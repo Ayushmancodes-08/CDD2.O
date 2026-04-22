@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 214 46% 33%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 214 46% 33%;
+    --radius: 0.5rem;
+  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #FFFFFF;
+    color: #1a2b4a;
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #0f1d35;
+  }
+  p { line-height: 1.7; }
+  ::selection { background-color: #2D4A7A; color: #ffffff; }
+}
+
+@layer components {
+  .glass-nav {
+    @apply bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm supports-[backdrop-filter]:bg-white/70;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+    border-radius: 12px;
+  }
+
+  .btn-primary {
+    @apply btn text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98];
+    background: linear-gradient(135deg, #2D4A7A 0%, #1c3459 100%);
+    padding: 12px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease-in-out;
+  }
+  .btn-primary:hover::after { left: 100%; }
+
+  .btn-secondary {
+    @apply btn bg-white border border-gray-200 text-gray-700 shadow-sm active:scale-[0.98] transition-all;
+    padding: 12px 28px;
+  }
+  .btn-secondary:hover {
+    border-color: #bae6fd;
+    background-color: rgba(240, 249, 255, 0.5);
+    color: #0f1d35;
+  }
+}
+
+::-webkit-scrollbar { width: 8px; height: 6px; }
+::-webkit-scrollbar-track { background: #f8f9fa; }
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 100px;
+  border: 2px solid #f8f9fa;
+}
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

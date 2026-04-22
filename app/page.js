@@ -2,12 +2,13 @@
 import React, { useState, useEffect, Suspense, lazy, useCallback, useRef } from 'react';
 import { motion, useScroll, useTransform, animate, useInView } from 'framer-motion';
 import {
-  Mail, MapPin, ChevronRight, Loader2, Target, Compass, ArrowRight,
+  Mail, MapPin, ChevronRight, Loader2, Target, Compass, ArrowRight, MousePointer2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Navbar from '@/components/cdd/Navbar';
 import Footer from '@/components/cdd/Footer';
 import { AnimatedGridPattern } from '@/components/cdd/AnimatedGrid';
+import { MagneticButton, TextReveal, Tilt, MaskReveal, StaggerGroup, staggerItem, ScrollIndicator } from '@/components/cdd/Animations';
 import { PROGRAMS, FACULTY, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { useGallery } from '@/components/cdd/useGallery';
 
@@ -22,21 +23,6 @@ const LoadingFallback = () => (
     <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
   </div>
 );
-
-const HoverWord = ({ children }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return (
-    <motion.span onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
-      className="inline-block relative cursor-default whitespace-nowrap"
-      animate={{ color: isHovered ? '#2D4A7A' : '#0f1d35' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}>
-      <motion.span className="absolute bottom-1 left-0 right-0 h-[4px] bg-accent-400 rounded-full origin-left opacity-40 mix-blend-multiply"
-        initial={{ scaleX: 0 }} animate={{ scaleX: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.25, ease: 'easeOut' }} />
-      {children}
-    </motion.span>
-  );
-};
 
 const SectionWrapper = ({ id, className = '', children, title, subtitle, altBg = false, eyebrow }) => (
   <section id={id} className={`py-16 md:py-20 lg:py-24 relative ${altBg ? 'bg-gray-50/60' : 'bg-white'} ${className}`}>
@@ -133,38 +119,70 @@ function App() {
         <div className="absolute bottom-[20%] right-[10%] w-[50vw] h-[50vw] bg-brand-400/10 rounded-full blur-[120px] pointer-events-none animate-float" style={{ animationDelay: '2s' }} />
 
         <div className="relative z-10 px-5 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-          <motion.div style={{ y: heroTextY, opacity: heroOpacity }} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }} className="max-w-4xl">
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-100 rounded-full mb-8">
+          <motion.div style={{ y: heroTextY, opacity: heroOpacity }} className="max-w-4xl">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-100 rounded-full mb-8 glow-ring">
               <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
               <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus</span>
             </motion.div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 leading-[1.08] tracking-tight">
-              Where <HoverWord>Code</HoverWord> <HoverWord>Meets</HoverWord> <br className="hidden sm:block" />
-              <span className="text-brand-500">Innovation.</span>
+              <TextReveal text="Where" className="text-brand-900" delay={0.1} />{' '}
+              <TextReveal text="Code" className="text-brand-900" delay={0.2} />{' '}
+              <TextReveal text="Meets" className="text-brand-900" delay={0.3} />
+              <br className="hidden sm:block" />
+              <span className="animated-gradient-text">
+                <TextReveal text="Innovation." delay={0.5} />
+              </span>
             </h1>
 
-            <p className="text-base md:text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9, ease: 'easeOut' }}
+              className="text-base md:text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
               The <strong className="text-brand-900 font-semibold">Coding Design Development Club</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#about-us" className="btn-primary group">
-                Discover Our Mission <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a href="#contact" className="btn-secondary">Get in Touch</a>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
+              className="flex flex-col sm:flex-row gap-4">
+              <MagneticButton strength={0.2}>
+                <a href="#about-us" className="btn-primary group">
+                  Discover Our Mission <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </a>
+              </MagneticButton>
+              <MagneticButton strength={0.15}>
+                <a href="#contact" className="btn-secondary">Get in Touch</a>
+              </MagneticButton>
+            </motion.div>
 
-            <div className="mt-14 flex flex-wrap items-center gap-x-10 gap-y-4 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-              <span>Trusted by 200+ students</span>
-              <span className="hidden sm:block w-1 h-1 rounded-full bg-gray-300"></span>
-              <span>11 Projects Deployed</span>
-              <span className="hidden sm:block w-1 h-1 rounded-full bg-gray-300"></span>
-              <span>5+ Hackathons Hosted</span>
-            </div>
+            {/* Marquee trust bar */}
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              className="mt-14 pt-8 border-t border-gray-100 overflow-hidden marquee-pause">
+              <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-gray-400 mb-4">Our ecosystem</p>
+              <div className="relative w-full overflow-hidden">
+                <div className="flex gap-10 animate-marquee whitespace-nowrap will-change-transform">
+                  {[
+                    '200+ Active Members', '11+ Projects Shipped', '5+ Hackathons', 'CodeKriti', 'LearnOverse',
+                    'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
+                    '200+ Active Members', '11+ Projects Shipped', '5+ Hackathons', 'CodeKriti', 'LearnOverse',
+                    'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
+                  ].map((item, i) => (
+                    <span key={i} className="inline-flex items-center gap-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                      {item}
+                      <span className="w-1 h-1 rounded-full bg-brand-300"></span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* ABOUT */}
@@ -201,42 +219,45 @@ function App() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-br from-brand-200 to-accent-200 rounded-3xl blur-3xl opacity-30"></div>
-            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 group aspect-video bg-brand-900">
+            <div className="absolute -inset-4 bg-gradient-to-br from-brand-200 to-accent-200 rounded-3xl blur-3xl opacity-30 animate-blob"></div>
+            <MaskReveal direction="left" className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 group aspect-video bg-brand-900">
               <video
                 src="https://image2url.com/videos/1765880714875-ae3dd126-0dd6-4ead-95f9-eb4f8f705e5d.mp4"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 autoPlay muted loop playsInline
                 poster="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop"
               />
-            </div>
+            </MaskReveal>
           </motion.div>
         </div>
       </SectionWrapper>
 
       {/* PROGRAMS */}
       <SectionWrapper id="programs" eyebrow="Programs" title="Technical Tracks" subtitle="Curriculum designed for industry readiness.">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <StaggerGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" delay={0.08}>
           {PROGRAMS.map((program, idx) => {
             const Icon = program.icon;
             return (
-              <motion.div key={idx} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="bg-white p-7 rounded-2xl border border-gray-100 hover:border-brand-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                <div className="absolute -inset-4 bg-gradient-to-r from-brand-50 to-accent-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none blur-xl z-0"></div>
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-5">
-                    <div className="p-3 bg-brand-50 rounded-xl border border-brand-100 group-hover:bg-brand-500 transition-colors duration-300">
-                      <Icon className="w-5 h-5 text-brand-600 group-hover:text-white transition-colors" strokeWidth={1.5} />
+              <motion.div key={idx} variants={staggerItem} className="perspective-1000">
+                <Tilt max={6} className="h-full">
+                  <div className="bg-white p-7 rounded-2xl border border-gray-100 hover:border-brand-200 hover:shadow-xl transition-all duration-500 group relative overflow-hidden h-full"
+                    style={{ transform: 'translateZ(0)' }}>
+                    <div className="absolute -inset-4 bg-gradient-to-r from-brand-50 to-accent-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-xl z-0"></div>
+                    <div className="relative z-10" style={{ transform: 'translateZ(40px)' }}>
+                      <div className="flex items-start justify-between mb-5">
+                        <div className="p-3 bg-brand-50 rounded-xl border border-brand-100 group-hover:bg-brand-500 transition-all duration-500 group-hover:scale-110">
+                          <Icon className="w-5 h-5 text-brand-600 group-hover:text-white transition-colors" strokeWidth={1.5} />
+                        </div>
+                      </div>
+                      <h3 className="text-lg font-display font-bold text-brand-900 mb-2">{program.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{program.description}</p>
                     </div>
                   </div>
-                  <h3 className="text-lg font-display font-bold text-brand-900 mb-2">{program.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{program.description}</p>
-                </div>
+                </Tilt>
               </motion.div>
             );
           })}
-        </div>
+        </StaggerGroup>
       </SectionWrapper>
 
       {/* FACULTY */}

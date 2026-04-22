@@ -182,7 +182,6 @@ function App() {
             </motion.div>
           </motion.div>
         </div>
-        <ScrollIndicator />
       </section>
 
       {/* ABOUT */}
@@ -340,9 +339,31 @@ function App() {
                   <p className="text-gray-600 text-sm">patraayushman21@gmail.com</p>
                 </div>
               </div>
-              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop"
-                  alt="Collaborate" className="w-full h-48 object-cover" />
+              {/* Google Map */}
+              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm group relative">
+                <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-100 shadow-sm flex items-center gap-2">
+                  <MapPin size={14} className="text-brand-500" />
+                  <span className="text-xs font-semibold text-brand-900">PMEC Campus</span>
+                </div>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1883.2726820195844!2d84.87146117586577!3d19.35767414384523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3d5b96a8b4e52b%3A0x0!2sParala%20Maharaja%20Engineering%20College!5e0!3m2!1sen!2sin!4v1700000000000"
+                  width="100%"
+                  height="260"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="PMEC Campus, Berhampur"
+                  className="grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
+                />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Parala+Maharaja+Engineering+College+Berhampur"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-4 right-4 z-10 bg-brand-900 hover:bg-brand-800 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-1.5 hover:-translate-y-0.5"
+                >
+                  Get Directions <ArrowRight size={12} />
+                </a>
               </div>
             </div>
 

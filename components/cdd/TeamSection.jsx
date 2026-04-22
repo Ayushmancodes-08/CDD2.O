@@ -77,7 +77,16 @@ export default function TeamSection() {
       {filter === 'Team' && (
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <AnimatePresence mode="popLayout">
-            {teamMembers.map((member) => (<MemberCard key={member.name} member={member} />))}
+            {teamMembers.slice(0, 4).map((member) => (<MemberCard key={member.name} member={member} />))}
+          </AnimatePresence>
+        </motion.div>
+      )}
+      {filter === 'Team' && teamMembers.length > 4 && (
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-5">
+          <AnimatePresence mode="popLayout">
+            <div className="hidden lg:block" />
+            {teamMembers.slice(4, 6).map((member) => (<MemberCard key={member.name} member={member} />))}
+            <div className="hidden lg:block" />
           </AnimatePresence>
         </motion.div>
       )}

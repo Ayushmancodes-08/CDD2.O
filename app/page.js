@@ -167,9 +167,9 @@ function App() {
               <div className="relative w-full overflow-hidden">
                 <div className="flex gap-10 animate-marquee whitespace-nowrap will-change-transform">
                   {[
-                    '200+ Active Members', '11+ Projects Shipped', '5+ Hackathons', 'CodeKriti', 'LearnOverse',
+                    '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                     'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
-                    '200+ Active Members', '11+ Projects Shipped', '5+ Hackathons', 'CodeKriti', 'LearnOverse',
+                    '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                     'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
                   ].map((item, i) => (
                     <span key={i} className="inline-flex items-center gap-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
@@ -213,7 +213,6 @@ function App() {
             <div className="flex gap-12 mt-8 pt-8 border-t border-gray-200">
               <AnimatedCounter from={0} to={200} label="Active Members" />
               <AnimatedCounter from={0} to={11} label="Projects" />
-              <AnimatedCounter from={0} to={5} label="Hackathons" />
             </div>
           </motion.div>
 

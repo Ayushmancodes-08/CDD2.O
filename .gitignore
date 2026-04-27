@@ -6,8 +6,7 @@
 
 # Dependencies
 node_modules/
-/node_modules
-/.pnp
+.pnp
 .pnp.js
 .yarn/install-state.gz
 .yarn/*
@@ -17,16 +16,16 @@ node_modules/
 !.yarn/versions
 
 # Testing
-/coverage
+coverage/
 
 # Next.js
-/.next/
-/out/
+.next/
+out/
 next-env.d.ts
 *.tsbuildinfo
 
 # Production builds
-/build
+build/
 dist/
 dist
 

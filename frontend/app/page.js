@@ -43,21 +43,22 @@ const SectionWrapper = ({ id, className = '', children, title, subtitle, altBg =
 );
 
 const AnimatedCounter = ({ from, to, label }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const containerRef = useRef(null);
+  const textRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: '0px' });
   useEffect(() => {
-    if (isInView && ref.current) {
+    if (isInView && textRef.current) {
       const controls = animate(from, to, {
-        duration: 2, ease: 'easeOut',
-        onUpdate(value) { if (ref.current) ref.current.textContent = Math.floor(value).toString(); }
+        duration: 1.2, ease: 'easeOut',
+        onUpdate(value) { if (textRef.current) textRef.current.textContent = Math.floor(value).toString(); }
       });
       return () => controls.stop();
     }
   }, [from, to, isInView]);
   return (
-    <div className="flex flex-col">
+    <div ref={containerRef} className="flex flex-col">
       <h4 className="text-4xl md:text-5xl font-display font-bold text-brand-900 mb-1 flex items-baseline">
-        <span ref={ref}>{from}</span><span className="text-brand-400">+</span>
+        <span ref={textRef}>{from}</span><span className="text-brand-400">+</span>
       </h4>
       <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em]">{label}</p>
     </div>

@@ -56,9 +56,7 @@ export default function Navbar() {
         <div className="w-full max-w-7xl px-5 sm:px-6 lg:px-8 flex justify-between items-center h-full">
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')}
             className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2 z-50 h-full py-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-md">
-              <span className="text-white font-display font-bold text-sm tracking-tight">CDD</span>
-            </div>
+            <img src="/Logo_dark.png" alt="CDD Club" className="w-9 h-9 object-contain" />
             <span className="hidden sm:block font-display font-bold text-brand-900 text-lg tracking-tight">CDD Club</span>
           </a>
 

@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import Navbar from '@/components/cdd/Navbar';
 import Footer from '@/components/cdd/Footer';
 import { AnimatedGridPattern } from '@/components/cdd/AnimatedGrid';
-import { MagneticButton, TextReveal, Tilt, MaskReveal, StaggerGroup, staggerItem, ScrollIndicator } from '@/components/cdd/Animations';
+import { MagneticButton, TextReveal, CharReveal, Tilt, MaskReveal, StaggerGroup, staggerItem, ScrollIndicator } from '@/components/cdd/Animations';
 import { PROGRAMS, FACULTY, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { useGallery } from '@/components/cdd/useGallery';
 
@@ -73,6 +73,8 @@ function App() {
   const { scrollY, scrollYProgress } = useScroll();
   const heroTextY = useTransform(scrollY, [0, 500], [0, 80]);
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const orb1Y = useTransform(scrollY, [0, 1000], [0, 150]);
+  const orb2Y = useTransform(scrollY, [0, 1000], [0, -150]);
 
   const handleContactChange = useCallback((e) => {
     setContactForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -115,8 +117,8 @@ function App() {
           className="[mask-image:radial-gradient(500px_circle_at_center,white,transparent)] inset-x-0 inset-y-[-30%] h-[200%] skew-y-12 fill-brand-500/30 stroke-brand-500/30" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{ backgroundImage: `radial-gradient(circle, #2D4A7A 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
-        <div className="absolute top-[20%] left-[10%] w-[40vw] h-[40vw] bg-accent-400/10 rounded-full blur-[100px] pointer-events-none animate-pulse-slow" />
-        <div className="absolute bottom-[20%] right-[10%] w-[50vw] h-[50vw] bg-brand-400/10 rounded-full blur-[120px] pointer-events-none animate-float" style={{ animationDelay: '2s' }} />
+        <motion.div style={{ y: orb1Y }} className="absolute top-[20%] left-[10%] w-[80vw] h-[80vw] md:w-[40vw] md:h-[40vw] bg-accent-400/10 rounded-full blur-[80px] md:blur-[100px] pointer-events-none animate-pulse-slow" />
+        <motion.div style={{ y: orb2Y, animationDelay: '2s' }} className="absolute bottom-[20%] right-[10%] w-[90vw] h-[90vw] md:w-[50vw] md:h-[50vw] bg-brand-400/10 rounded-full blur-[100px] md:blur-[120px] pointer-events-none animate-float" />
 
         <div className="relative z-10 px-5 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           <motion.div style={{ y: heroTextY, opacity: heroOpacity }} className="max-w-4xl">
@@ -127,13 +129,13 @@ function App() {
               <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus</span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 leading-[1.08] tracking-tight">
+            <h1 className="text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 tracking-tight">
               <TextReveal text="Where" className="text-brand-900" delay={0.1} />{' '}
               <TextReveal text="Code" className="text-brand-900" delay={0.2} />{' '}
               <TextReveal text="Meets" className="text-brand-900" delay={0.3} />
               <br className="hidden sm:block" />
               <span className="animated-gradient-text">
-                <TextReveal text="Innovation." delay={0.5} />
+                <CharReveal text="Innovation." delay={0.5} />
               </span>
             </h1>
 
@@ -149,12 +151,12 @@ function App() {
               transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
               className="flex flex-col sm:flex-row gap-4">
               <MagneticButton strength={0.2}>
-                <a href="#about-us" className="btn-primary group">
+                <a href="#about-us" className="btn-primary group w-full sm:w-auto justify-center text-center">
                   Discover Our Mission <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </a>
               </MagneticButton>
               <MagneticButton strength={0.15}>
-                <a href="#contact" className="btn-secondary">Get in Touch</a>
+                <a href="#contact" className="btn-secondary w-full sm:w-auto justify-center text-center">Get in Touch</a>
               </MagneticButton>
             </motion.div>
 
@@ -182,6 +184,8 @@ function App() {
             </motion.div>
           </motion.div>
         </div>
+        
+        <ScrollIndicator />
       </section>
 
       {/* ABOUT */}
@@ -189,7 +193,7 @@ function App() {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-8">
             <div className="flex gap-4 items-start group">
-              <div className="shrink-0 mt-0.5 p-3 bg-white rounded-xl border border-gray-100 shadow-sm group-hover:shadow-md transition-shadow">
+              <div className="shrink-0 mt-0.5 p-3 bg-white rounded-xl shadow-ambient group-hover:shadow-md transition-shadow">
                 <Target className="w-5 h-5 text-brand-500" />
               </div>
               <div>
@@ -200,7 +204,7 @@ function App() {
               </div>
             </div>
             <div className="flex gap-4 items-start group">
-              <div className="shrink-0 mt-0.5 p-3 bg-white rounded-xl border border-gray-100 shadow-sm group-hover:shadow-md transition-shadow">
+              <div className="shrink-0 mt-0.5 p-3 bg-white rounded-xl shadow-ambient group-hover:shadow-md transition-shadow">
                 <Compass className="w-5 h-5 text-brand-500" />
               </div>
               <div>
@@ -218,7 +222,7 @@ function App() {
 
           <motion.div initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
             <div className="absolute -inset-4 bg-gradient-to-br from-brand-200 to-accent-200 rounded-3xl blur-3xl opacity-30 animate-blob"></div>
-            <MaskReveal direction="left" className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 group aspect-video bg-brand-900">
+            <MaskReveal direction="left" className="relative overflow-hidden rounded-2xl shadow-xl group aspect-video bg-brand-900">
               <video
                 src="https://image2url.com/videos/1765880714875-ae3dd126-0dd6-4ead-95f9-eb4f8f705e5d.mp4"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
@@ -238,12 +242,12 @@ function App() {
             return (
               <motion.div key={idx} variants={staggerItem} className="perspective-1000">
                 <Tilt max={6} className="h-full">
-                  <div className="bg-white p-7 rounded-2xl border border-gray-100 hover:border-brand-200 hover:shadow-xl transition-all duration-500 group relative overflow-hidden h-full"
+                  <div className="bg-white p-7 rounded-2xl shadow-ambient hover:shadow-xl transition-all duration-500 group relative overflow-hidden h-full"
                     style={{ transform: 'translateZ(0)' }}>
                     <div className="absolute -inset-4 bg-gradient-to-r from-brand-50 to-accent-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-xl z-0"></div>
                     <div className="relative z-10" style={{ transform: 'translateZ(40px)' }}>
                       <div className="flex items-start justify-between mb-5">
-                        <div className="p-3 bg-brand-50 rounded-xl border border-brand-100 group-hover:bg-brand-500 transition-all duration-500 group-hover:scale-110">
+                        <div className="p-3 bg-brand-50 rounded-xl group-hover:bg-brand-500 transition-all duration-500 group-hover:scale-110">
                           <Icon className="w-5 h-5 text-brand-600 group-hover:text-white transition-colors" strokeWidth={1.5} />
                         </div>
                       </div>
@@ -266,7 +270,7 @@ function App() {
             return (
               <motion.div key={idx} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200 hover:-translate-y-0.5 transition-all duration-300 group">
+                className="flex items-center gap-4 bg-white p-5 rounded-2xl shadow-ambient hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
                 <img src={dynamicImage || member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=EEF2FF&color=2D4A7A`}
                   alt={member.name} className="w-16 h-16 object-cover rounded-full border-2 border-brand-50 shadow-sm" />
                 <div>
@@ -325,22 +329,22 @@ function App() {
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
             <div className="space-y-8">
               <div className="flex items-start gap-4">
-                <div className="shrink-0 p-3 bg-brand-50 rounded-xl border border-brand-100"><MapPin className="text-brand-500" size={20} /></div>
+                <div className="shrink-0 p-3 bg-brand-50 rounded-xl"><MapPin className="text-brand-500" size={20} /></div>
                 <div>
                   <h4 className="font-display font-bold text-brand-900 text-base mb-1">Headquarters</h4>
                   <p className="text-gray-600 text-sm leading-relaxed">Room 113, Academic Main Building<br />PMEC Campus, Sitalapalli, Berhampur 761003</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="shrink-0 p-3 bg-brand-50 rounded-xl border border-brand-100"><Mail className="text-brand-500" size={20} /></div>
+                <div className="shrink-0 p-3 bg-brand-50 rounded-xl"><Mail className="text-brand-500" size={20} /></div>
                 <div>
                   <h4 className="font-display font-bold text-brand-900 text-base mb-1">Inquiries</h4>
                   <p className="text-gray-600 text-sm">patraayushman21@gmail.com</p>
                 </div>
               </div>
               {/* Google Map */}
-              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm group relative">
-                <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-100 shadow-sm flex items-center gap-2">
+              <div className="rounded-2xl overflow-hidden shadow-ambient group relative">
+                <div className="absolute top-4 left-4 z-10 bg-white/60 backdrop-blur-2xl px-3 py-2 rounded-lg shadow-ambient flex items-center gap-2">
                   <MapPin size={14} className="text-brand-500" />
                   <span className="text-xs font-semibold text-brand-900">PMEC Campus</span>
                 </div>
@@ -366,28 +370,28 @@ function App() {
               </div>
             </div>
 
-            <form className="space-y-4 bg-gray-50/60 p-6 md:p-8 rounded-2xl border border-gray-100" onSubmit={handleContactSubmit}>
+            <form className="space-y-4 bg-gray-50/60 p-6 md:p-8 rounded-2xl shadow-ambient" onSubmit={handleContactSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">First Name</label>
                   <input type="text" name="firstName" value={contactForm.firstName} onChange={handleContactChange} required
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all" placeholder="Jane" />
+                    className="w-full bg-white rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-ambient transition-all" placeholder="Jane" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Name</label>
                   <input type="text" name="lastName" value={contactForm.lastName} onChange={handleContactChange} required
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all" placeholder="Doe" />
+                    className="w-full bg-white rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-ambient transition-all" placeholder="Doe" />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Address</label>
                 <input type="email" name="email" value={contactForm.email} onChange={handleContactChange} required
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all" placeholder="jane@example.com" />
+                  className="w-full bg-white rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-ambient transition-all" placeholder="jane@example.com" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Message</label>
                 <textarea rows={4} name="message" value={contactForm.message} onChange={handleContactChange} required
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all resize-none" placeholder="How can we help?" />
+                  className="w-full bg-white rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-ambient transition-all resize-none" placeholder="How can we help?" />
               </div>
               <button type="submit" disabled={isSubmitting} className="w-full btn-primary group justify-center">
                 {isSubmitting ? (<><Loader2 className="animate-spin" size={16} />Sending...</>) : (<>Send Message <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>)}

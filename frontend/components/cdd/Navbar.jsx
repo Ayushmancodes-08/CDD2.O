@@ -62,14 +62,16 @@ export default function Navbar() {
             <span className="hidden sm:block font-display font-bold text-brand-900 text-lg tracking-tight">CDD Club</span>
           </a>
 
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => {
               const isActive = link.href.replace('#', '') === activeSection;
               return (
                 <a key={link.name} href={link.href} onClick={(e) => handleNavClick(e, link.href)}
-                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                    ${isActive ? 'text-brand-900 bg-brand-50' : 'text-gray-500 hover:text-brand-900 hover:bg-gray-50'}`}>
+                  className={`relative py-2 text-sm font-medium transition-colors duration-200 group
+                    ${isActive ? 'text-brand-900' : 'text-gray-500 hover:text-brand-900'}`}>
                   {link.name}
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-500 transition-all duration-300
+                    ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                 </a>
               );
             })}
@@ -89,7 +91,7 @@ export default function Navbar() {
         {isOpen && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="fixed top-16 left-0 w-full z-40 bg-white border-b border-gray-100 shadow-lg lg:hidden">
+            className="fixed top-16 left-0 w-full z-40 bg-white/90 backdrop-blur-2xl shadow-ambient rounded-b-2xl lg:hidden">
             <div className="flex flex-col p-3 space-y-1">
               {navLinks.map((link) => {
                 const isActive = link.href.replace('#', '') === activeSection;
@@ -101,7 +103,7 @@ export default function Navbar() {
                   </a>
                 );
               })}
-              <div className="pt-2 mt-1 border-t border-gray-100">
+              <div className="pt-2 mt-1">
                 <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}
                   className="block w-full text-center py-3 bg-brand-900 text-white rounded-lg font-semibold text-sm hover:bg-brand-800 transition-colors">
                   Contact Us

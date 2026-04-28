@@ -11,7 +11,7 @@ const CountdownTimer = () => {
 
   useEffect(() => {
     const demoDate = new Date();
-    demoDate.setDate(demoDate.getDate() + 5);
+    demoDate.setMonth(demoDate.getMonth() + 10);
     demoDate.setHours(10, 0, 0);
     const timer = setInterval(() => {
       const difference = demoDate.getTime() - new Date().getTime();
@@ -36,7 +36,7 @@ const CountdownTimer = () => {
           <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
           Registration Closing Soon
         </div>
-        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">CodeKriti 2025</h3>
+        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">CodeKriti 2026</h3>
         <p className="text-white/60 text-xs md:text-sm mt-1">Don&apos;t miss the biggest hackathon of the year.</p>
       </div>
       <div className="flex gap-3 relative z-10">
@@ -216,27 +216,22 @@ export default function EventsSection() {
 
       <CountdownTimer />
 
-      <div className="relative pt-8">
-        <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-200 to-transparent -translate-x-1/2"></div>
-        <div className="space-y-10">
-          {EVENTS.map((event, index) => {
-            const isEven = index % 2 === 0;
-            return (
-              <motion.div key={event.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.08 }}
-                className="relative flex flex-col md:flex-row items-stretch justify-between w-full">
-                <div className="w-full md:w-[calc(50%-40px)] mb-6 md:mb-0">
-                  <div className="md:hidden w-full"><EventCard event={event} /></div>
-                  <div className="hidden md:block w-full">{!isEven ? <EventCard event={event} /> : null}</div>
-                </div>
-                <div className="absolute left-1/2 -translate-x-1/2 top-8 w-3 h-3 rounded-full z-10 hidden md:block bg-white border-2 border-brand-500 shadow-md"></div>
-                <div className="hidden md:flex w-[calc(50%-40px)] justify-start">
-                  {isEven ? <EventCard event={event} /> : null}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+      <div className="relative pt-16 pb-12 flex justify-center items-center min-h-[300px]">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true }} 
+          transition={{ duration: 0.8, ease: "easeOut" }} 
+          className="text-center relative z-10"
+        >
+          <div className="absolute -inset-4 bg-brand-50/50 blur-xl rounded-full -z-10"></div>
+          <p 
+            className="text-brand-700 text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide drop-shadow-sm" 
+            style={{ fontFamily: '"Caveat", cursive', lineHeight: '1.4' }}
+          >
+            More events coming soon... <br className="md:hidden" /> Please wait!
+          </p>
+        </motion.div>
       </div>
     </div>
   );

@@ -7,6 +7,9 @@ import { CLUB_SOCIALS, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -98,11 +101,42 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} CDD Club PMEC. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Built with</span>
-            <Heart size={10} className="text-red-400 fill-red-400" />
+            <Heart size={10} className="text-red-400 fill-red-400 cursor-pointer hover:scale-125 transition-transform" onClick={() => setIsAdminOpen(true)} />
             <span>from Berhampur</span>
           </div>
         </div>
       </div>
+
+      {isAdminOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-brand-950 border border-white/10 p-6 md:p-8 rounded-2xl max-w-md w-full shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setIsAdminOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+              ✕
+            </button>
+            <h3 className="text-xl font-display font-bold text-white mb-1">Admin Access</h3>
+            <p className="text-sm text-gray-400 mb-6">Enter your credentials to access the admin panel.</p>
+            
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Email Address</label>
+                <input type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
+                  placeholder="admin@cddclub.com" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Password</label>
+                <input type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
+                  placeholder="••••••••" />
+              </div>
+              <button onClick={() => toast.info(`Attempting login with ${adminEmail}`)}
+                className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition-all shadow-md mt-2">
+                Login as Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

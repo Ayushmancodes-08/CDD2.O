@@ -273,7 +273,8 @@ function App() {
                 transition={{ delay: idx * 0.1 }}
                 className="flex items-center gap-4 bg-white p-5 rounded-2xl shadow-ambient hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
                 <img src={dynamicImage || member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=EEF2FF&color=2D4A7A`}
-                  alt={member.name} className="w-16 h-16 object-cover rounded-full border-2 border-brand-50 shadow-sm" />
+                  alt={member.name} className="w-16 h-16 object-cover rounded-full border-2 border-brand-50 shadow-sm"
+                  loading="lazy" decoding="async" />
                 <div>
                   <h3 className="font-display font-bold text-brand-900 text-base">{member.name}</h3>
                   <p className="text-brand-500 text-xs font-semibold uppercase tracking-wider mb-0.5">{member.role}</p>

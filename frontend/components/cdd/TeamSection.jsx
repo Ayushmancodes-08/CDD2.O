@@ -25,7 +25,7 @@ const MemberCard = ({ member, isFounder }) => (
       <img src={member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=dce4f2&color=0f1d35`}
         alt={member.name} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${member.imagePosition ? '' : 'object-center'}`}
         style={member.imagePosition ? { objectPosition: member.imagePosition } : {}}
-        loading="lazy"
+        loading="lazy" decoding="async"
         onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=dce4f2&color=0f1d35`; }} />
     </div>
     <h3 className={`text-base font-display font-bold mb-0.5 ${isFounder ? 'text-amber-700' : 'text-brand-900'}`}>{member.name}</h3>
@@ -133,6 +133,7 @@ export default function TeamSection() {
                       <img src={member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=dce4f2&color=0f1d35`}
                         alt={member.name} className={`w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0 ${member.imagePosition ? '' : 'object-center'}`}
                         style={member.imagePosition ? { objectPosition: member.imagePosition } : {}}
+                        loading="lazy" decoding="async"
                         onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=dce4f2&color=0f1d35`; }} />
                       <div className="flex-grow min-w-0">
                         <h3 className="font-display font-bold text-brand-900 text-sm truncate">{member.name}</h3>
@@ -151,7 +152,8 @@ export default function TeamSection() {
                       <div className="flex flex-col sm:flex-row items-center gap-4 p-5 bg-gradient-to-r from-amber-50 to-amber-50/50 rounded-xl border border-amber-200 text-center sm:text-left">
                         <div className="relative flex-shrink-0">
                           <img src={founder.image} alt={founder.name}
-                            className="w-16 h-16 rounded-full object-cover object-center border-[3px] border-amber-200 shadow-sm" />
+                            className="w-16 h-16 rounded-full object-cover object-center border-[3px] border-amber-200 shadow-sm"
+                            loading="lazy" decoding="async" />
                           <Star size={14} className="absolute -top-1 -right-1 text-amber-400 fill-amber-400" />
                         </div>
                         <div className="flex-grow">

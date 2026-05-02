@@ -35,7 +35,7 @@ export const FACULTY = [
     name: "Dr. Kalyan Kumar Jena",
     role: "Faculty In-charge",
     specialty: "Asst. Professor, CSE Dept.",
-    image: "/kalyan-kumar-jena.jpeg",
+    image: "/Dr.-Kalyan-Kumar-Jena.jpeg",
   },
 ];
 

@@ -23,19 +23,19 @@ export const FACULTY = [
     name: "Dr. Debasis Mohapatra",
     role: "Faculty In-charge",
     specialty: "Asst. Professor, CSE Dept.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=400&auto=format&fit=crop",
+    image: "/debasish_sir.png",
   },
   {
     name: "Dr. Sourav Kumar Bhoi",
     role: "Faculty In-charge",
     specialty: "Asst. Professor, CSE Dept.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=400&auto=format&fit=crop",
+    image: "/sourav_sir.png",
   },
   {
-    name: "Kalyan Kumar Jena",
+    name: "Dr. Kalyan Kumar Jena",
     role: "Faculty In-charge",
     specialty: "Asst. Professor, CSE Dept.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&h=400&auto=format&fit=crop",
+    image: "/kalyan-kumar-jena.jpeg",
   },
 ];
 

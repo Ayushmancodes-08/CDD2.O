@@ -2,9 +2,9 @@ import './globals.css'
 import { Toaster } from 'sonner'
 
 export const metadata = {
-  title: "CDD Club | Where Code Meets Innovation — PMEC's Premier Tech Society",
-  description: "The Coding Design Development Club (CDD) is PMEC's premier technical society bridging theory and industry. Hackathons, workshops, projects, and more.",
-  keywords: "CDD Club, PMEC, coding club, hackathon, web development, AI, machine learning, technical society",
+  title: "IDEA AND INNOVATION CELL (CDD×SIC) | Where Code Meets Innovation — PMEC's Premier Tech Society",
+  description: "The IDEA and Innovation Cell (CDD×SIC) is PMEC's premier technical society bridging theory and industry. Hackathons, workshops, projects, and more.",
+  keywords: "IDEA AND INNOVATION CELL, CDD×SIC, CDD Club, PMEC, coding club, hackathon, web development, AI, machine learning, technical society",
   icons: {
     icon: [
       {

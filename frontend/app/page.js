@@ -144,7 +144,7 @@ function App() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9, ease: 'easeOut' }}
               className="text-base md:text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
-              The <strong className="text-brand-900 font-semibold">Coding Design Development Club</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
+              The <strong className="text-brand-900 font-semibold">IDEA and Innovation Cell</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
             </motion.p>
 
             <motion.div
@@ -265,7 +265,7 @@ function App() {
 
       {/* FACULTY */}
       <SectionWrapper id="faculty" eyebrow="Faculty" title="Advisory Board" subtitle="Expert guidance bridging theory and real-world application." altBg={true}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {FACULTY.map((member, idx) => {
             const dynamicImage = getImageByName(member.name);
             return (

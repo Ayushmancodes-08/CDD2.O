@@ -20,12 +20,6 @@ export const PROGRAMS = [
 
 export const FACULTY = [
   {
-    name: "Dr. Debasis Mohapatra",
-    role: "Faculty In-charge",
-    specialty: "Asst. Professor, CSE Dept.",
-    image: "/debasish_sir.png",
-  },
-  {
     name: "Dr. Sourav Kumar Bhoi",
     role: "Faculty In-charge",
     specialty: "Asst. Professor, CSE Dept.",
@@ -96,7 +90,7 @@ export const TEAM_MEMBERS = [
   { name: "Debasish Sahu", role: "Public Relations Coordinator", description: "Handling public relations and external communications.", image: "/team_alumini/debasis.jpg", category: "Team", linkedin: "https://www.linkedin.com/in/debasish-sahu-b35635250", email: "sahudebasish327@gmail.com", instagram: "https://www.instagram.com/_debasishsahu_/" },
   { name: "Sarthak Mishra", role: "Coordinator", description: "Supporting club events and student engagement.", image: "/team_alumini/sarthak.jpg", category: "Team", linkedin: "https://www.linkedin.com/in/sarthak-mishra-b99bb0331", email: "sarthakmishra9420@gmail.com", instagram: "https://www.instagram.com/sarthakmishra05/" },
   { name: "Anisha Parida", role: "Coordinator", description: "Facilitating workshops and club activities.", image: "/team_alumini/anisha_didi.jpg", imagePosition: "center top", category: "Team", linkedin: "https://www.linkedin.com/in/anisha-parida-20780b2b0", email: "anishaparida04@gmail.com", instagram: "https://www.instagram.com/aisha_242004" },
-  { name: "Saurav Pratap Singh", role: "Founder", description: "Established the CDD Club and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/c_fill,g_face,w_400,h_400/v1765901413/Founder_vnqqps.jpg", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
+  { name: "Saurav Pratap Singh", role: "Founder", description: "Established the IDEA and Innovation Cell (CDD×SIC) and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/c_fill,g_face,w_400,h_400/v1765901413/Founder_vnqqps.jpg", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
   { name: "Baibhab Sahu", role: "Alumni", description: "", image: "/team_alumini/baibhab_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/baibhabsahu07", email: "ankur2002666@gmail.com", instagram: "https://www.instagram.com/baibhabsahu/" },
   { name: "Chhayakanta Dash", role: "Alumni", description: "", image: "/team_alumini/Chaya_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/chhayakantadash", email: "chhayakantdash143@gmail.com", instagram: "https://www.instagram.com/mr.chhayakant/" },
   { name: "Pranjal Panda", role: "Alumni", description: "", image: "/team_alumini/pranjal_didi.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/pranjal-panda-236191317", email: "pranjalpanda047@gmail.com", instagram: "https://www.instagram.com/pranjal.panda_/" },

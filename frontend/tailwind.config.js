@@ -8,6 +8,11 @@ module.exports = {
     './src/**/*.{js,jsx}',
   ],
   prefix: "",
+  safelist: [
+    {
+      pattern: /^border-(red|blue|green|gray|brand|amber|purple|emerald|orange|slate|zinc|neutral|black|white|transparent)(-(50|100|200|300|400|500|600|700|800|900|950))?$/,
+    },
+  ],
   theme: {
     container: {
       center: true,

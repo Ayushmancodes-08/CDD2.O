@@ -36,7 +36,7 @@ const CountdownTimer = () => {
           <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
           Registration Closing Soon
         </div>
-        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">CodeKriti 2026</h3>
+        <h3 className="text-2xl md:text-3xl font-display font-bold text-white">CodeKriti 2027</h3>
         <p className="text-white/60 text-xs md:text-sm mt-1">Don&apos;t miss the biggest hackathon of the year.</p>
       </div>
       <div className="flex gap-3 relative z-10">

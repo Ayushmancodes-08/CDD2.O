@@ -4,15 +4,21 @@ import { Toaster } from 'sonner'
 export const metadata = {
   metadataBase: new URL('https://cdd-pmec.vercel.app'),
   title: {
-    default: "IDEA AND INNOVATION CELL (CDD×SIC) | CDD — Coding Design and Development PMEC",
-    template: "%s | IDEA AND INNOVATION CELL (CDD×SIC)"
+    default: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — CDD (Coding Design and Development)",
+    template: "%s | IDEA AND INNOVATION CELL PMEC (CDD×SIC)"
   },
-  description: "Official portal of IDEA AND INNOVATION CELL (CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College (PMEC Berhampur). Premier student innovation cell, coding club, hackathons, CodeKriti 2027, AI/ML, and web development.",
+  description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
   keywords: [
+    "IDEA AND INNOVATION CELL PMEC",
     "IDEA AND INNOVATION CELL",
     "IDEA and Innovation Cell",
-    "idea innovation cell",
-    "IDEA Innovation Cell PMEC",
+    "idea innovation cell pmec",
+    "IIC PMEC",
+    "iic pmec",
+    "IIC",
+    "iic",
+    "PMEC IIC",
+    "Institution Innovation Council PMEC",
     "CDD×SIC",
     "CDD x SIC",
     "CDD-SIC",
@@ -37,8 +43,8 @@ export const metadata = {
     "PMEC hackathon",
     "cdd-pmec.vercel.app"
   ],
-  authors: [{ name: "IDEA AND INNOVATION CELL (CDD×SIC)" }],
-  creator: "IDEA AND INNOVATION CELL (CDD×SIC)",
+  authors: [{ name: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)" }],
+  creator: "IDEA AND INNOVATION CELL PMEC (CDD×SIC)",
   publisher: "Parala Maharaja Engineering College (PMEC)",
   robots: {
     index: true,
@@ -58,22 +64,22 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://cdd-pmec.vercel.app',
-    siteName: 'IDEA AND INNOVATION CELL (CDD×SIC)',
-    title: "IDEA AND INNOVATION CELL (CDD×SIC) | PMEC's Premier Tech Society & Innovation Cell",
-    description: "Official portal of IDEA AND INNOVATION CELL (CDD×SIC) & CDD (Coding Design and Development) at PMEC Berhampur.",
+    siteName: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
+    title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — Official Tech & Innovation Society",
+    description: "Official website of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur.",
     images: [
       {
         url: '/Logo_dark.png',
         width: 1200,
         height: 630,
-        alt: 'IDEA AND INNOVATION CELL (CDD×SIC) Logo',
+        alt: 'IDEA AND INNOVATION CELL PMEC Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "IDEA AND INNOVATION CELL (CDD×SIC) | CDD PMEC",
-    description: "Official portal of IDEA AND INNOVATION CELL (CDD×SIC) at PMEC Berhampur.",
+    title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC (CDD×SIC)",
+    description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD at PMEC Berhampur.",
     images: ['/Logo_dark.png'],
     creator: '@cddclubpmec',
   },
@@ -107,11 +113,16 @@ export default function RootLayout({ children }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
-    name: 'IDEA AND INNOVATION CELL (CDD×SIC)',
+    name: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
     alternateName: [
+      'IDEA AND INNOVATION CELL PMEC',
       'IDEA AND INNOVATION CELL',
-      'IDEA and Innovation Cell',
-      'idea innovation cell',
+      'IIC PMEC',
+      'iic pmec',
+      'IIC',
+      'iic',
+      'Institution Innovation Council PMEC',
+      'PMEC IIC',
       'CDD×SIC',
       'CDD x SIC',
       'CDD',
@@ -133,7 +144,7 @@ export default function RootLayout({ children }) {
       name: 'Parala Maharaja Engineering College (PMEC)',
       url: 'https://pmec.ac.in'
     },
-    description: "IDEA AND INNOVATION CELL (CDD×SIC) and CDD (Coding Design and Development) is the official technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
+    description: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) and CDD (Coding Design and Development) is the official technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
   };
 
   return (

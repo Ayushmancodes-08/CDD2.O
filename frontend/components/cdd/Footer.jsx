@@ -97,11 +97,11 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-          <p>© {new Date().getFullYear()} IDEA AND INNOVATION CELL (CDD×SIC) PMEC. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
           <div className="flex items-center gap-1">
-            <span>Built with</span>
+            <span>Crafted with passion at</span>
             <Heart size={10} className="text-red-400 fill-red-400 cursor-pointer hover:scale-125 transition-transform" onClick={() => setIsAdminOpen(true)} />
-            <span>from Berhampur</span>
+            <span>PMEC Berhampur</span>
           </div>
         </div>
       </div>

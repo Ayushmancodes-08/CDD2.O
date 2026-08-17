@@ -11,18 +11,19 @@ import { AnimatedGridPattern } from '@/components/cdd/AnimatedGrid';
 import { MagneticButton, TextReveal, CharReveal, Tilt, MaskReveal, StaggerGroup, staggerItem, ScrollIndicator } from '@/components/cdd/Animations';
 import { PROGRAMS, FACULTY, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { useGallery } from '@/components/cdd/useGallery';
+import {
+  GallerySkeleton,
+  ProjectsSkeleton,
+  EventsSkeleton,
+  TeamSkeleton,
+  FullPageGallerySkeleton,
+} from '@/components/cdd/Skeletons';
 
 const ProjectsSection = lazy(() => import('@/components/cdd/ProjectsSection'));
 const EventsSection = lazy(() => import('@/components/cdd/EventsSection'));
 const TeamSection = lazy(() => import('@/components/cdd/TeamSection'));
 const GallerySection = lazy(() => import('@/components/cdd/GallerySection').then(m => ({ default: m.GallerySection })));
 const FullPageGallery = lazy(() => import('@/components/cdd/GallerySection').then(m => ({ default: m.FullPageGallery })));
-
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center w-full h-40">
-    <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
-  </div>
-);
 
 const SectionWrapper = ({ id, className = '', children, title, subtitle, altBg = false, eyebrow }) => (
   <section id={id} className={`py-16 md:py-20 lg:py-24 relative ${altBg ? 'bg-gray-50/60' : 'bg-white'} ${className}`}>
@@ -101,7 +102,7 @@ function App() {
 
   if (currentView === 'archive') {
     return (
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand-500" /></div>}>
+      <Suspense fallback={<FullPageGallerySkeleton />}>
         <FullPageGallery onBack={() => setCurrentView('home')} />
       </Suspense>
     );
@@ -296,28 +297,28 @@ function App() {
 
         {/* GALLERY */}
         <SectionWrapper id="gallery" eyebrow="Gallery" title="Community Archive" subtitle="Documenting our progress." className="!pb-10 md:!pb-12 lg:!pb-16">
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<GallerySkeleton />}>
             <GallerySection onViewArchive={() => setCurrentView('archive')} />
           </Suspense>
         </SectionWrapper>
 
         {/* PROJECTS */}
         <SectionWrapper id="projects" eyebrow="Projects" title="Featured Projects" subtitle="Innovative solutions built and deployed by our members." altBg={true}>
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<ProjectsSkeleton />}>
             <ProjectsSection />
           </Suspense>
         </SectionWrapper>
 
         {/* EVENTS */}
         <SectionWrapper id="events" eyebrow="Events" title="Schedule" subtitle="Upcoming hackathons, seminars, and workshops.">
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<EventsSkeleton />}>
             <EventsSection />
           </Suspense>
         </SectionWrapper>
 
         {/* TEAM */}
         <SectionWrapper id="team" eyebrow="Team" title="Leadership" subtitle="The core team driving our vision." altBg={true}>
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<TeamSkeleton />}>
             <TeamSection />
           </Suspense>
         </SectionWrapper>

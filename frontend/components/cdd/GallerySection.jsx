@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, ChevronLeft, ChevronRight, X, ImageIcon } from 'lucide-react';
 import { useGallery } from './useGallery';
+import { GallerySkeleton, FullPageGallerySkeleton } from './Skeletons';
 
 export function FullPageGallery({ onBack }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -44,11 +45,7 @@ export function FullPageGallery({ onBack }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-brand-900 text-lg font-display font-semibold animate-pulse">Loading Archive...</div>
-      </div>
-    );
+    return <FullPageGallerySkeleton />;
   }
 
   if (error) {
@@ -171,11 +168,7 @@ export function GallerySection({ onViewArchive }) {
   }, [selectedIndex, handleNext, handlePrev]);
 
   if (loading) {
-    return (
-      <div className="h-64 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-6 w-6 border-2 border-transparent border-t-brand-500"></div>
-      </div>
-    );
+    return <GallerySkeleton />;
   }
 
   if (error && images.length === 0) {

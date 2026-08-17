@@ -68,7 +68,7 @@ export function FullPageGallery({ onBack }) {
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 py-8">
         <div className="flex items-center justify-between mb-8 sticky top-4 bg-white/90 backdrop-blur-md py-4 px-6 rounded-2xl border border-gray-100 shadow-sm z-20">
           <div className="flex items-center gap-4">
-            <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-brand-900" aria-label="Back">
+            <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-brand-900" aria-label="Back to main page">
               <ArrowLeft size={20} />
             </button>
             <div>
@@ -93,7 +93,7 @@ export function FullPageGallery({ onBack }) {
                 <div className="bg-white p-1.5 shadow-sm hover:shadow-lg rounded-2xl border border-gray-100 hover:border-brand-200 transition-all">
                   <div className="relative overflow-hidden rounded-xl">
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10" />
-                    <img src={src} alt={`Gallery ${idx}`} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" referrerPolicy="no-referrer" />
+                    <img src={src} alt={`IDEA and Innovation Cell event photo ${idx + 1}`} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
                   </div>
                 </div>
               </motion.div>
@@ -107,15 +107,16 @@ export function FullPageGallery({ onBack }) {
           {selectedIndex !== null && createPortal(
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-white/95 backdrop-blur-xl flex items-center justify-center p-4"
-              style={{ zIndex: 2147483647 }} onClick={() => setSelectedIndex(null)}>
+              style={{ zIndex: 2147483647 }} onClick={() => setSelectedIndex(null)}
+              role="dialog" aria-modal="true" aria-label="Archive image lightbox viewer">
               <button className="absolute top-6 right-6 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 p-3 rounded-full transition-all z-20"
-                onClick={() => setSelectedIndex(null)}><X size={20} /></button>
+                onClick={() => setSelectedIndex(null)} aria-label="Close preview"><X size={20} /></button>
               <button className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-all z-20"
-                onClick={handlePrev}><ChevronLeft size={28} /></button>
+                onClick={handlePrev} aria-label="Previous image"><ChevronLeft size={28} /></button>
               <button className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-all z-20"
-                onClick={handleNext}><ChevronRight size={28} /></button>
+                onClick={handleNext} aria-label="Next image"><ChevronRight size={28} /></button>
               <motion.img key={selectedIndex} initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                src={allImages[selectedIndex]} alt="Full size"
+                src={allImages[selectedIndex]} alt={`Full size preview ${selectedIndex + 1}`}
                 className="max-w-full max-h-[85vh] shadow-2xl rounded-xl pointer-events-auto select-none"
                 onClick={(e) => e.stopPropagation()} referrerPolicy="no-referrer" />
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-gray-600 font-mono text-xs bg-gray-100 px-4 py-1.5 rounded-full">
@@ -205,7 +206,7 @@ export function GallerySection({ onViewArchive }) {
               className="bg-white p-1.5 shadow-sm group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] rounded-2xl border border-gray-100 group-hover:border-brand-200">
               <div className="relative overflow-hidden bg-gray-50 rounded-xl">
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 duration-300" />
-                <img src={src} alt={`Gallery ${idx + 1}`} className="w-full h-auto object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                <img src={src} alt={`IDEA and Innovation Cell gallery highlight ${idx + 1}`} className="w-full h-auto object-cover" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
               </div>
             </div>
           </motion.div>
@@ -213,7 +214,7 @@ export function GallerySection({ onViewArchive }) {
       </div>
 
       <div className="mt-12 text-center">
-        <button onClick={onViewArchive} className="btn-primary group">
+        <button onClick={onViewArchive} className="btn-primary group" aria-label="View Full Gallery Archive">
           View Full Archive <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
@@ -222,14 +223,15 @@ export function GallerySection({ onViewArchive }) {
         {selectedIndex !== null && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-white/95 backdrop-blur-xl flex items-center justify-center p-4 z-[9999]"
-            onClick={() => setSelectedIndex(null)}>
+            onClick={() => setSelectedIndex(null)}
+            role="dialog" aria-modal="true" aria-label="Image preview lightbox">
             <button className="absolute top-6 right-6 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 p-3 rounded-full transition-all z-20"
-              onClick={() => setSelectedIndex(null)}><X size={20} /></button>
+              onClick={() => setSelectedIndex(null)} aria-label="Close preview"><X size={20} /></button>
             <button className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-all z-20"
-              onClick={(e) => { e.stopPropagation(); handlePrev(e); }}><ChevronLeft size={28} /></button>
+              onClick={(e) => { e.stopPropagation(); handlePrev(e); }} aria-label="Previous image"><ChevronLeft size={28} /></button>
             <button className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3 text-gray-600 hover:text-brand-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-all z-20"
-              onClick={(e) => { e.stopPropagation(); handleNext(e); }}><ChevronRight size={28} /></button>
-            <motion.img key={selectedIndex} src={displayImages[selectedIndex]} alt="Full size"
+              onClick={(e) => { e.stopPropagation(); handleNext(e); }} aria-label="Next image"><ChevronRight size={28} /></button>
+            <motion.img key={selectedIndex} src={displayImages[selectedIndex]} alt={`Gallery highlight ${selectedIndex + 1}`}
               initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
               className="max-w-full max-h-[85vh] shadow-2xl rounded-xl pointer-events-auto select-none"
               onClick={(e) => e.stopPropagation()} referrerPolicy="no-referrer" />

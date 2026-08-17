@@ -9,25 +9,30 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-      const sections = ['home', 'about-us', 'programs', 'projects', 'team', 'contact'];
-      const navHeight = 80;
-      requestAnimationFrame(() => {
-        for (const section of sections) {
-          const element = document.getElementById(section);
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            if (rect.top <= navHeight && rect.bottom > navHeight) {
-              setActiveSection(section);
-              break;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          const sections = ['home', 'about-us', 'programs', 'projects', 'team', 'contact'];
+          const navHeight = 80;
+          for (const section of sections) {
+            const element = document.getElementById(section);
+            if (element) {
+              const rect = element.getBoundingClientRect();
+              if (rect.top <= navHeight && rect.bottom > navHeight) {
+                setActiveSection(section);
+                break;
+              }
             }
           }
-        }
-      });
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -51,13 +56,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out flex items-center justify-center
+      <nav aria-label="Main Navigation" className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out flex items-center justify-center
         ${isScrolled ? 'glass-nav h-16 lg:h-[68px]' : 'bg-transparent h-18 lg:h-20'}`}>
         <div className="w-full max-w-7xl px-5 sm:px-6 lg:px-8 flex justify-between items-center h-full">
-          <a href="#home" onClick={(e) => handleNavClick(e, '#home')}
+          <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="IDEA AND INNOVATION CELL Home"
             className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2 z-50 h-full py-2">
-            <img src="/Logo_dark.png" alt="IDEA AND INNOVATION CELL (CDD×SIC)" className="w-9 h-9 object-contain"
-              decoding="async" />
+            <img src="/Logo_dark.png" alt="IDEA AND INNOVATION CELL (CDD×SIC) Logo" className="w-9 h-9 object-contain"
+              decoding="async" width={36} height={36} />
             <span className="hidden sm:block font-display font-bold text-brand-900 text-sm sm:text-base md:text-lg tracking-tight">IDEA AND INNOVATION CELL (CDD×SIC)</span>
           </a>
 
@@ -80,7 +85,8 @@ export default function Navbar() {
           </div>
 
           <button className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors z-50 focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)} aria-label="Toggle Menu">
+            onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? "Close Navigation Menu" : "Open Navigation Menu"}
+            aria-expanded={isOpen} aria-controls="mobile-navigation-menu">
             {isOpen ? <X size={24} strokeWidth={2} /> : <Menu size={24} strokeWidth={2} />}
           </button>
         </div>
@@ -88,7 +94,7 @@ export default function Navbar() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+          <motion.div id="mobile-navigation-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="fixed top-16 left-0 w-full z-40 bg-white/90 backdrop-blur-2xl shadow-ambient rounded-b-2xl lg:hidden">
             <div className="flex flex-col p-3 space-y-1">

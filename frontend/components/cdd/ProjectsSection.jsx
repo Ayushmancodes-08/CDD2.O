@@ -25,7 +25,7 @@ const ProjectCard = ({ project }) => {
       className="bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group h-full">
       {project.image && (
         <div className="relative h-48 overflow-hidden">
-          <img src={project.image} alt={project.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          <img src={project.image} alt={`Screenshot of ${project.name}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy" decoding="async" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
         </div>
@@ -37,9 +37,11 @@ const ProjectCard = ({ project }) => {
             <Icon size={20} className={theme.text} />
           </div>
           {isDual && (
-            <div className="flex bg-gray-50 p-0.5 rounded-lg">
+            <div className="flex bg-gray-50 p-0.5 rounded-lg" role="tablist" aria-label={`${project.name} Versions`}>
               {project.versions.map((v, idx) => (
                 <button key={v.name} onClick={() => setActiveVersion(idx)}
+                  role="tab"
+                  aria-selected={activeVersion === idx}
                   className={`px-3 py-1 text-[11px] font-semibold rounded-md transition-all ${activeVersion === idx ? 'bg-white text-brand-900 shadow-sm' : 'text-gray-500 hover:text-brand-900'}`}>
                   {v.name}
                 </button>
@@ -61,6 +63,7 @@ const ProjectCard = ({ project }) => {
         </div>
         <div className="mt-auto pt-5 border-t border-gray-50">
           <a href={currentLink} target="_blank" rel="noopener noreferrer"
+            aria-label={`Open ${isDual ? `${project.name} ${currentName}` : project.name} in a new tab`}
             className={`inline-flex items-center justify-center w-full gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition-all shadow-sm ${theme.btn}`}>
             {isDual ? `Visit ${currentName}` : 'View Live Project'}
             <ExternalLink size={14} />

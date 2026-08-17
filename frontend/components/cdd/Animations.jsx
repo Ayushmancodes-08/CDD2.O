@@ -23,14 +23,14 @@ export function MagneticButton({ children, className = '', strength = 0.25, ...p
   return (
     <motion.div ref={ref} onMouseMove={handleMove} onMouseLeave={handleLeave}
       style={{ x: sx, y: sy }} className={`inline-block ${className}`}>
-      {React.cloneElement(children, props)}
+      {React.isValidElement(children) ? React.cloneElement(children, props) : children}
     </motion.div>
   );
 }
 
 /* ---------- Word-by-word text reveal ---------- */
-export function TextReveal({ text, className = '', stagger = 0.05, delay = 0 }) {
-  const words = text.split(' ');
+export function TextReveal({ text = '', className = '', stagger = 0.05, delay = 0 }) {
+  const words = text ? text.split(' ') : [];
   return (
     <span className={`inline-block ${className}`}>
       {words.map((word, i) => (
@@ -50,10 +50,11 @@ export function TextReveal({ text, className = '', stagger = 0.05, delay = 0 }) 
 }
 
 /* ---------- Character stagger ---------- */
-export function CharReveal({ text, className = '', delay = 0 }) {
+export function CharReveal({ text = '', className = '', delay = 0 }) {
+  const chars = text ? text.split('') : [];
   return (
     <span className={`inline-block ${className}`}>
-      {text.split('').map((char, i) => (
+      {chars.map((char, i) => (
         <motion.span key={i}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -128,7 +129,7 @@ export function ScrollIndicator() {
   const [show, setShow] = useState(true);
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY < 100);
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
@@ -137,6 +138,7 @@ export function ScrollIndicator() {
       animate={{ opacity: show ? 1 : 0 }}
       transition={{ duration: 0.4 }}
       className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-gray-400 pointer-events-none z-10"
+      aria-hidden="true"
     >
       <span className="text-[10px] font-semibold tracking-[0.3em] uppercase">Scroll</span>
       <div className="w-px h-10 bg-gradient-to-b from-gray-300 to-transparent relative overflow-hidden">

@@ -8,6 +8,8 @@ export const metadata = {
     template: "%s | IDEA AND INNOVATION CELL PMEC (CDD×SIC)"
   },
   description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
+  applicationName: "IDEA AND INNOVATION CELL PMEC",
+  referrer: "origin-when-cross-origin",
   keywords: [
     "IDEA AND INNOVATION CELL PMEC",
     "IDEA AND INNOVATION CELL",
@@ -46,6 +48,13 @@ export const metadata = {
   authors: [{ name: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)" }],
   creator: "IDEA AND INNOVATION CELL PMEC (CDD×SIC)",
   publisher: "Parala Maharaja Engineering College (PMEC)",
+  category: "Technology & Education",
+  classification: "Student Innovation and Engineering Society",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   robots: {
     index: true,
     follow: true,
@@ -66,7 +75,7 @@ export const metadata = {
     url: 'https://cdd-pmec.vercel.app',
     siteName: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
     title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — Official Tech & Innovation Society",
-    description: "Official website of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur.",
+    description: "Official website of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
     images: [
       {
         url: '/Logo_dark.png',
@@ -82,6 +91,7 @@ export const metadata = {
     description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD at PMEC Berhampur.",
     images: ['/Logo_dark.png'],
     creator: '@cddclubpmec',
+    site: '@cddclubpmec',
   },
   icons: {
     icon: [
@@ -110,41 +120,99 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
-  const jsonLd = {
+  const jsonLdGraph = {
     '@context': 'https://schema.org',
-    '@type': 'EducationalOrganization',
-    name: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
-    alternateName: [
-      'IDEA AND INNOVATION CELL PMEC',
-      'IDEA AND INNOVATION CELL',
-      'IIC PMEC',
-      'iic pmec',
-      'IIC',
-      'iic',
-      'Institution Innovation Council PMEC',
-      'PMEC IIC',
-      'CDD×SIC',
-      'CDD x SIC',
-      'CDD',
-      'cdd',
-      'Coding Design and Development',
-      'Coding Design & Development',
-      'CDD Club PMEC'
-    ],
-    url: 'https://cdd-pmec.vercel.app',
-    logo: 'https://cdd-pmec.vercel.app/Logo_dark.png',
-    sameAs: [
-      'https://www.instagram.com/cdd_club_pmec',
-      'https://www.linkedin.com/company/coding-design-and-development/posts/?feedView=all',
-      'https://github.com/CodingClubPMEC',
-      'https://x.com/cddclubpmec'
-    ],
-    parentOrganization: {
-      '@type': 'CollegeOrUniversity',
-      name: 'Parala Maharaja Engineering College (PMEC)',
-      url: 'https://pmec.ac.in'
-    },
-    description: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) and CDD (Coding Design and Development) is the official technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
+    '@graph': [
+      {
+        '@type': 'EducationalOrganization',
+        '@id': 'https://cdd-pmec.vercel.app/#organization',
+        name: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
+        alternateName: [
+          'IDEA AND INNOVATION CELL PMEC',
+          'IDEA AND INNOVATION CELL',
+          'IIC PMEC',
+          'iic pmec',
+          'IIC',
+          'iic',
+          'Institution Innovation Council PMEC',
+          'PMEC IIC',
+          'CDD×SIC',
+          'CDD x SIC',
+          'CDD',
+          'cdd',
+          'Coding Design and Development',
+          'Coding Design & Development',
+          'CDD Club PMEC'
+        ],
+        url: 'https://cdd-pmec.vercel.app',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://cdd-pmec.vercel.app/Logo_dark.png',
+          caption: 'IDEA AND INNOVATION CELL PMEC'
+        },
+        image: 'https://cdd-pmec.vercel.app/Logo_dark.png',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Room 113, Academic Main Building, PMEC Campus',
+          addressLocality: 'Berhampur',
+          addressRegion: 'Odisha',
+          postalCode: '761003',
+          addressCountry: 'IN'
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: 19.357674,
+          longitude: 84.871461
+        },
+        sameAs: [
+          'https://www.instagram.com/cdd_club_pmec',
+          'https://www.linkedin.com/company/coding-design-and-development/posts/?feedView=all',
+          'https://github.com/CodingClubPMEC',
+          'https://x.com/cddclubpmec'
+        ],
+        parentOrganization: {
+          '@type': 'CollegeOrUniversity',
+          name: 'Parala Maharaja Engineering College (PMEC)',
+          url: 'https://pmec.ac.in'
+        },
+        description: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) and CDD (Coding Design and Development) is the premier technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://cdd-pmec.vercel.app/#website',
+        url: 'https://cdd-pmec.vercel.app',
+        name: 'IDEA AND INNOVATION CELL PMEC',
+        publisher: {
+          '@id': 'https://cdd-pmec.vercel.app/#organization'
+        },
+        inLanguage: 'en-US'
+      },
+      {
+        '@type': 'Event',
+        '@id': 'https://cdd-pmec.vercel.app/#codekriti2027',
+        name: 'CodeKriti 2027 Hackathon',
+        description: 'Annual flagship 24-hour hackathon bringing together creative student developers, designers, and innovators.',
+        startDate: '2027-03-15T09:00:00+05:30',
+        endDate: '2027-03-16T09:00:00+05:30',
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: {
+          '@type': 'Place',
+          name: 'Parala Maharaja Engineering College',
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'PMEC Campus, Sitalapalli',
+            addressLocality: 'Berhampur',
+            addressRegion: 'Odisha',
+            postalCode: '761003',
+            addressCountry: 'IN'
+          }
+        },
+        organizer: {
+          '@id': 'https://cdd-pmec.vercel.app/#organization'
+        }
+      }
+    ]
   };
 
   return (
@@ -152,7 +220,7 @@ export default function RootLayout({ children }) {
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
         />
       </head>
       <body className="antialiased bg-white text-slate-900 selection:bg-brand-600 selection:text-white">

@@ -22,18 +22,23 @@ export const useGallery = () => {
         const CACHE_TIMESTAMP_KEY = 'gallery_timestamp_v3';
         const CACHE_TTL = 30 * 60 * 1000;
 
-        const cached = sessionStorage.getItem(CACHE_KEY);
-        const cachedTimestamp = sessionStorage.getItem(CACHE_TIMESTAMP_KEY);
+        try {
+          const cached = typeof window !== 'undefined' ? sessionStorage.getItem(CACHE_KEY) : null;
+          const cachedTimestamp = typeof window !== 'undefined' ? sessionStorage.getItem(CACHE_TIMESTAMP_KEY) : null;
 
-        if (cached && cachedTimestamp) {
-          const age = Date.now() - parseInt(cachedTimestamp, 10);
-          if (age < CACHE_TTL) {
-            setImages(JSON.parse(cached));
-            setLoading(false);
-            return;
+          if (cached && cachedTimestamp) {
+            const age = Date.now() - parseInt(cachedTimestamp, 10);
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setImages(parsed);
+              if (age < CACHE_TTL) {
+                setLoading(false);
+                return;
+              }
+            }
           }
-          setImages(JSON.parse(cached));
-          setLoading(false);
+        } catch {
+          // Ignore session storage parse/access errors in restricted/private browsing modes
         }
 
         if (!galleryFetchPromise) {
@@ -43,7 +48,7 @@ export const useGallery = () => {
                 signal: AbortSignal.timeout(15000),
               });
               const data = await response.json();
-              if (data.status === 'success') return data.data;
+              if (data.status === 'success' && Array.isArray(data.data)) return data.data;
               throw new Error(data.message || 'Failed to fetch images');
             } finally {
               galleryFetchPromise = null;
@@ -53,8 +58,14 @@ export const useGallery = () => {
 
         const data = await galleryFetchPromise;
         setImages(data);
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
-        sessionStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+        try {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            sessionStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+          }
+        } catch {
+          // Quota exceeded or private browsing restriction
+        }
       } catch (err) {
         if (!images.length) {
           setError('Error connecting to gallery service');
@@ -69,16 +80,17 @@ export const useGallery = () => {
       fetchedRef.current = true;
       fetchImages();
     }
-  }, []);
+  }, [images.length]);
 
   const getImageByName = (name) => {
     if (!name) return undefined;
     const normalizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
     const found = images.find(img =>
-      img.name && img.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(normalizedName)
+      img?.name && img.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(normalizedName)
     );
     return found?.url;
   };
 
   return { images, loading, error, getImageByName };
 };
+

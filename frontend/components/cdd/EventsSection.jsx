@@ -10,11 +10,12 @@ const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const demoDate = new Date();
-    demoDate.setMonth(demoDate.getMonth() + 10);
-    demoDate.setHours(10, 0, 0);
-    const timer = setInterval(() => {
-      const difference = demoDate.getTime() - new Date().getTime();
+    // CodeKriti 2027 Hackathon target date
+    const targetDate = new Date('2027-03-15T09:00:00+05:30');
+    
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const difference = targetDate.getTime() - now;
       if (difference > 0) {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -22,8 +23,13 @@ const CountdownTimer = () => {
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60)
         });
-      } else clearInterval(timer);
-    }, 1000);
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTime();
+    const timer = setInterval(calculateTime, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -39,7 +45,7 @@ const CountdownTimer = () => {
         <h3 className="text-2xl md:text-3xl font-display font-bold text-white">CodeKriti 2027</h3>
         <p className="text-white/60 text-xs md:text-sm mt-1">Don&apos;t miss the biggest hackathon of the year.</p>
       </div>
-      <div className="flex gap-3 relative z-10">
+      <div className="flex gap-3 relative z-10" aria-label="Countdown to CodeKriti 2027">
         {Object.entries(timeLeft).map(([unit, value]) => (
           <div key={unit} className="flex flex-col items-center">
             <div className="w-14 h-14 md:w-16 md:h-16 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center text-lg md:text-2xl font-display font-bold text-white">
@@ -59,6 +65,15 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const setYear = (year) => setFormData({ ...formData, year });
@@ -84,17 +99,18 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-6" style={{ zIndex: 2147483647 }}>
+    <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-6" style={{ zIndex: 2147483647 }}
+      role="dialog" aria-modal="true" aria-labelledby="registration-modal-title">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-brand-950/40 backdrop-blur-sm" onClick={onClose} />
       <motion.div initial={{ scale: 0.97, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.97, opacity: 0, y: 16 }}
         className="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl z-10 overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-6 pb-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-20">
           <div>
-            <h3 className="text-lg font-display font-bold text-brand-900">Registration</h3>
+            <h3 id="registration-modal-title" className="text-lg font-display font-bold text-brand-900">Registration</h3>
             <p className="text-xs text-gray-500 font-medium mt-0.5">Reserve your spot</p>
           </div>
-          <button onClick={onClose} className="p-2 -mr-2 text-gray-400 hover:text-brand-900 hover:bg-gray-100 rounded-full transition-all">
+          <button onClick={onClose} aria-label="Close Registration Modal" className="p-2 -mr-2 text-gray-400 hover:text-brand-900 hover:bg-gray-100 rounded-full transition-all">
             <X size={18} />
           </button>
         </div>
@@ -105,8 +121,8 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
-              <input required type="text" name="name" value={formData.name} onChange={handleChange}
+              <label htmlFor="reg-name" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
+              <input id="reg-name" required type="text" name="name" autoComplete="name" value={formData.name} onChange={handleChange}
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 outline-none transition-all text-sm" placeholder="John Doe" />
             </div>
             <div>
@@ -122,28 +138,28 @@ const RegistrationModal = ({ isOpen, onClose, eventName }) => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Branch</label>
-                <select required name="branch" value={formData.branch} onChange={handleChange}
+                <label htmlFor="reg-branch" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Branch</label>
+                <select id="reg-branch" required name="branch" value={formData.branch} onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-500 outline-none text-sm">
                   <option value="">Select Branch</option>
                   {BRANCHES.map((b) => <option key={b.short} value={b.full}>{b.full}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Reg No</label>
-                <input required type="text" name="regNo" value={formData.regNo} onChange={handleChange}
+                <label htmlFor="reg-no" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Reg No</label>
+                <input id="reg-no" required type="text" name="regNo" value={formData.regNo} onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-500 outline-none text-sm" placeholder="Registration No" />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Phone</label>
-                <input required type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                <label htmlFor="reg-phone" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Phone</label>
+                <input id="reg-phone" required type="tel" name="phone" autoComplete="tel" value={formData.phone} onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-500 outline-none text-sm" placeholder="+91..." />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
-                <input required type="email" name="email" value={formData.email} onChange={handleChange}
+                <label htmlFor="reg-email" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
+                <input id="reg-email" required type="email" name="email" autoComplete="email" value={formData.email} onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-brand-500 outline-none text-sm" placeholder="student@pmec.ac.in" />
               </div>
             </div>
@@ -168,7 +184,7 @@ export default function EventsSection() {
     const start = date.toISOString().replace(/-|:|\.\d\d\d/g, '');
     const end = new Date(date.getTime() + 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
     const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(desc)}`;
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const EventCard = ({ event }) => {
@@ -194,12 +210,13 @@ export default function EventsSection() {
         <p className="text-gray-600 text-xs md:text-sm leading-relaxed mb-5">{event.description}</p>
         <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
           {isParticipateType ? (
-            <button onClick={() => setSelectedEvent(event.title)} className="text-brand-600 font-semibold text-xs hover:text-brand-900 flex items-center gap-1.5 group/btn">
+            <button onClick={() => setSelectedEvent(event.title)} className="text-brand-600 font-semibold text-xs hover:text-brand-900 flex items-center gap-1.5 group/btn" aria-label={`Register for ${event.title}`}>
               Register Now <ArrowRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
             </button>
           ) : (
             <button onClick={() => handleAddToCalendar(event.title, event.date, event.description)}
-              className="text-gray-500 font-medium text-xs hover:text-brand-600 flex items-center gap-1.5">
+              className="text-gray-500 font-medium text-xs hover:text-brand-600 flex items-center gap-1.5"
+              aria-label={`Add ${event.title} to Google Calendar`}>
               <Plus size={14} /> Add to Calendar
             </button>
           )}

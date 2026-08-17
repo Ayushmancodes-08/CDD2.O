@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 import { Linkedin, Mail, Instagram, Github, ChevronRight, ChevronLeft, ShieldCheck, Star } from 'lucide-react';
 import { TEAM_MEMBERS } from '@/lib/cdd-constants';
 
-const SocialLink = ({ href, icon: Icon, label }) => {
+const SocialLink = ({ href, icon: Icon, label, memberName }) => {
   if (!href) return null;
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={label}
+      aria-label={`${label} profile of ${memberName}`}
       className="w-8 h-8 rounded-full bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white border border-brand-200/60 hover:border-brand-600 flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-110"
     >
       <Icon size={14} />
@@ -102,7 +102,7 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
       <div className={`relative w-full ${isCompact ? 'sm:w-[42%]' : 'sm:w-[46%]'} h-56 sm:h-full overflow-hidden bg-gradient-to-br from-brand-950 to-slate-900 flex-shrink-0`}>
         <img
           src={member.image || avatarFallback}
-          alt={member.name}
+          alt={`Photo of ${member.name} - ${member.role}`}
           className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
             member.imagePosition ? '' : 'object-top'
           }`}
@@ -173,10 +173,10 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
               Profile
             </span>
             <div className="flex items-center gap-1.5">
-              <SocialLink href={member.linkedin} icon={Linkedin} label="LinkedIn" />
-              <SocialLink href={member.email ? `mailto:${member.email}` : undefined} icon={Mail} label="Email" />
-              <SocialLink href={member.instagram} icon={Instagram} label="Instagram" />
-              <SocialLink href={member.github} icon={Github} label="GitHub" />
+              <SocialLink href={member.linkedin} icon={Linkedin} label="LinkedIn" memberName={member.name} />
+              <SocialLink href={member.email ? `mailto:${member.email}` : undefined} icon={Mail} label="Email" memberName={member.name} />
+              <SocialLink href={member.instagram} icon={Instagram} label="Instagram" memberName={member.name} />
+              <SocialLink href={member.github} icon={Github} label="GitHub" memberName={member.name} />
             </div>
           </div>
         </div>

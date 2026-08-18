@@ -109,7 +109,7 @@ export const TEAM_MEMBERS = [
     name: "Subhechha Tiwari",
     role: "Head Coordinator (Girls)",
     description: "Facilitating student initiatives, workshop coordination, and inclusive tech leadership.",
-    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899126/WhatsApp_Image_2026-08-13_at_19.05.22_crktkr.jpg",
+    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1787033135/WhatsApp_Image_2026-08-17_at_23.09.15_dqsg7c.jpg",
     category: "Board",
     linkedin: "https://www.linkedin.com/in/subhechha-tiwari-86b38338a/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BjVkmTPdzTj%2BG3GWiAj8PVA%3D%3D",
     instagram: "https://www.instagram.com/subhechha1803/"

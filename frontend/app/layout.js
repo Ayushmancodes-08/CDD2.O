@@ -11,16 +11,59 @@ export const metadata = {
   applicationName: "IDEA AND INNOVATION CELL PMEC",
   referrer: "origin-when-cross-origin",
   keywords: [
+    // Core brand terms
+    "pmec",
+    "PMEC",
+    "cddpmec",
+    "iicpmec",
+    "iic pmec",
+    "cdd pmec",
+    "cdd_pmec",
+    "iic_pmec",
+    "pmec iic",
+    "pmec cdd",
+    "pmec idea",
+    "idea pmec",
+    "IDEA PMEC",
+    "IDEA CELL PMEC",
+    "idea cell pmec",
+    "pmec idea cell",
+    "pmec innovation cell",
+    "innovation cell pmec",
+    "idea innovation cell pmec",
+    "idea and innovation cell pmec",
     "IDEA AND INNOVATION CELL PMEC",
     "IDEA AND INNOVATION CELL",
     "IDEA and Innovation Cell",
-    "idea innovation cell pmec",
+    "IDEA and Innovation Cell PMEC",
     "IIC PMEC",
     "iic pmec",
     "IIC",
     "iic",
     "PMEC IIC",
     "Institution Innovation Council PMEC",
+    "Institution's Innovation Council PMEC",
+    "IIC PMEC Berhampur",
+    "CDD PMEC Berhampur",
+    "IDEA PMEC Berhampur",
+
+    // College and Location variations
+    "pmec berhampur",
+    "PMEC Berhampur",
+    "PMEC Sitalapalli",
+    "Parala Maharaja Engineering College",
+    "Parala Maharaja Engineering College Berhampur",
+    "Parala Maharaja Engineering College innovation cell",
+    "Parala Maharaja Engineering College coding club",
+    "Parala Maharaja Engineering College idea cell",
+    "Parala Maharaja Engineering College IIC",
+    "Parala Maharaja Engineering College CDD",
+    "PMEC college clubs",
+    "PMEC student clubs",
+    "PMEC tech society",
+    "PMEC engineering college",
+
+    // Club / Tech society
     "CDD×SIC",
     "CDD x SIC",
     "CDD-SIC",
@@ -37,14 +80,11 @@ export const metadata = {
     "PMEC Innovation Cell",
     "PMEC coding club",
     "PMEC Berhampur tech club",
-    "Parala Maharaja Engineering College innovation cell",
-    "Parala Maharaja Engineering College coding club",
     "CodeKriti",
     "CodeKriti 2027",
     "CodeKriti hackathon",
     "PMEC hackathon",
-    "iicpmec.vercel.app",
-    "cdd-pmec.vercel.app"
+    "iicpmec.vercel.app"
   ],
   authors: [{ name: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)" }],
   creator: "IDEA AND INNOVATION CELL PMEC (CDD×SIC)",
@@ -134,6 +174,15 @@ export default function RootLayout({ children }) {
         alternateName: [
           'IDEA AND INNOVATION CELL PMEC',
           'IDEA AND INNOVATION CELL',
+          'IDEA and Innovation Cell',
+          'IDEA and Innovation Cell PMEC',
+          'IDEA Cell PMEC',
+          'idea cell pmec',
+          'IDEA PMEC',
+          'idea pmec',
+          'PMEC IDEA Cell',
+          'PMEC Innovation Cell',
+          'Innovation Cell PMEC',
           'IIC PMEC',
           'iic pmec',
           'IIC',
@@ -215,6 +264,51 @@ export default function RootLayout({ children }) {
         organizer: {
           '@id': 'https://iicpmec.vercel.app/#organization'
         }
+      },
+      {
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'What is IDEA and Innovation Cell PMEC (IDEA Cell PMEC)?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'IDEA and Innovation Cell PMEC (also known as IDEA Cell PMEC / IIC PMEC) is the official innovation and student development incubator at Parala Maharaja Engineering College, Berhampur. It oversees student projects, hackathons, and technical advancement.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'What is IIC PMEC / CDD PMEC?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'IDEA and Innovation Cell (IIC PMEC) & CDD (Coding Design and Development) is the premier official student technical and innovation society at Parala Maharaja Engineering College (PMEC), Berhampur.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'What is PMEC CDD (Coding Design and Development)?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'CDD is the tech and development wing at PMEC Berhampur dedicated to web development, AI/ML, hackathons, open-source projects, and technical peer learning.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'What is the flagship hackathon of IIC PMEC?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'CodeKriti is the annual flagship 24-hour hackathon organized by IDEA and Innovation Cell (IIC PMEC) at Parala Maharaja Engineering College.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Where is PMEC Campus located?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Parala Maharaja Engineering College (PMEC) is located at Sitalapalli, Berhampur, Ganjam, Odisha, 761003.'
+            }
+          }
+        ]
       }
     ]
   };

@@ -56,6 +56,9 @@ export const metadata = {
     address: false,
     telephone: false,
   },
+  verification: {
+    google: 'QsDjMLpQfxJwJFyJZ4v1UfgcucY3HqrwFUMO34OT_3g',
+  },
   robots: {
     index: true,
     follow: true,

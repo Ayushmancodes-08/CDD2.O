@@ -2,7 +2,7 @@ import './globals.css'
 import { Toaster } from 'sonner'
 
 export const metadata = {
-  metadataBase: new URL('https://cdd-pmec.vercel.app'),
+  metadataBase: new URL('https://iicpmec.vercel.app'),
   title: {
     default: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — CDD (Coding Design and Development)",
     template: "%s | IDEA AND INNOVATION CELL PMEC (CDD×SIC)"
@@ -43,6 +43,7 @@ export const metadata = {
     "CodeKriti 2027",
     "CodeKriti hackathon",
     "PMEC hackathon",
+    "iicpmec.vercel.app",
     "cdd-pmec.vercel.app"
   ],
   authors: [{ name: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)" }],
@@ -67,12 +68,12 @@ export const metadata = {
     },
   },
   alternates: {
-    canonical: 'https://cdd-pmec.vercel.app',
+    canonical: 'https://iicpmec.vercel.app',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://cdd-pmec.vercel.app',
+    url: 'https://iicpmec.vercel.app',
     siteName: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
     title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — Official Tech & Innovation Society",
     description: "Official website of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
@@ -125,7 +126,7 @@ export default function RootLayout({ children }) {
     '@graph': [
       {
         '@type': 'EducationalOrganization',
-        '@id': 'https://cdd-pmec.vercel.app/#organization',
+        '@id': 'https://iicpmec.vercel.app/#organization',
         name: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
         alternateName: [
           'IDEA AND INNOVATION CELL PMEC',
@@ -144,13 +145,13 @@ export default function RootLayout({ children }) {
           'Coding Design & Development',
           'CDD Club PMEC'
         ],
-        url: 'https://cdd-pmec.vercel.app',
+        url: 'https://iicpmec.vercel.app',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://cdd-pmec.vercel.app/Logo_dark.png',
+          url: 'https://iicpmec.vercel.app/Logo_dark.png',
           caption: 'IDEA AND INNOVATION CELL PMEC'
         },
-        image: 'https://cdd-pmec.vercel.app/Logo_dark.png',
+        image: 'https://iicpmec.vercel.app/Logo_dark.png',
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'Room 113, Academic Main Building, PMEC Campus',
@@ -179,17 +180,17 @@ export default function RootLayout({ children }) {
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://cdd-pmec.vercel.app/#website',
-        url: 'https://cdd-pmec.vercel.app',
+        '@id': 'https://iicpmec.vercel.app/#website',
+        url: 'https://iicpmec.vercel.app',
         name: 'IDEA AND INNOVATION CELL PMEC',
         publisher: {
-          '@id': 'https://cdd-pmec.vercel.app/#organization'
+          '@id': 'https://iicpmec.vercel.app/#organization'
         },
         inLanguage: 'en-US'
       },
       {
         '@type': 'Event',
-        '@id': 'https://cdd-pmec.vercel.app/#codekriti2027',
+        '@id': 'https://iicpmec.vercel.app/#codekriti2027',
         name: 'CodeKriti 2027 Hackathon',
         description: 'Annual flagship 24-hour hackathon bringing together creative student developers, designers, and innovators.',
         startDate: '2027-03-15T09:00:00+05:30',
@@ -209,7 +210,7 @@ export default function RootLayout({ children }) {
           }
         },
         organizer: {
-          '@id': 'https://cdd-pmec.vercel.app/#organization'
+          '@id': 'https://iicpmec.vercel.app/#organization'
         }
       }
     ]

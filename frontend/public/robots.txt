@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Host: https://cdd-pmec.vercel.app
-Sitemap: https://cdd-pmec.vercel.app/sitemap.xml
+Host: https://iicpmec.vercel.app
+Sitemap: https://iicpmec.vercel.app/sitemap.xml

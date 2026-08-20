@@ -93,7 +93,7 @@ export function FullPageGallery({ onBack }) {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 pointer-events-none" />
                     <OptimizedImage
                       src={src}
-                      alt={`IDEA and Innovation Cell event photo ${idx + 1}`}
+                      alt={`Idea and Innovation Cell event photo ${idx + 1}`}
                       className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       priority={idx < 10}
                       referrerPolicy="no-referrer"
@@ -208,7 +208,7 @@ export function GallerySection({ onViewArchive }) {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 duration-300 pointer-events-none" />
                 <OptimizedImage
                   src={src}
-                  alt={`IDEA and Innovation Cell gallery highlight ${idx + 1}`}
+                  alt={`Idea and Innovation Cell gallery highlight ${idx + 1}`}
                   className="w-full h-auto object-cover"
                   priority={idx < 4}
                   referrerPolicy="no-referrer"

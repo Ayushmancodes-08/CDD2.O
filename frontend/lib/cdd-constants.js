@@ -170,7 +170,7 @@ export const TEAM_MEMBERS = [
   { name: "Anisha Parida", role: "Core Coordinator", description: "Facilitating workshop coordination, logistics, and student engagement.", image: "/team_alumini/anisha_didi.jpg", imagePosition: "center top", category: "Core", linkedin: "https://www.linkedin.com/in/anisha-parida-20780b2b0", email: "anishaparida04@gmail.com", instagram: "https://www.instagram.com/aisha_242004" },
   
   // Founder
-  { name: "Saurav Pratap Singh", role: "Founder", description: "Established the IDEA and Innovation Cell (CDD×SIC) and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786906550/Screenshot_2026-08-17_002527_ctmcse.png", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
+  { name: "Saurav Pratap Singh", role: "Founder", description: "Established the Idea and Innovation Cell (CDD×SIC) and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786906550/Screenshot_2026-08-17_002527_ctmcse.png", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
   
   // Alumni
   { name: "Baibhab Sahu", role: "Alumni", description: "", image: "/team_alumini/baibhab_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/baibhabsahu07", email: "ankur2002666@gmail.com", instagram: "https://www.instagram.com/baibhabsahu/" },

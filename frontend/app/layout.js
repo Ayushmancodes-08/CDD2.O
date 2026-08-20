@@ -4,18 +4,18 @@ import { Toaster } from 'sonner'
 export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
   title: {
-    default: "IDEA AND INNOVATION CELL PMEC | IIC PMEC - CDD (Coding Design and Development)",
-    template: "%s | IDEA AND INNOVATION CELL PMEC (CDD×SIC)"
+    default: "Idea and Innovation Cell PMEC | IIC PMEC - CDD (Coding Design and Development)",
+    template: "%s | Idea and Innovation Cell PMEC (CDD×SIC)"
   },
-  description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
-  applicationName: "IDEA AND INNOVATION CELL PMEC",
+  description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
+  applicationName: "Idea and Innovation Cell PMEC",
   appleWebApp: {
     title: "IIC PMEC",
     statusBarStyle: "default",
     capable: true,
   },
   other: {
-    "site_name": "IDEA AND INNOVATION CELL PMEC",
+    "site_name": "Idea and Innovation Cell PMEC",
   },
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -32,18 +32,18 @@ export const metadata = {
     "pmec cdd",
     "pmec idea",
     "idea pmec",
-    "IDEA PMEC",
-    "IDEA CELL PMEC",
+    "Idea PMEC",
+    "Idea Cell PMEC",
     "idea cell pmec",
     "pmec idea cell",
     "pmec innovation cell",
     "innovation cell pmec",
     "idea innovation cell pmec",
     "idea and innovation cell pmec",
-    "IDEA AND INNOVATION CELL PMEC",
-    "IDEA AND INNOVATION CELL",
-    "IDEA and Innovation Cell",
-    "IDEA and Innovation Cell PMEC",
+    "Idea and Innovation Cell PMEC",
+    "Idea and Innovation Cell",
+    "Idea and Innovation Cell",
+    "Idea and Innovation Cell PMEC",
     "IIC PMEC",
     "iic pmec",
     "IIC",
@@ -53,7 +53,7 @@ export const metadata = {
     "Institution's Innovation Council PMEC",
     "IIC PMEC Berhampur",
     "CDD PMEC Berhampur",
-    "IDEA PMEC Berhampur",
+    "Idea PMEC Berhampur",
 
     // College and Location variations
     "pmec berhampur",
@@ -84,7 +84,7 @@ export const metadata = {
     "Coding Design & Development",
     "Coding Design and Development Club",
     "PMEC CDD",
-    "PMEC IDEA Cell",
+    "PMEC Idea Cell",
     "PMEC Innovation Cell",
     "PMEC coding club",
     "PMEC Berhampur tech club",
@@ -94,8 +94,8 @@ export const metadata = {
     "PMEC hackathon",
     "iicpmec.vercel.app"
   ],
-  authors: [{ name: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)" }],
-  creator: "IDEA AND INNOVATION CELL PMEC (CDD×SIC)",
+  authors: [{ name: "Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)" }],
+  creator: "Idea and Innovation Cell PMEC (CDD×SIC)",
   publisher: "Parala Maharaja Engineering College (PMEC)",
   category: "Technology & Education",
   classification: "Student Innovation and Engineering Society",
@@ -125,22 +125,22 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://iicpmec.vercel.app',
-    siteName: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
-    title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — Official Tech & Innovation Society",
-    description: "Official website of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
+    siteName: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
+    title: "Idea and Innovation Cell PMEC | IIC PMEC — Official Tech & Innovation Society",
+    description: "Official website of Idea and Innovation Cell PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
     images: [
       {
         url: '/Logo_dark.png',
         width: 1200,
         height: 630,
-        alt: 'IDEA AND INNOVATION CELL PMEC Logo',
+        alt: 'Idea and Innovation Cell PMEC Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "IDEA AND INNOVATION CELL PMEC | IIC PMEC (CDD×SIC)",
-    description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC) & CDD at PMEC Berhampur.",
+    title: "Idea and Innovation Cell PMEC | IIC PMEC (CDD×SIC)",
+    description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC) & CDD at PMEC Berhampur.",
     images: ['/Logo_dark.png'],
     creator: '@cddclubpmec',
     site: '@cddclubpmec',
@@ -167,17 +167,17 @@ export default function RootLayout({ children }) {
       {
         '@type': 'EducationalOrganization',
         '@id': 'https://iicpmec.vercel.app/#organization',
-        name: 'IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC)',
+        name: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
         alternateName: [
-          'IDEA AND INNOVATION CELL PMEC',
-          'IDEA AND INNOVATION CELL',
-          'IDEA and Innovation Cell',
-          'IDEA and Innovation Cell PMEC',
-          'IDEA Cell PMEC',
+          'Idea and Innovation Cell PMEC',
+          'Idea and Innovation Cell',
+          'Idea and Innovation Cell',
+          'Idea and Innovation Cell PMEC',
+          'Idea Cell PMEC',
           'idea cell pmec',
-          'IDEA PMEC',
+          'Idea PMEC',
           'idea pmec',
-          'PMEC IDEA Cell',
+          'PMEC Idea Cell',
           'PMEC Innovation Cell',
           'Innovation Cell PMEC',
           'IIC PMEC',
@@ -198,7 +198,7 @@ export default function RootLayout({ children }) {
         logo: {
           '@type': 'ImageObject',
           url: 'https://iicpmec.vercel.app/Logo_dark.png',
-          caption: 'IDEA AND INNOVATION CELL PMEC'
+          caption: 'Idea and Innovation Cell PMEC'
         },
         image: 'https://iicpmec.vercel.app/Logo_dark.png',
         address: {
@@ -225,18 +225,18 @@ export default function RootLayout({ children }) {
           name: 'Parala Maharaja Engineering College (PMEC)',
           url: 'https://pmec.ac.in'
         },
-        description: "IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) and CDD (Coding Design and Development) is the premier technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
+        description: "Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) and CDD (Coding Design and Development) is the premier technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
       },
       {
         '@type': 'WebSite',
         '@id': 'https://iicpmec.vercel.app/#website',
         url: 'https://iicpmec.vercel.app',
-        name: 'IDEA AND INNOVATION CELL PMEC',
+        name: 'Idea and Innovation Cell PMEC',
         alternateName: [
           'IIC PMEC',
-          'IDEA AND INNOVATION CELL',
+          'Idea and Innovation Cell',
           'CDD PMEC',
-          'IDEA Cell PMEC'
+          'Idea Cell PMEC'
         ],
         publisher: {
           '@id': 'https://iicpmec.vercel.app/#organization'
@@ -273,10 +273,10 @@ export default function RootLayout({ children }) {
         'mainEntity': [
           {
             '@type': 'Question',
-            'name': 'What is IDEA and Innovation Cell PMEC (IDEA Cell PMEC)?',
+            'name': 'What is Idea and Innovation Cell PMEC (Idea Cell PMEC)?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'IDEA and Innovation Cell PMEC (also known as IDEA Cell PMEC / IIC PMEC) is the official innovation and student development incubator at Parala Maharaja Engineering College, Berhampur. It oversees student projects, hackathons, and technical advancement.'
+              'text': 'Idea and Innovation Cell PMEC (also known as Idea Cell PMEC / IIC PMEC) is the official innovation and student development incubator at Parala Maharaja Engineering College, Berhampur. It oversees student projects, hackathons, and technical advancement.'
             }
           },
           {
@@ -284,7 +284,7 @@ export default function RootLayout({ children }) {
             'name': 'What is IIC PMEC / CDD PMEC?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'IDEA and Innovation Cell (IIC PMEC) & CDD (Coding Design and Development) is the premier official student technical and innovation society at Parala Maharaja Engineering College (PMEC), Berhampur.'
+              'text': 'Idea and Innovation Cell (IIC PMEC) & CDD (Coding Design and Development) is the premier official student technical and innovation society at Parala Maharaja Engineering College (PMEC), Berhampur.'
             }
           },
           {
@@ -300,7 +300,7 @@ export default function RootLayout({ children }) {
             'name': 'What is the flagship hackathon of IIC PMEC?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'CodeKriti is the annual flagship 24-hour hackathon organized by IDEA and Innovation Cell (IIC PMEC) at Parala Maharaja Engineering College.'
+              'text': 'CodeKriti is the annual flagship 24-hour hackathon organized by Idea and Innovation Cell (IIC PMEC) at Parala Maharaja Engineering College.'
             }
           },
           {

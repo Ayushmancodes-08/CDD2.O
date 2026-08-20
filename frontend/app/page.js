@@ -178,7 +178,7 @@ function App() {
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.9, ease: 'easeOut' }}
                 className="text-base md:text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
-                The <strong className="text-brand-900 font-semibold">IDEA and Innovation Cell</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
+                The <strong className="text-brand-900 font-semibold">Idea and Innovation Cell</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
               </motion.p>
 
               <motion.div
@@ -263,7 +263,7 @@ function App() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                   autoPlay muted loop playsInline
                   poster="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop"
-                  aria-label="IDEA AND INNOVATION CELL Activities and Student Community Showcase"
+                  aria-label="Idea and Innovation Cell Activities and Student Community Showcase"
                 />
               </MaskReveal>
             </motion.div>

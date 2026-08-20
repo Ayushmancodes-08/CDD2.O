@@ -41,10 +41,10 @@ export default function Footer() {
   };
 
   const socials = [
-    { icon: Github, url: CLUB_SOCIALS.github, label: 'GitHub - IDEA and Innovation Cell' },
-    { icon: Linkedin, url: CLUB_SOCIALS.linkedin, label: 'LinkedIn - IDEA and Innovation Cell' },
-    { icon: Twitter, url: CLUB_SOCIALS.x, label: 'X (Twitter) - IDEA and Innovation Cell' },
-    { icon: Instagram, url: CLUB_SOCIALS.instagram, label: 'Instagram - IDEA and Innovation Cell' },
+    { icon: Github, url: CLUB_SOCIALS.github, label: 'GitHub - Idea and Innovation Cell' },
+    { icon: Linkedin, url: CLUB_SOCIALS.linkedin, label: 'LinkedIn - Idea and Innovation Cell' },
+    { icon: Twitter, url: CLUB_SOCIALS.x, label: 'X (Twitter) - Idea and Innovation Cell' },
+    { icon: Instagram, url: CLUB_SOCIALS.instagram, label: 'Instagram - Idea and Innovation Cell' },
   ];
 
   return (
@@ -54,9 +54,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <img src="/logo_white.png" alt="IDEA AND INNOVATION CELL (CDD×SIC) Logo" className="w-10 h-10 object-contain"
+              <img src="/logo_white.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-10 h-10 object-contain"
                 loading="lazy" decoding="async" width={40} height={40} />
-              <span className="text-xl font-display font-bold text-white tracking-tight">IDEA AND INNOVATION CELL (CDD×SIC)</span>
+              <span className="text-xl font-display font-bold text-white tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
             </div>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
               PMEC&apos;s premier technical society. Bridging academic theory and industry through code, design, and innovation.
@@ -109,7 +109,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-          <p>© {new Date().getFullYear()} IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Crafted with passion at</span>
             <Heart size={10} className="text-red-400 fill-red-400 cursor-pointer hover:scale-125 transition-transform" onClick={() => setIsAdminOpen(true)} aria-label="Admin Access Portal" />

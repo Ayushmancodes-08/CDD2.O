@@ -59,11 +59,11 @@ export default function Navbar() {
       <nav aria-label="Main Navigation" className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out flex items-center justify-center
         ${isScrolled ? 'glass-nav h-16 lg:h-[68px]' : 'bg-transparent h-18 lg:h-20'}`}>
         <div className="w-full max-w-7xl px-5 sm:px-6 lg:px-8 flex justify-between items-center h-full">
-          <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="IDEA AND INNOVATION CELL Home"
+          <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="Idea and Innovation Cell Home"
             className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2 z-50 h-full py-2">
-            <img src="/Logo_dark.png" alt="IDEA AND INNOVATION CELL (CDD×SIC) Logo" className="w-9 h-9 object-contain"
+            <img src="/Logo_dark.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-9 h-9 object-contain"
               decoding="async" fetchPriority="high" width={36} height={36} />
-            <span className="hidden sm:block font-display font-bold text-brand-900 text-sm sm:text-base md:text-lg tracking-tight">IDEA AND INNOVATION CELL (CDD×SIC)</span>
+            <span className="hidden sm:block font-display font-bold text-brand-900 text-sm sm:text-base md:text-lg tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
           </a>
 
           <div className="hidden lg:flex items-center gap-6">

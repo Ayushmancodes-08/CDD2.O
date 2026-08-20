@@ -316,6 +316,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Preconnect for external media origins */}
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://script.google.com" crossOrigin="anonymous" />
+        
+        {/* Critical image preloads */}
+        <link rel="preload" as="image" href="/Logo_dark.png" fetchPriority="high" />
+        <link rel="preload" as="image" href="/sourav_sir.png" fetchPriority="high" />
+        <link rel="preload" as="image" href="/Dr.-Kalyan-Kumar-Jena.jpeg" fetchPriority="high" />
+        <link rel="preload" as="image" href="/projects/quizmaster_ai.jpg" />
+        <link rel="preload" as="image" href="/projects/college_erp.jpg" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}

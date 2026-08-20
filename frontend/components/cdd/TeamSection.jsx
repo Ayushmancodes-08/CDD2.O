@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Mail, Instagram, Github, ChevronRight, ChevronLeft, ShieldCheck, Star } from 'lucide-react';
 import { TEAM_MEMBERS } from '@/lib/cdd-constants';
+import OptimizedImage from './OptimizedImage';
 
 const SocialLink = ({ href, icon: Icon, label, memberName }) => {
   if (!href) return null;
@@ -100,18 +101,16 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
     >
       {/* Left Photo Container with Slanted Cut */}
       <div className={`relative w-full ${isCompact ? 'sm:w-[42%]' : 'sm:w-[46%]'} h-56 sm:h-full overflow-hidden bg-gradient-to-br from-brand-950 to-slate-900 flex-shrink-0`}>
-        <img
+        <OptimizedImage
           src={member.image || avatarFallback}
+          fallbackSrc={avatarFallback}
           alt={`Photo of ${member.name} - ${member.role}`}
+          containerClassName="w-full h-full bg-slate-900"
           className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
             member.imagePosition ? '' : 'object-top'
           }`}
-          style={member.imagePosition ? { objectPosition: member.imagePosition } : { objectPosition: 'center 15%' }}
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            e.target.src = avatarFallback;
-          }}
+          objectPosition={member.imagePosition || 'center 15%'}
+          priority={true}
         />
         
         {/* Slanted overlay cut for desktop */}

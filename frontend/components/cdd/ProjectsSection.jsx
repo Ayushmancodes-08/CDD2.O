@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import { PROJECTS } from '@/lib/cdd-constants';
+import OptimizedImage from './OptimizedImage';
 
 const colorMap = {
   purple: { accent: 'bg-purple-500', bg: 'bg-purple-50', border: 'border-purple-100', btn: 'bg-purple-600 hover:bg-purple-700', text: 'text-purple-600' },
@@ -25,9 +26,14 @@ const ProjectCard = ({ project }) => {
       className="bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group h-full">
       {project.image && (
         <div className="relative h-48 overflow-hidden">
-          <img src={project.image} alt={`Screenshot of ${project.name}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy" decoding="async" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          <OptimizedImage
+            src={project.image}
+            alt={`Screenshot of ${project.name}`}
+            containerClassName="w-full h-full"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            priority={true}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
         </div>
       )}
       <div className={`h-1 w-full ${theme.accent}`}></div>

@@ -47,14 +47,14 @@ export const PROJECTS = [
     icon: GraduationCap, color: "purple",
     tech: ["Next.js 15", "TypeScript", "Supabase", "Google Genkit"],
     link: "https://quizzer-five-phi.vercel.app/",
-    image: "/projects/quizmaster_ai.png",
+    image: "/projects/quizmaster_ai.jpg",
     type: "single",
   },
   {
     id: 2, name: "College ERP", category: "Enterprise System",
     description: "Centralized platform for academic and administrative operations.",
     icon: LayoutDashboard, color: "blue",
-    image: "/projects/college_erp.png",
+    image: "/projects/college_erp.jpg",
     type: "dual",
     versions: [
       { name: "v1.0", tech: ["Next.js 14", "TypeScript", "Supabase"], link: "https://school-erpsuppa.vercel.app/" },
@@ -67,7 +67,7 @@ export const PROJECTS = [
     icon: BookOpen, color: "green",
     tech: ["Next.js 16", "TypeScript", "Gemini API", "LangChain"],
     link: "https://learnoverse2-0.vercel.app/",
-    image: "/projects/learnoverse.png",
+    image: "/projects/learnoverse.jpg",
     type: "single",
   },
   {
@@ -76,7 +76,7 @@ export const PROJECTS = [
     icon: Users, color: "orange",
     tech: ["Next.js", "TypeScript", "Tailwind", "PostgreSQL"],
     link: "https://skill-pilot-three.vercel.app/",
-    image: "/projects/skillplot.png",
+    image: "/projects/skillplot.jpg",
     type: "single",
   },
 ];
@@ -128,7 +128,7 @@ export const TEAM_MEMBERS = [
     name: "Prateek Mohanty",
     role: "Management Head",
     description: "Overseeing event management, ground operations, and logistics execution.",
-    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899126/WhatsApp_Image_2026-08-13_at_18.15.05_vfcb5f.jpg",
+    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1787219031/WhatsApp_Image_2026-08-20_at_12.54.48_fw1fmf.jpg",
     category: "Board",
     linkedin: "https://www.linkedin.com/in/prateek-mohanty-134806331/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B8gfYlQkpTxCwIF%2BUjtIC1Q%3D%3D",
     instagram: "https://www.instagram.com/prateek_forsure/"
@@ -178,10 +178,10 @@ export const TEAM_MEMBERS = [
   { name: "K Rabindra Nath Senapaty", role: "Alumni", description: "", image: "/team_alumini/rabindra_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/krabindranathsenapaty", email: "rabindrasenapaty2003@gmail.com", instagram: "https://www.instagram.com/rabindra_senapaty/" },
   { name: "P Soumya Sundar Subudhi", role: "Alumni", description: "", image: "/team_alumini/soumya_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/p-soumya-sundar-subudhi", email: "p.soumyasundars@gmail.com", instagram: "https://www.instagram.com/____s.oumya____/" },
   { name: "Debadatta Dash", role: "Alumni", description: "", image: "/team_alumini/debadutta_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/debadatta-dash-45b14725b", instagram: "https://www.instagram.com/_orb.__deb/" },
-  { name: "Shubham Ranjan Sahoo", role: "Alumni", description: "", image: "/team_alumini/subham_sahoo.png", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/shubham-ranjan-sahoo-7a1982294" },
-  { name: "Swagat Prasad Nanda", role: "Alumni", description: "", image: "/team_alumini/swagat_bhai.png", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/swagat-prasad-nanda", email: "swagatprasad3344@gmail.com" },
-  { name: "Subham Kumar Padhy", role: "Alumni", description: "", image: "/team_alumini/subham_padhy.png", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subham-kumar-padhy", email: "subhamkumarpadhy14@gmail.com" },
-  { name: "Subrat Kumar Sahu", role: "Alumni", description: "", image: "/team_alumini/subrat_bhai.png", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subratkumarsahu", email: "subratsahu1808@gmail.com" },
+  { name: "Shubham Ranjan Sahoo", role: "Alumni", description: "", image: "/team_alumini/subham_sahoo.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/shubham-ranjan-sahoo-7a1982294" },
+  { name: "Swagat Prasad Nanda", role: "Alumni", description: "", image: "/team_alumini/swagat_bhai.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/swagat-prasad-nanda", email: "swagatprasad3344@gmail.com" },
+  { name: "Subham Kumar Padhy", role: "Alumni", description: "", image: "/team_alumini/subham_padhy.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subham-kumar-padhy", email: "subhamkumarpadhy14@gmail.com" },
+  { name: "Subrat Kumar Sahu", role: "Alumni", description: "", image: "/team_alumini/subrat_bhai.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subratkumarsahu", email: "subratsahu1808@gmail.com" },
   { name: "Alisha Rani Nanda", role: "Alumni", description: "", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786915712/1783705695878_kfa6eq.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/alisha-rani-nanda-935681235" },
   { name: "Purnima Prusty", role: "Alumni", description: "", image: "/team_alumini/Purnima_didi.jpeg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/purnima-prusty-37491b24a", email: "purnimaprusty2003@gmail.com" },
 ];

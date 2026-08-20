@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, ChevronLeft, ChevronRight, X, ImageIcon } from 'lucide-react';
 import { useGallery } from './useGallery';
 import { GallerySkeleton, FullPageGallerySkeleton } from './Skeletons';
+import OptimizedImage from './OptimizedImage';
 
 export function FullPageGallery({ onBack }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -88,9 +89,15 @@ export function FullPageGallery({ onBack }) {
                 className="break-inside-avoid relative group rounded-2xl cursor-pointer transition-all duration-300 mb-5"
                 onClick={() => setSelectedIndex(idx)}>
                 <div className="bg-white p-1.5 shadow-sm hover:shadow-lg rounded-2xl border border-gray-100 hover:border-brand-200 transition-all">
-                  <div className="relative overflow-hidden rounded-xl">
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10" />
-                    <img src={src} alt={`IDEA and Innovation Cell event photo ${idx + 1}`} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+                  <div className="relative overflow-hidden rounded-xl bg-gray-50">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 pointer-events-none" />
+                    <OptimizedImage
+                      src={src}
+                      alt={`IDEA and Innovation Cell event photo ${idx + 1}`}
+                      className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      priority={idx < 10}
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -198,8 +205,14 @@ export function GallerySection({ onViewArchive }) {
             <div onClick={() => setSelectedIndex(idx)}
               className="bg-white p-1.5 shadow-sm group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-[1.02] rounded-2xl border border-gray-100 group-hover:border-brand-200">
               <div className="relative overflow-hidden bg-gray-50 rounded-xl">
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 duration-300" />
-                <img src={src} alt={`IDEA and Innovation Cell gallery highlight ${idx + 1}`} className="w-full h-auto object-cover" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors z-10 duration-300 pointer-events-none" />
+                <OptimizedImage
+                  src={src}
+                  alt={`IDEA and Innovation Cell gallery highlight ${idx + 1}`}
+                  className="w-full h-auto object-cover"
+                  priority={idx < 4}
+                  referrerPolicy="no-referrer"
+                />
               </div>
             </div>
           </motion.div>

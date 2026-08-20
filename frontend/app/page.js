@@ -11,6 +11,8 @@ import { AnimatedGridPattern } from '@/components/cdd/AnimatedGrid';
 import { MagneticButton, TextReveal, CharReveal, Tilt, MaskReveal, StaggerGroup, staggerItem, ScrollIndicator } from '@/components/cdd/Animations';
 import { PROGRAMS, FACULTY, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { useGallery } from '@/components/cdd/useGallery';
+import { preloadAllImages } from '@/lib/preload-images';
+import OptimizedImage from '@/components/cdd/OptimizedImage';
 import {
   GallerySkeleton,
   ProjectsSkeleton,
@@ -68,9 +70,21 @@ const AnimatedCounter = ({ from, to, label }) => {
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
-  const { getImageByName } = useGallery();
+  const { images: galleryImages, getImageByName } = useGallery();
   const [contactForm, setContactForm] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Eagerly preload and decode static site assets into cache on startup
+  useEffect(() => {
+    preloadAllImages();
+  }, []);
+
+  // Preload top gallery photos as soon as gallery endpoint responds
+  useEffect(() => {
+    if (galleryImages && galleryImages.length > 0) {
+      preloadAllImages(galleryImages.slice(0, 12).map((img) => img.url));
+    }
+  }, [galleryImages]);
 
   const { scrollY, scrollYProgress } = useScroll();
   const heroTextY = useTransform(scrollY, [0, 500], [0, 80]);
@@ -277,13 +291,19 @@ function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {FACULTY.map((member, idx) => {
               const dynamicImage = getImageByName(member.name);
+              const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=EEF2FF&color=2D4A7A`;
               return (
                 <motion.div key={idx} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                   className="flex items-center gap-4 bg-white p-5 rounded-2xl shadow-ambient hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <img src={dynamicImage || member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=EEF2FF&color=2D4A7A`}
-                    alt={`Portrait of ${member.name} - ${member.role}`} className="w-16 h-16 object-cover rounded-full border-2 border-brand-50 shadow-sm"
-                    loading="lazy" decoding="async" />
+                  <OptimizedImage
+                    src={dynamicImage || member.image || fallbackAvatar}
+                    fallbackSrc={fallbackAvatar}
+                    alt={`Portrait of ${member.name} - ${member.role}`}
+                    containerClassName="w-16 h-16 rounded-full border-2 border-brand-50 shadow-sm shrink-0"
+                    className="w-full h-full object-cover"
+                    priority={true}
+                  />
                   <div>
                     <h3 className="font-display font-bold text-brand-900 text-base">{member.name}</h3>
                     <p className="text-brand-500 text-xs font-semibold uppercase tracking-wider mb-0.5">{member.role}</p>

@@ -5,9 +5,9 @@ export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
   title: {
     default: "Idea and Innovation Cell PMEC | IIC PMEC (CDD×SIC)",
-    template: "%s | Idea and Innovation Cell PMEC (CDD×SIC)"
+    template: "%s | IIC PMEC (CDD×SIC)"
   },
-  description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) & CDD at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
+  description: "Official portal of Idea and Innovation Cell (IIC PMEC) & CDD at PMEC Berhampur. Student innovation cell, hackathons, AI/ML, and web development.",
   applicationName: "Idea and Innovation Cell PMEC",
   appleWebApp: {
     title: "IIC PMEC",
@@ -126,8 +126,8 @@ export const metadata = {
     locale: 'en_US',
     url: 'https://iicpmec.vercel.app',
     siteName: 'Idea and Innovation Cell PMEC',
-    title: "Idea and Innovation Cell PMEC | IIC PMEC — Official Tech & Innovation Society",
-    description: "Official website of Idea and Innovation Cell PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
+    title: "Idea and Innovation Cell PMEC | IIC PMEC (CDD×SIC)",
+    description: "Official portal of Idea and Innovation Cell (IIC PMEC) & CDD at PMEC Berhampur. Student innovation cell, hackathons, AI/ML, and web development.",
     images: [
       {
         url: '/Logo_dark.png',
@@ -140,7 +140,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Idea and Innovation Cell PMEC | IIC PMEC (CDD×SIC)",
-    description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC) & CDD at PMEC Berhampur.",
+    description: "Official portal of Idea and Innovation Cell (IIC PMEC) & CDD at PMEC Berhampur.",
     images: ['/Logo_dark.png'],
     creator: '@cddclubpmec',
     site: '@cddclubpmec',

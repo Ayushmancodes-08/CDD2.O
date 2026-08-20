@@ -106,6 +106,7 @@ export const metadata = {
   },
   verification: {
     google: 'QsDjMLpQfxJwJFyJZ4v1UfgcucY3HqrwFUMO34OT_3g',
+    yandex: '0791c3349d00c2a0',
   },
   robots: {
     index: true,

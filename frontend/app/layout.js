@@ -248,6 +248,10 @@ export default function RootLayout({ children }) {
         '@id': 'https://iicpmec.vercel.app/#codekriti2027',
         name: 'CodeKriti 2027 Hackathon',
         description: 'Annual flagship 24-hour hackathon bringing together creative student developers, designers, and innovators.',
+        image: [
+          'https://iicpmec.vercel.app/Logo_dark.png',
+          'https://iicpmec.vercel.app/icon.png'
+        ],
         startDate: '2027-03-15T09:00:00+05:30',
         endDate: '2027-03-16T09:00:00+05:30',
         eventStatus: 'https://schema.org/EventScheduled',
@@ -266,6 +270,19 @@ export default function RootLayout({ children }) {
         },
         organizer: {
           '@id': 'https://iicpmec.vercel.app/#organization'
+        },
+        performer: {
+          '@type': 'Organization',
+          name: 'Idea and Innovation Cell PMEC',
+          url: 'https://iicpmec.vercel.app'
+        },
+        offers: {
+          '@type': 'Offer',
+          url: 'https://iicpmec.vercel.app/#events',
+          price: '0',
+          priceCurrency: 'INR',
+          availability: 'https://schema.org/InStock',
+          validFrom: '2026-08-01T00:00:00+05:30'
         }
       },
       {

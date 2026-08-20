@@ -4,10 +4,10 @@ import { Toaster } from 'sonner'
 export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
   title: {
-    default: "Idea and Innovation Cell PMEC | IIC PMEC - CDD (Coding Design and Development)",
+    default: "Idea and Innovation Cell PMEC | IIC PMEC (CDD×SIC)",
     template: "%s | Idea and Innovation Cell PMEC (CDD×SIC)"
   },
-  description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
+  description: "Official portal of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) & CDD at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
   applicationName: "Idea and Innovation Cell PMEC",
   appleWebApp: {
     title: "IIC PMEC",
@@ -125,7 +125,7 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://iicpmec.vercel.app',
-    siteName: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
+    siteName: 'Idea and Innovation Cell PMEC',
     title: "Idea and Innovation Cell PMEC | IIC PMEC — Official Tech & Innovation Society",
     description: "Official website of Idea and Innovation Cell PMEC (IIC PMEC) & CDD (Coding Design and Development) at PMEC Berhampur. Bridging theory and practice through cutting-edge technology.",
     images: [

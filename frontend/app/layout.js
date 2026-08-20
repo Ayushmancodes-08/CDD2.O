@@ -4,11 +4,19 @@ import { Toaster } from 'sonner'
 export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
   title: {
-    default: "IDEA AND INNOVATION CELL PMEC | IIC PMEC — CDD (Coding Design and Development)",
+    default: "IDEA AND INNOVATION CELL PMEC | IIC PMEC - CDD (Coding Design and Development)",
     template: "%s | IDEA AND INNOVATION CELL PMEC (CDD×SIC)"
   },
   description: "Official portal of IDEA AND INNOVATION CELL PMEC (IIC PMEC / CDD×SIC) & CDD (Coding Design and Development) at Parala Maharaja Engineering College, Berhampur. Student innovation cell, hackathons, CodeKriti 2027, AI/ML, and web development.",
   applicationName: "IDEA AND INNOVATION CELL PMEC",
+  appleWebApp: {
+    title: "IIC PMEC",
+    statusBarStyle: "default",
+    capable: true,
+  },
+  other: {
+    "site_name": "IDEA AND INNOVATION CELL PMEC",
+  },
   referrer: "origin-when-cross-origin",
   keywords: [
     // Core brand terms
@@ -139,28 +147,17 @@ export const metadata = {
   },
   icons: {
     icon: [
-      {
-        url: "/Logo_dark.png",
-        href: "/Logo_dark.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/logo_white.png",
-        href: "/logo_white.png",
-        media: "(prefers-color-scheme: dark)",
-      },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
-      {
-        url: "/Logo_dark.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/logo_white.png",
-        media: "(prefers-color-scheme: dark)",
-      },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
+  manifest: '/site.webmanifest',
 }
 
 export default function RootLayout({ children }) {
@@ -235,6 +232,12 @@ export default function RootLayout({ children }) {
         '@id': 'https://iicpmec.vercel.app/#website',
         url: 'https://iicpmec.vercel.app',
         name: 'IDEA AND INNOVATION CELL PMEC',
+        alternateName: [
+          'IIC PMEC',
+          'IDEA AND INNOVATION CELL',
+          'CDD PMEC',
+          'IDEA Cell PMEC'
+        ],
         publisher: {
           '@id': 'https://iicpmec.vercel.app/#organization'
         },
@@ -327,6 +330,13 @@ export default function RootLayout({ children }) {
         <link rel="preload" as="image" href="/Dr.-Kalyan-Kumar-Jena.jpeg" fetchPriority="high" />
         <link rel="preload" as="image" href="/projects/quizmaster_ai.jpg" />
         <link rel="preload" as="image" href="/projects/college_erp.jpg" />
+
+        {/* Favicons & Web Manifest for Search Engines and Browsers */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
 
         <script
           type="application/ld+json"

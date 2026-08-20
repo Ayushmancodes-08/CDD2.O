@@ -13,6 +13,7 @@ import { PROGRAMS, FACULTY, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { useGallery } from '@/components/cdd/useGallery';
 import { preloadAllImages } from '@/lib/preload-images';
 import OptimizedImage from '@/components/cdd/OptimizedImage';
+import dynamic from 'next/dynamic';
 import {
   GallerySkeleton,
   ProjectsSkeleton,
@@ -21,11 +22,26 @@ import {
   FullPageGallerySkeleton,
 } from '@/components/cdd/Skeletons';
 
-const ProjectsSection = lazy(() => import('@/components/cdd/ProjectsSection'));
-const EventsSection = lazy(() => import('@/components/cdd/EventsSection'));
-const TeamSection = lazy(() => import('@/components/cdd/TeamSection'));
-const GallerySection = lazy(() => import('@/components/cdd/GallerySection').then(m => ({ default: m.GallerySection })));
-const FullPageGallery = lazy(() => import('@/components/cdd/GallerySection').then(m => ({ default: m.FullPageGallery })));
+const ProjectsSection = dynamic(() => import('@/components/cdd/ProjectsSection'), {
+  loading: () => <ProjectsSkeleton />,
+  ssr: true,
+});
+const EventsSection = dynamic(() => import('@/components/cdd/EventsSection'), {
+  loading: () => <EventsSkeleton />,
+  ssr: true,
+});
+const TeamSection = dynamic(() => import('@/components/cdd/TeamSection'), {
+  loading: () => <TeamSkeleton />,
+  ssr: true,
+});
+const GallerySection = dynamic(() => import('@/components/cdd/GallerySection').then((m) => m.GallerySection), {
+  loading: () => <GallerySkeleton />,
+  ssr: true,
+});
+const FullPageGallery = dynamic(() => import('@/components/cdd/GallerySection').then((m) => m.FullPageGallery), {
+  loading: () => <FullPageGallerySkeleton />,
+  ssr: false,
+});
 
 const SectionWrapper = ({ id, className = '', children, title, subtitle, altBg = false, eyebrow }) => (
   <section id={id} className={`py-16 md:py-20 lg:py-24 relative ${altBg ? 'bg-gray-50/60' : 'bg-white'} ${className}`}>
@@ -115,11 +131,7 @@ function App() {
   }, [contactForm]);
 
   if (currentView === 'archive') {
-    return (
-      <Suspense fallback={<FullPageGallerySkeleton />}>
-        <FullPageGallery onBack={() => setCurrentView('home')} />
-      </Suspense>
-    );
+    return <FullPageGallery onBack={() => setCurrentView('home')} />;
   }
 
   return (
@@ -317,30 +329,22 @@ function App() {
 
         {/* GALLERY */}
         <SectionWrapper id="gallery" eyebrow="Gallery" title="Community Archive" subtitle="Documenting our progress." className="!pb-10 md:!pb-12 lg:!pb-16">
-          <Suspense fallback={<GallerySkeleton />}>
-            <GallerySection onViewArchive={() => setCurrentView('archive')} />
-          </Suspense>
+          <GallerySection onViewArchive={() => setCurrentView('archive')} />
         </SectionWrapper>
 
         {/* PROJECTS */}
         <SectionWrapper id="projects" eyebrow="Projects" title="Featured Projects" subtitle="Innovative solutions built and deployed by our members." altBg={true}>
-          <Suspense fallback={<ProjectsSkeleton />}>
-            <ProjectsSection />
-          </Suspense>
+          <ProjectsSection />
         </SectionWrapper>
 
         {/* EVENTS */}
         <SectionWrapper id="events" eyebrow="Events" title="Schedule" subtitle="Upcoming hackathons, seminars, and workshops.">
-          <Suspense fallback={<EventsSkeleton />}>
-            <EventsSection />
-          </Suspense>
+          <EventsSection />
         </SectionWrapper>
 
         {/* TEAM */}
         <SectionWrapper id="team" eyebrow="Team" title="Leadership" subtitle="The core team driving our vision." altBg={true}>
-          <Suspense fallback={<TeamSkeleton />}>
-            <TeamSection />
-          </Suspense>
+          <TeamSection />
         </SectionWrapper>
 
         {/* CONTACT */}
@@ -370,7 +374,11 @@ function App() {
                   <div className="shrink-0 p-3 bg-brand-50 rounded-xl"><Mail className="text-brand-500" size={20} /></div>
                   <div>
                     <h4 className="font-display font-bold text-brand-900 text-base mb-1">Inquiries</h4>
-                    <p className="text-gray-600 text-sm">patraayushman21@gmail.com</p>
+                    <p className="text-gray-600 text-sm">
+                      <a href="mailto:codingclubpmec@gmail.com" className="hover:text-brand-600 transition-colors">
+                        codingclubpmec@gmail.com
+                      </a>
+                    </p>
                   </div>
                 </div>
                 {/* Google Map */}

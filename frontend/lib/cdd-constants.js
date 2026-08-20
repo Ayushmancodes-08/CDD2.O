@@ -131,6 +131,7 @@ export const TEAM_MEMBERS = [
     image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1787219031/WhatsApp_Image_2026-08-20_at_12.54.48_fw1fmf.jpg",
     category: "Board",
     linkedin: "https://www.linkedin.com/in/prateek-mohanty-134806331/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B8gfYlQkpTxCwIF%2BUjtIC1Q%3D%3D",
+    email: "prateekmohanty2006@gmail.com",
     instagram: "https://www.instagram.com/prateek_forsure/"
   },
   {

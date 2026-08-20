@@ -64,7 +64,8 @@ export default function Footer() {
             <div className="flex gap-2">
               {socials.map((social) => (
                 <a key={social.label} href={social.url} target="_blank" rel="noopener noreferrer" aria-label={social.label}
-                  className="p-2.5 bg-white/5 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 group">
+                  onClick={(e) => e.currentTarget.blur()}
+                  className="p-2.5 bg-white/5 rounded-lg hover:bg-white/10 active:bg-white/20 hover:text-white text-gray-400 transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 active:scale-95">
                   <social.icon size={16} className="group-hover:scale-110 transition-transform" />
                 </a>
               ))}

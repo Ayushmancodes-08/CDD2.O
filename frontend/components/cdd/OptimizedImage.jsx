@@ -20,18 +20,13 @@ export default function OptimizedImage({
   referrerPolicy,
   ...props
 }) {
-  const [loaded, setLoaded] = useState(() => preloadedImageSet.has(src));
+  const [loaded, setLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
   useEffect(() => {
     if (!src) return;
-    if (preloadedImageSet.has(src)) {
-      setLoaded(true);
-      return;
-    }
-    // Check if the browser image element already completed loading
-    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+    if (preloadedImageSet.has(src) || (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0)) {
       preloadedImageSet.add(src);
       setLoaded(true);
     }

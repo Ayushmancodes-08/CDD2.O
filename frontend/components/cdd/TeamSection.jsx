@@ -13,7 +13,8 @@ const SocialLink = ({ href, icon: Icon, label, memberName }) => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${label} profile of ${memberName}`}
-      className="w-8 h-8 rounded-full bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white border border-brand-200/60 hover:border-brand-600 flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-110"
+      onClick={(e) => e.currentTarget.blur()}
+      className="w-8 h-8 rounded-full bg-brand-50 hover:bg-brand-600 active:bg-brand-700 text-brand-700 hover:text-white active:text-white border border-brand-200/60 hover:border-brand-600 flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
     >
       <Icon size={14} />
     </a>
@@ -246,16 +247,16 @@ const MemberCarousel = ({ members, itemsPerPageDesktop = 1, isFounder = false })
       {members.length > itemsPerPage && (
         <>
           <button
-            onClick={prevSlide}
+            onClick={(e) => { prevSlide(); e.currentTarget.blur(); }}
             aria-label="Previous Members"
-            className="absolute -left-2 sm:left-0 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white shadow-md border border-gray-200 text-brand-900 hover:bg-brand-600 hover:text-white hover:border-brand-600 hover:scale-110 transition-all duration-300"
+            className="absolute -left-2 sm:left-0 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white shadow-md border border-gray-200 text-brand-900 hover:bg-brand-600 hover:text-white hover:border-brand-600 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <ChevronLeft size={20} />
           </button>
           <button
-            onClick={nextSlide}
+            onClick={(e) => { nextSlide(); e.currentTarget.blur(); }}
             aria-label="Next Members"
-            className="absolute -right-2 sm:right-0 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white shadow-md border border-gray-200 text-brand-900 hover:bg-brand-600 hover:text-white hover:border-brand-600 hover:scale-110 transition-all duration-300"
+            className="absolute -right-2 sm:right-0 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white shadow-md border border-gray-200 text-brand-900 hover:bg-brand-600 hover:text-white hover:border-brand-600 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <ChevronRight size={20} />
           </button>

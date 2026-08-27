@@ -60,9 +60,9 @@ export default function Navbar() {
         ${isScrolled ? 'glass-nav h-16 lg:h-[68px]' : 'bg-transparent h-18 lg:h-20'}`}>
         <div className="w-full max-w-7xl px-5 sm:px-6 lg:px-8 flex justify-between items-center h-full">
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="Idea and Innovation Cell Home"
-            className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2 z-50 h-full py-2">
-            <img src="/Logo_dark.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-9 h-9 object-contain"
-              decoding="async" fetchPriority="high" width={36} height={36} />
+            className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2.5 z-50 h-full py-2">
+            <img src="/Logo_dark.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-[38.5px] h-[38.5px] object-contain shrink-0"
+              decoding="async" fetchPriority="high" width={39} height={39} />
             <span className="hidden sm:block font-display font-bold text-brand-900 text-sm sm:text-base md:text-lg tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
           </a>
 

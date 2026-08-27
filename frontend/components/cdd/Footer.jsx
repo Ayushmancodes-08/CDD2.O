@@ -54,8 +54,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <img src="/logo_white.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-10 h-10 object-contain"
-                loading="lazy" decoding="async" width={40} height={40} />
+              <img src="/logo_white.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-[43px] h-[43px] object-contain shrink-0"
+                loading="lazy" decoding="async" width={43} height={43} />
               <span className="text-xl font-display font-bold text-white tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
             </div>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">

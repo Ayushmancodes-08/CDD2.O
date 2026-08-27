@@ -170,7 +170,7 @@ export const TEAM_MEMBERS = [
   { name: "Anisha Parida", role: "Core Coordinator", description: "Facilitating workshop coordination, logistics, and student engagement.", image: "/team_alumini/anisha_didi.jpg", imagePosition: "center top", category: "Core", linkedin: "https://www.linkedin.com/in/anisha-parida-20780b2b0", email: "anishaparida04@gmail.com", instagram: "https://www.instagram.com/aisha_242004" },
   
   // Founder
-  { name: "Saurav Pratap Singh", role: "Founder", description: "Established the Idea and Innovation Cell (CDD×SIC) and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786906550/Screenshot_2026-08-17_002527_ctmcse.png", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
+  { name: "Saurav Pratap Singh", role: "Founder", description: "Established Coding design and development club (CDD) in 2021 and laid the foundation for technical excellence.", image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786906550/Screenshot_2026-08-17_002527_ctmcse.png", category: "Founder", linkedin: "https://www.linkedin.com/in/saurav269" },
   
   // Alumni
   { name: "Baibhab Sahu", role: "Alumni", description: "", image: "/team_alumini/baibhab_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/baibhabsahu07", email: "ankur2002666@gmail.com", instagram: "https://www.instagram.com/baibhabsahu/" },
@@ -179,7 +179,7 @@ export const TEAM_MEMBERS = [
   { name: "K Rabindra Nath Senapaty", role: "Alumni", description: "", image: "/team_alumini/rabindra_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/krabindranathsenapaty", email: "rabindrasenapaty2003@gmail.com", instagram: "https://www.instagram.com/rabindra_senapaty/" },
   { name: "P Soumya Sundar Subudhi", role: "Alumni", description: "", image: "/team_alumini/soumya_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/p-soumya-sundar-subudhi", email: "p.soumyasundars@gmail.com", instagram: "https://www.instagram.com/____s.oumya____/" },
   { name: "Debadatta Dash", role: "Alumni", description: "", image: "/team_alumini/debadutta_bhai.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/debadatta-dash-45b14725b", instagram: "https://www.instagram.com/_orb.__deb/" },
-  { name: "Shubham Ranjan Sahoo", role: "Alumni", description: "", image: "/team_alumini/subham_sahoo.jpg", category: "Alumni", batch: "2026", linkedin: "https://www.linkedin.com/in/shubham-ranjan-sahoo-7a1982294" },
+  { name: "Shubham Ranjan Sahoo", role: "Alumni", description: "", image: "/team_alumini/subham_sahoo.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/shubham-ranjan-sahoo-7a1982294" },
   { name: "Swagat Prasad Nanda", role: "Alumni", description: "", image: "/team_alumini/swagat_bhai.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/swagat-prasad-nanda", email: "swagatprasad3344@gmail.com" },
   { name: "Subham Kumar Padhy", role: "Alumni", description: "", image: "/team_alumini/subham_padhy.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subham-kumar-padhy", email: "subhamkumarpadhy14@gmail.com" },
   { name: "Subrat Kumar Sahu", role: "Alumni", description: "", image: "/team_alumini/subrat_bhai.jpg", category: "Alumni", batch: "2025", linkedin: "https://www.linkedin.com/in/subratkumarsahu", email: "subratsahu1808@gmail.com" },

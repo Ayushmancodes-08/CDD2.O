@@ -148,17 +148,19 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
-      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
-      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+      { url: '/favicon-light-32x32.png?v=3', media: '(prefers-color-scheme: light)', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-light-16x16.png?v=3', media: '(prefers-color-scheme: light)', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon-dark-32x32.png?v=3', media: '(prefers-color-scheme: dark)', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-dark-16x16.png?v=3', media: '(prefers-color-scheme: dark)', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon.ico?v=3', sizes: 'any' },
+      { url: '/icon.png?v=3', type: 'image/png', sizes: '512x512' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon.ico?v=3',
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png?v=3', sizes: '180x180', type: 'image/png' },
     ],
   },
-  manifest: '/site.webmanifest',
+  manifest: '/site.webmanifest?v=3',
 }
 
 export default function RootLayout({ children }) {
@@ -349,12 +351,14 @@ export default function RootLayout({ children }) {
         <link rel="preload" as="image" href="/projects/quizmaster_ai.jpg" />
         <link rel="preload" as="image" href="/projects/college_erp.jpg" />
 
-        {/* Favicons & Web Manifest for Search Engines and Browsers */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
+        {/* Adaptive Dark & Light Mode Favicons for Browser Tabs */}
+        <link rel="icon" media="(prefers-color-scheme: light)" href="/favicon-light-32x32.png?v=3" type="image/png" sizes="32x32" />
+        <link rel="icon" media="(prefers-color-scheme: light)" href="/favicon-light-16x16.png?v=3" type="image/png" sizes="16x16" />
+        <link rel="icon" media="(prefers-color-scheme: dark)" href="/favicon-dark-32x32.png?v=3" type="image/png" sizes="32x32" />
+        <link rel="icon" media="(prefers-color-scheme: dark)" href="/favicon-dark-16x16.png?v=3" type="image/png" sizes="16x16" />
+        <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
+        <link rel="manifest" href="/site.webmanifest?v=3" />
 
         <script
           type="application/ld+json"

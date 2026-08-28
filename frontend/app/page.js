@@ -173,7 +173,7 @@ function App() {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-100 rounded-full mb-8 glow-ring">
                 <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
-                <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus</span>
+                <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus · IICPMEC</span>
               </motion.div>
 
               <h1 className="text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 tracking-tight">
@@ -190,7 +190,7 @@ function App() {
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.9, ease: 'easeOut' }}
                 className="text-base md:text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
-                The <strong className="text-brand-900 font-semibold">Idea and Innovation Cell</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
+                The <strong className="text-brand-900 font-semibold">Idea and Innovation Cell (IIC PMEC / IICPMEC)</strong> is PMEC&apos;s premier technical society. Bridging theory and industry through code, design, and real-world projects.
               </motion.p>
 
               <motion.div
@@ -216,9 +216,9 @@ function App() {
                 <div className="relative w-full overflow-hidden">
                   <div className="flex gap-10 animate-marquee whitespace-nowrap will-change-transform">
                     {[
-                      '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
+                      'IICPMEC Community', '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                       'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
-                      '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
+                      'IICPMEC Community', '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                       'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
                     ].map((item, i) => (
                       <span key={i} className="inline-flex items-center gap-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">

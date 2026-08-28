@@ -60,7 +60,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <img src="/logo_white.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-[43px] h-[43px] object-contain shrink-0"
+              <img src="/logo_white.png" alt="Idea and Innovation Cell (IICPMEC / CDD×SIC) Logo" className="w-[43px] h-[43px] object-contain shrink-0"
                 loading="lazy" decoding="async" width={43} height={43} />
               <span className="text-xl font-display font-bold text-white tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
             </div>
@@ -115,7 +115,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-          <p suppressHydrationWarning>© {new Date().getFullYear()} Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} Idea and Innovation Cell PMEC (IIC PMEC / IICPMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Crafted with passion at</span>
             <Heart size={10} className="text-red-400 fill-red-400 cursor-pointer hover:scale-125 transition-transform" onClick={() => setIsAdminOpen(true)} aria-label="Admin Access Portal" />

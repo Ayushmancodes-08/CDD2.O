@@ -59,9 +59,9 @@ export default function Navbar() {
       <nav aria-label="Main Navigation" className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out flex items-center justify-center
         ${isScrolled ? 'glass-nav h-16 lg:h-[68px]' : 'bg-transparent h-18 lg:h-20'}`}>
         <div className="w-full max-w-7xl px-5 sm:px-6 lg:px-8 flex justify-between items-center h-full">
-          <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="Idea and Innovation Cell Home"
+          <a href="#home" onClick={(e) => handleNavClick(e, '#home')} aria-label="Idea and Innovation Cell (IICPMEC) Home"
             className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2.5 z-50 h-full py-2">
-            <img src="/Logo_dark.png" alt="Idea and Innovation Cell (CDD×SIC) Logo" className="w-[38.5px] h-[38.5px] object-contain shrink-0"
+            <img src="/Logo_dark.png" alt="Idea and Innovation Cell (IICPMEC / CDD×SIC) Logo" className="w-[38.5px] h-[38.5px] object-contain shrink-0"
               decoding="async" fetchPriority="high" width={39} height={39} />
             <span className="hidden sm:block font-display font-bold text-brand-900 text-sm sm:text-base md:text-lg tracking-tight">Idea and Innovation Cell (CDD×SIC)</span>
           </a>

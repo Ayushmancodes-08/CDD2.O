@@ -18,6 +18,7 @@ export const metadata = {
   },
   other: {
     "site_name": "Idea and Innovation Cell PMEC (IICPMEC)",
+    "mobile-web-app-capable": "yes",
   },
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -486,11 +487,8 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://script.google.com" crossOrigin="anonymous" />
         
         {/* Critical image preloads */}
-        <link rel="preload" as="image" href="/Logo_dark.png" fetchPriority="high" />
-        <link rel="preload" as="image" href="/sourav_sir.png" fetchPriority="high" />
-        <link rel="preload" as="image" href="/Dr.-Kalyan-Kumar-Jena.jpeg" fetchPriority="high" />
-        <link rel="preload" as="image" href="/projects/quizmaster_ai.jpg" />
-        <link rel="preload" as="image" href="/projects/college_erp.jpg" />
+        <link rel="preload" as="image" href="/normaliic.jpeg" fetchPriority="high" />
+        <link rel="preload" as="image" href="/Logo_dark.png" />
 
         {/* Adaptive Dark & Light Mode Favicons for Browser Tabs */}
         <link rel="icon" media="(prefers-color-scheme: light)" href="/favicon-light-32x32.png?v=3" type="image/png" sizes="32x32" />

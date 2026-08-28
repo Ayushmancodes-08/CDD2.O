@@ -82,7 +82,7 @@ export default function Footer() {
             <h4 className="text-white font-display font-semibold mb-5 text-sm">Club</h4>
             <ul className="space-y-3 text-sm">
               {[['Home', 'home'], ['About', 'about-us'], ['Team', 'team'], ['Gallery', 'gallery']].map(([label, id]) => (
-                <li key={label}><a href={`#${id}`} className="hover:text-white transition-colors duration-200">{label}</a></li>
+                <li key={label}><a href={`/#${id}`} className="hover:text-white transition-colors duration-200">{label}</a></li>
               ))}
             </ul>
           </div>
@@ -91,8 +91,9 @@ export default function Footer() {
             <h4 className="text-white font-display font-semibold mb-5 text-sm">Activities</h4>
             <ul className="space-y-3 text-sm">
               {[['Programs', 'programs'], ['Projects', 'projects'], ['Events', 'events']].map(([label, id]) => (
-                <li key={label}><a href={`#${id}`} className="hover:text-white transition-colors duration-200">{label}</a></li>
+                <li key={label}><a href={`/#${id}`} className="hover:text-white transition-colors duration-200">{label}</a></li>
               ))}
+              <li><a href="/links" className="text-brand-400 hover:text-brand-300 font-medium transition-colors duration-200 flex items-center gap-1">Linktree Hub <span className="text-[10px] bg-brand-500/20 px-1.5 py-0.2 rounded text-brand-300">NEW</span></a></li>
             </ul>
           </div>
 

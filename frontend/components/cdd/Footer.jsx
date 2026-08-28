@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Github, Twitter, Linkedin, Instagram, Heart, ArrowRight, Loader2 } from 'lucide-react';
+import { Github, Linkedin, Instagram, Heart, ArrowRight, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { CLUB_SOCIALS, GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 
@@ -35,7 +35,7 @@ export default function Footer() {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Subscribed! A welcome email has been sent to your inbox.");
+        toast.success(data.message || 'Subscribed successfully! Welcome aboard.');
         setEmail('');
       } else {
         toast.error(data.error || 'Failed to subscribe. Please try again.');
@@ -50,7 +50,6 @@ export default function Footer() {
   const socials = [
     { icon: Github, url: CLUB_SOCIALS.github, label: 'GitHub - Idea and Innovation Cell' },
     { icon: Linkedin, url: CLUB_SOCIALS.linkedin, label: 'LinkedIn - Idea and Innovation Cell' },
-    { icon: Twitter, url: CLUB_SOCIALS.x, label: 'X (Twitter) - Idea and Innovation Cell' },
     { icon: Instagram, url: CLUB_SOCIALS.instagram, label: 'Instagram - Idea and Innovation Cell' },
   ];
 

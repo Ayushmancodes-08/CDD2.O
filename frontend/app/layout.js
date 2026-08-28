@@ -219,10 +219,9 @@ export default function RootLayout({ children }) {
           longitude: 84.871461
         },
         sameAs: [
-          'https://www.instagram.com/cdd_club_pmec',
-          'https://www.linkedin.com/company/coding-design-and-development/posts/?feedView=all',
-          'https://github.com/CodingClubPMEC',
-          'https://x.com/cddclubpmec'
+          'https://www.instagram.com/ideainnovationcell.pmec',
+          'https://www.linkedin.com/in/idea-and-innovation-cell-pmec-838392431',
+          'https://github.com/Idea-Innovation-Cell'
         ],
         parentOrganization: {
           '@type': 'CollegeOrUniversity',

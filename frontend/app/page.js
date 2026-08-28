@@ -387,8 +387,8 @@ function App() {
                   <div>
                     <h4 className="font-display font-bold text-brand-900 text-base mb-1">Inquiries</h4>
                     <p className="text-gray-600 text-sm">
-                      <a href="mailto:codingclubpmec@gmail.com" className="hover:text-brand-600 transition-colors">
-                        codingclubpmec@gmail.com
+                      <a href="mailto:ideainnovationcell.pmec@gmail.com" className="hover:text-brand-600 transition-colors">
+                        ideainnovationcell.pmec@gmail.com
                       </a>
                     </p>
                   </div>

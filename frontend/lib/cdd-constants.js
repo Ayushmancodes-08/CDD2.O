@@ -188,8 +188,7 @@ export const TEAM_MEMBERS = [
 ];
 
 export const CLUB_SOCIALS = {
-  instagram: "https://www.instagram.com/cdd_club_pmec",
-  linkedin: "https://www.linkedin.com/company/coding-design-and-development/posts/?feedView=all",
-  github: "https://github.com/CodingClubPMEC",
-  x: "https://x.com/cddclubpmec",
+  instagram: "https://www.instagram.com/ideainnovationcell.pmec",
+  linkedin: "https://www.linkedin.com/in/idea-and-innovation-cell-pmec-838392431",
+  github: "https://github.com/Idea-Innovation-Cell",
 };

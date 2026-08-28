@@ -536,8 +536,23 @@ export default function LinktreePage() {
                 <X size={16} />
               </button>
 
-              <h3 className="text-base !font-sans font-bold mb-2 text-white">Share Club Hub</h3>
-              <p className="text-xs !font-sans text-emerald-100/60 mb-5">Copy this direct link to paste into your Instagram bio, WhatsApp status, or club messages.</p>
+              <h3 className="text-base !font-sans font-bold mb-1 text-white">Share Club Hub</h3>
+              <p className="text-xs !font-sans text-emerald-100/60 mb-4">Copy this direct link to paste into your Instagram bio, WhatsApp status, or club messages.</p>
+
+              {/* Share Preview Card with Solid White Logo */}
+              <div className="flex items-center gap-3 bg-[#04120d] border border-emerald-900/70 p-3 rounded-2xl mb-4 text-left shadow-inner">
+                <div className="w-12 h-12 rounded-xl bg-white p-1 shrink-0 overflow-hidden shadow-md flex items-center justify-center">
+                  <img
+                    src="/normaliic.jpeg"
+                    alt="IIC PMEC"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs !font-sans font-bold text-white truncate">Idea & Innovation Cell (IIC PMEC)</h4>
+                  <p className="text-[11px] !font-sans text-emerald-400 font-medium">iicpmec.vercel.app/links</p>
+                </div>
+              </div>
 
               <div className="flex items-center gap-2 bg-[#04120d] border border-emerald-900/60 rounded-xl p-2 mb-4">
                 <input

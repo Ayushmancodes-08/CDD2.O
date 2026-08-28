@@ -138,10 +138,10 @@ export const metadata = {
     description: "Official portal of Idea and Innovation Cell (IIC PMEC / IICPMEC) & CDD at PMEC Berhampur. Student innovation cell, hackathons, AI/ML, and web development.",
     images: [
       {
-        url: '/Logo_dark.png',
+        url: '/normaliic.jpeg',
         width: 1200,
         height: 630,
-        alt: 'Idea and Innovation Cell PMEC (IICPMEC) Logo',
+        alt: 'Idea and Innovation Cell PMEC (IICPMEC) Official Logo',
       },
     ],
   },
@@ -149,7 +149,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "Idea and Innovation Cell PMEC | IIC PMEC / IICPMEC (CDD×SIC)",
     description: "Official portal of Idea and Innovation Cell (IIC PMEC / IICPMEC) & CDD at PMEC Berhampur.",
-    images: ['/Logo_dark.png'],
+    images: ['/normaliic.jpeg'],
     creator: '@cddclubpmec',
     site: '@cddclubpmec',
   },

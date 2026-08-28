@@ -319,19 +319,23 @@ function App() {
               return (
                 <motion.div key={idx} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
+                  itemScope itemType="https://schema.org/Person"
                   className="flex items-center gap-4 bg-white p-5 rounded-2xl shadow-ambient hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                  <meta itemProp="worksFor" content="Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)" />
+                  <meta itemProp="affiliation" content="Parala Maharaja Engineering College (PMEC)" />
                   <OptimizedImage
                     src={dynamicImage || member.image || fallbackAvatar}
                     fallbackSrc={fallbackAvatar}
                     alt={`Portrait of ${member.name} - ${member.role}`}
+                    itemProp="image"
                     containerClassName="w-16 h-16 rounded-full border-2 border-brand-50 shadow-sm shrink-0"
                     className="w-full h-full object-cover"
                     priority={true}
                   />
                   <div>
-                    <h3 className="font-display font-bold text-brand-900 text-base">{member.name}</h3>
-                    <p className="text-brand-500 text-xs font-semibold uppercase tracking-wider mb-0.5">{member.role}</p>
-                    <p className="text-gray-400 text-xs font-medium">{member.specialty}</p>
+                    <h3 itemProp="name" className="font-display font-bold text-brand-900 text-base">{member.name}</h3>
+                    <p itemProp="jobTitle" className="text-brand-500 text-xs font-semibold uppercase tracking-wider mb-0.5">{member.role}</p>
+                    <p itemProp="description" className="text-gray-400 text-xs font-medium">{member.specialty}</p>
                   </div>
                 </motion.div>
               );

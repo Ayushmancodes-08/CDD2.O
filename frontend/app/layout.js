@@ -1,6 +1,7 @@
 import './globals.css'
 import { Toaster } from 'sonner'
 import SecurityProtection from '@/components/cdd/SecurityProtection'
+import { FACULTY, TEAM_MEMBERS, PROJECTS, EVENTS } from '@/lib/cdd-constants'
 
 export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
@@ -169,6 +170,92 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  // Generate individual Person Schema nodes for all Faculty and Team Members
+  const personNodes = [
+    ...FACULTY.map((f) => ({
+      '@type': 'Person',
+      '@id': `https://iicpmec.vercel.app/#person-${f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+      name: f.name,
+      jobTitle: `${f.role} (Faculty Advisor)`,
+      description: `${f.name} is the ${f.role} at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) and ${f.specialty} at Parala Maharaja Engineering College, Berhampur.`,
+      worksFor: {
+        '@id': 'https://iicpmec.vercel.app/#organization',
+      },
+      affiliation: {
+        '@type': 'CollegeOrUniversity',
+        name: 'Parala Maharaja Engineering College (PMEC)',
+        url: 'https://pmec.ac.in',
+      },
+      image: f.image ? (f.image.startsWith('http') ? f.image : `https://iicpmec.vercel.app${f.image}`) : undefined,
+    })),
+    ...TEAM_MEMBERS.map((m) => ({
+      '@type': 'Person',
+      '@id': `https://iicpmec.vercel.app/#person-${m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+      name: m.name,
+      jobTitle: `${m.role} - Idea and Innovation Cell PMEC`,
+      description: m.description
+        ? `${m.name} is the ${m.role} at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), Parala Maharaja Engineering College. ${m.description}`
+        : `${m.name} is the ${m.role} of Idea and Innovation Cell (IIC PMEC / CDD×SIC) at Parala Maharaja Engineering College, Berhampur.`,
+      worksFor: {
+        '@id': 'https://iicpmec.vercel.app/#organization',
+      },
+      affiliation: {
+        '@type': 'EducationalOrganization',
+        name: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
+        url: 'https://iicpmec.vercel.app',
+      },
+      alumniOf: {
+        '@type': 'CollegeOrUniversity',
+        name: 'Parala Maharaja Engineering College (PMEC)',
+        url: 'https://pmec.ac.in',
+      },
+      email: m.email ? m.email : undefined,
+      sameAs: [m.linkedin, m.instagram, m.github].filter(Boolean),
+      image: m.image ? (m.image.startsWith('http') ? m.image : `https://iicpmec.vercel.app${m.image}`) : undefined,
+    })),
+  ];
+
+  // Generate SoftwareApplication nodes for all Projects
+  const projectNodes = PROJECTS.map((p) => ({
+    '@type': 'SoftwareApplication',
+    '@id': `https://iicpmec.vercel.app/#project-${p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    name: p.name,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web Browser',
+    description: p.description,
+    url: p.link || (p.versions && p.versions[0]?.link) || 'https://iicpmec.vercel.app/#projects',
+    image: p.image ? (p.image.startsWith('http') ? p.image : `https://iicpmec.vercel.app${p.image}`) : undefined,
+    creator: {
+      '@id': 'https://iicpmec.vercel.app/#organization',
+    },
+  }));
+
+  // Generate Event nodes for upcoming events
+  const eventNodes = EVENTS.map((e) => ({
+    '@type': 'Event',
+    '@id': `https://iicpmec.vercel.app/#event-${e.id}`,
+    name: `${e.title} - IIC PMEC`,
+    description: e.description,
+    startDate: e.date.includes('2027') ? '2027-03-15T09:00:00+05:30' : undefined,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: 'Parala Maharaja Engineering College',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'PMEC Campus, Sitalapalli',
+        addressLocality: 'Berhampur',
+        addressRegion: 'Odisha',
+        postalCode: '761003',
+        addressCountry: 'IN',
+      },
+    },
+    organizer: {
+      '@id': 'https://iicpmec.vercel.app/#organization',
+    },
+  }));
+
   const jsonLdGraph = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -235,6 +322,7 @@ export default function RootLayout({ children }) {
           name: 'Parala Maharaja Engineering College (PMEC)',
           url: 'https://pmec.ac.in'
         },
+        member: personNodes.map((p) => ({ '@id': p['@id'] })),
         description: "Idea and Innovation Cell PMEC (IIC PMEC / IICPMEC / CDD×SIC) and CDD (Coding Design and Development) is the premier technical innovation society at Parala Maharaja Engineering College (PMEC Berhampur)."
       },
       {
@@ -258,65 +346,98 @@ export default function RootLayout({ children }) {
         },
         inLanguage: 'en-US'
       },
-      {
-        '@type': 'Event',
-        '@id': 'https://iicpmec.vercel.app/#codekriti2027',
-        name: 'CodeKriti 2027 Hackathon',
-        description: 'Annual flagship 24-hour hackathon bringing together creative student developers, designers, and innovators.',
-        image: [
-          'https://iicpmec.vercel.app/Logo_dark.png',
-          'https://iicpmec.vercel.app/icon.png'
-        ],
-        startDate: '2027-03-15T09:00:00+05:30',
-        endDate: '2027-03-16T09:00:00+05:30',
-        eventStatus: 'https://schema.org/EventScheduled',
-        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-        location: {
-          '@type': 'Place',
-          name: 'Parala Maharaja Engineering College',
-          address: {
-            '@type': 'PostalAddress',
-            streetAddress: 'PMEC Campus, Sitalapalli',
-            addressLocality: 'Berhampur',
-            addressRegion: 'Odisha',
-            postalCode: '761003',
-            addressCountry: 'IN'
-          }
-        },
-        organizer: {
-          '@id': 'https://iicpmec.vercel.app/#organization'
-        },
-        performer: {
-          '@type': 'Organization',
-          name: 'Idea and Innovation Cell PMEC',
-          url: 'https://iicpmec.vercel.app'
-        },
-        offers: {
-          '@type': 'Offer',
-          url: 'https://iicpmec.vercel.app/#events',
-          price: '0',
-          priceCurrency: 'INR',
-          availability: 'https://schema.org/InStock',
-          validFrom: '2026-08-01T00:00:00+05:30'
-        }
-      },
+      ...personNodes,
+      ...projectNodes,
+      ...eventNodes,
       {
         '@type': 'FAQPage',
         'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'Who is Om Prakash Sahoo?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Om Prakash Sahoo is the Secretary of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) at Parala Maharaja Engineering College (PMEC), Berhampur. He spearheads executive operations, club administration, and organizational strategy.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is the Secretary of Idea and Innovation Cell (IIC PMEC)?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Om Prakash Sahoo is the Secretary of Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) at Parala Maharaja Engineering College, Berhampur.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Ayushman Patra?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Ayushman Patra is the Head Coordinator (Boys) at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), coordinating technical development teams, web/app projects, and developer workflows.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Subhechha Tiwari?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Subhechha Tiwari is the Head Coordinator (Girls) at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), facilitating student tech initiatives, workshops, and team coordination.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Prince Priyaranjan Behera?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Prince Priyaranjan Behera is the Content & Social Media Head at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), leading branding and digital media strategy.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Prateek Mohanty?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Prateek Mohanty is the Management Head at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), overseeing event management and operations.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Amlan Satapathy?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Amlan Satapathy is the PR & Outreach Head at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), managing public relations and institutional outreach.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Saurav Pratap Singh?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Saurav Pratap Singh is the Founder of Coding Design and Development (CDD) / Idea and Innovation Cell at PMEC Berhampur, established in 2021.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who is Omkar Padhy?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Omkar Padhy is the President of Coding Design and Development (CDD) / Idea and Innovation Cell PMEC.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Who are the Faculty In-charges of IIC PMEC?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Dr. Sourav Kumar Bhoi and Dr. Kalyan Kumar Jena are the Faculty In-charges of Idea and Innovation Cell PMEC. Both are Assistant Professors in the Department of Computer Science and Engineering at Parala Maharaja Engineering College.'
+            }
+          },
           {
             '@type': 'Question',
             'name': 'What is IICPMEC (Idea and Innovation Cell PMEC)?',
             'acceptedAnswer': {
               '@type': 'Answer',
               'text': 'IICPMEC (also known as Idea and Innovation Cell PMEC / IIC PMEC / Idea Cell PMEC) is the official innovation and student development incubator at Parala Maharaja Engineering College, Berhampur. It oversees student projects, hackathons, and technical advancement.'
-            }
-          },
-          {
-            '@type': 'Question',
-            'name': 'What is IIC PMEC / IICPMEC / CDD PMEC?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'Idea and Innovation Cell (IIC PMEC / IICPMEC) & CDD (Coding Design and Development) is the premier official student technical and innovation society at Parala Maharaja Engineering College (PMEC), Berhampur.'
             }
           },
           {
@@ -329,10 +450,10 @@ export default function RootLayout({ children }) {
           },
           {
             '@type': 'Question',
-            'name': 'What is PMEC CDD (Coding Design and Development)?',
+            'name': 'What software projects has IIC PMEC built?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'CDD is the tech and development wing at PMEC Berhampur dedicated to web development, AI/ML, hackathons, open-source projects, and technical peer learning.'
+              'text': 'IIC PMEC student developers have built and deployed projects including Quizmaster AI (AI quiz engine), College ERP / CampusConnect (academic management portal), LearnOverse (AI study companion), and Skillplot (collaborative peer learning platform).'
             }
           },
           {

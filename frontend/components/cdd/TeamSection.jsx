@@ -88,6 +88,8 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
   return (
     <motion.div
       layout
+      itemScope
+      itemType="https://schema.org/Person"
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
@@ -100,12 +102,15 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
           : `border-gray-200/80 ${palette.glow}`
       }`}
     >
+      <meta itemProp="worksFor" content="Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)" />
+      <meta itemProp="affiliation" content="Parala Maharaja Engineering College (PMEC)" />
       {/* Left Photo Container with Slanted Cut */}
       <div className={`relative w-full ${isCompact ? 'sm:w-[42%]' : 'sm:w-[46%]'} h-56 sm:h-full overflow-hidden bg-gradient-to-br from-brand-950 to-slate-900 flex-shrink-0`}>
         <OptimizedImage
           src={member.image || avatarFallback}
           fallbackSrc={avatarFallback}
           alt={`Photo of ${member.name} - ${member.role}`}
+          itemProp="image"
           containerClassName="w-full h-full bg-slate-900"
           className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
             member.imagePosition ? '' : 'object-top'
@@ -144,7 +149,7 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
         <div className="bg-slate-50/80 border border-slate-100 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between flex-1 shadow-inner">
           <div>
             <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
-              <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${palette.badge}`}>
+              <span itemProp="jobTitle" className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${palette.badge}`}>
                 {member.role}
               </span>
               {member.batch && (
@@ -154,13 +159,13 @@ const SplitDiagonalCard = ({ member, isFounder, isCompact }) => {
               )}
             </div>
 
-            <h3 className={`font-display font-extrabold text-brand-950 tracking-tight group-hover:text-brand-600 transition-colors duration-200 ${
+            <h3 itemProp="name" className={`font-display font-extrabold text-brand-950 tracking-tight group-hover:text-brand-600 transition-colors duration-200 ${
               isCompact ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
             }`}>
               {member.name}
             </h3>
 
-            <p className={`text-gray-600 leading-relaxed font-normal mt-1.5 ${
+            <p itemProp="description" className={`text-gray-600 leading-relaxed font-normal mt-1.5 ${
               isCompact ? 'text-xs line-clamp-2' : 'text-xs sm:text-sm line-clamp-3'
             }`}>
               {member.description || 'Dedicated core team member driving innovation, technical development, and excellence across CDD initiatives.'}

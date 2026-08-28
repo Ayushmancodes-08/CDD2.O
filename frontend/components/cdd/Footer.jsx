@@ -22,19 +22,26 @@ export default function Footer() {
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || !email.includes('@')) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const res = await fetch('/api/newsletter', {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'newsletter-subscribe', email: email.trim() })
+        body: JSON.stringify({ email: email.trim() }),
       });
-      toast.success("Subscribed! You'll receive our updates.");
-      setEmail('');
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Subscribed! A welcome email has been sent to your inbox.");
+        setEmail('');
+      } else {
+        toast.error(data.error || 'Failed to subscribe. Please try again.');
+      }
     } catch (error) {
-      toast.error('Failed to subscribe. Please try again.');
+      toast.error('Connection error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -109,7 +116,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-          <p>© {new Date().getFullYear()} Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC) — Parala Maharaja Engineering College, Berhampur. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Crafted with passion at</span>
             <Heart size={10} className="text-red-400 fill-red-400 cursor-pointer hover:scale-125 transition-transform" onClick={() => setIsAdminOpen(true)} aria-label="Admin Access Portal" />
@@ -121,31 +128,82 @@ export default function Footer() {
       {isAdminOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
           role="dialog" aria-modal="true" aria-labelledby="admin-dialog-title">
-          <div className="bg-brand-950 border border-white/10 p-6 md:p-8 rounded-2xl max-w-md w-full shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-            <button onClick={() => setIsAdminOpen(false)} aria-label="Close Admin Access Modal" className="absolute top-4 right-4 text-gray-400 hover:text-white">
+          <div className="bg-brand-950 border border-white/10 p-6 md:p-8 rounded-2xl max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setIsAdminOpen(false)} aria-label="Close Admin Access Modal" className="absolute top-4 right-4 text-gray-400 hover:text-white p-1">
               ✕
             </button>
-            <h3 id="admin-dialog-title" className="text-xl font-display font-bold text-white mb-1">Admin Access</h3>
-            <p className="text-sm text-gray-400 mb-6">Enter your credentials to access the admin panel.</p>
+            <h3 id="admin-dialog-title" className="text-xl font-display font-bold text-white mb-1">Newsletter & Admin Console</h3>
+            <p className="text-xs text-gray-400 mb-6">Manage subscribers and broadcast newsletters to all subscribers at once.</p>
             
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label htmlFor="admin-email-input" className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Email Address</label>
-                <input id="admin-email-input" type="email" autoComplete="username" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
-                  placeholder="admin@cddclub.com" />
-              </div>
-              <div className="space-y-1.5">
-                <label htmlFor="admin-password-input" className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Password</label>
-                <input id="admin-password-input" type="password" autoComplete="current-password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
-                  placeholder="••••••••" />
-              </div>
-              <button onClick={() => toast.info(`Attempting login with ${adminEmail}`)}
-                className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition-all shadow-md mt-2">
-                Login as Admin
-              </button>
+            {/* Quick Export to Excel */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+              <h4 className="text-sm font-semibold text-white mb-1.5 flex items-center gap-2">
+                📊 Export Subscribers to Excel
+              </h4>
+              <p className="text-xs text-gray-400 mb-3">
+                Download the complete subscriber list with timestamp & status in Excel/CSV format.
+              </p>
+              <a
+                href="/api/newsletter?export=csv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-all shadow-sm"
+              >
+                📥 Download Excel/CSV Spreadsheet
+              </a>
             </div>
+
+            {/* Broadcast to All Subscribers */}
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const subject = form.subject.value;
+              const message = form.message.value;
+              if (!subject || !message) {
+                toast.error('Subject and message are required.');
+                return;
+              }
+              const toastId = toast.loading('Sending broadcast to all subscribers...');
+              try {
+                const res = await fetch('/api/newsletter/broadcast', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ subject, message }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  toast.success(data.message || 'Newsletter sent to all subscribers!', { id: toastId });
+                  form.reset();
+                } else {
+                  toast.error(data.error || 'Failed to send broadcast.', { id: toastId });
+                }
+              } catch {
+                toast.error('Failed to connect to server.', { id: toastId });
+              }
+            }} className="space-y-4">
+              <h4 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
+                📢 Broadcast Email to All Subscribers
+              </h4>
+              
+              <div className="space-y-1">
+                <label htmlFor="broadcast-subject" className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Email Subject</label>
+                <input id="broadcast-subject" name="subject" type="text" required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
+                  placeholder="e.g., CodeKriti 2027 Registration Open!" />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="broadcast-message" className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Newsletter Message (HTML or Plaintext)</label>
+                <textarea id="broadcast-message" name="message" rows={4} required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-400 transition-all placeholder:text-gray-500"
+                  placeholder="Type your announcement, workshop details, or hackathon links here..." />
+              </div>
+
+              <button type="submit"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl transition-all shadow-md text-xs">
+                🚀 Send to All Subscribers at Once
+              </button>
+            </form>
           </div>
         </div>
       )}

@@ -45,6 +45,17 @@
     letter-spacing: -0.01em;
   }
 
+  /* Anti-Theft Image & Media Protection */
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+    pointer-events: auto;
+  }
+
   h1,
   h2,
   h3,

@@ -9,9 +9,11 @@ export function AnimatedGridPattern({
   const id = useId();
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [squares, setSquares] = useState(() => generateSquares(numSquares, { width: 800, height: 600 }));
+  const [squares, setSquares] = useState([]);
+  const [mounted, setMounted] = useState(false);
 
   function getPos(dims) {
+    if (!dims.width || !dims.height) return [0, 0];
     return [
       Math.floor((Math.random() * dims.width) / width),
       Math.floor((Math.random() * dims.height) / height),
@@ -19,6 +21,7 @@ export function AnimatedGridPattern({
   }
 
   function generateSquares(count, dims) {
+    if (!dims.width || !dims.height) return [];
     return Array.from({ length: count }, (_, i) => ({ id: i, pos: getPos(dims) }));
   }
 
@@ -27,10 +30,17 @@ export function AnimatedGridPattern({
   };
 
   useEffect(() => {
-    if (dimensions.width && dimensions.height) {
+    setMounted(true);
+    const initialDims = { width: window.innerWidth || 800, height: 600 };
+    setDimensions(initialDims);
+    setSquares(generateSquares(numSquares, initialDims));
+  }, [numSquares]);
+
+  useEffect(() => {
+    if (mounted && dimensions.width && dimensions.height) {
       setSquares(generateSquares(numSquares, dimensions));
     }
-  }, [dimensions, numSquares]);
+  }, [dimensions, numSquares, mounted]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {

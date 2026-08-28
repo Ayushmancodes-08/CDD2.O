@@ -1,5 +1,6 @@
 import './globals.css'
 import { Toaster } from 'sonner'
+import SecurityProtection from '@/components/cdd/SecurityProtection'
 
 export const metadata = {
   metadataBase: new URL('https://iicpmec.vercel.app'),
@@ -337,7 +338,7 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         {/* Preconnect for external media origins */}
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
@@ -365,7 +366,8 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
         />
       </head>
-      <body className="antialiased bg-white text-slate-900 selection:bg-brand-600 selection:text-white">
+      <body className="antialiased bg-white text-slate-900 selection:bg-brand-600 selection:text-white" suppressHydrationWarning>
+        <SecurityProtection />
         {children}
         <Toaster position="top-center" richColors />
       </body>

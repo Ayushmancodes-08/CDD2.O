@@ -6,6 +6,7 @@ import { ArrowRight, ArrowLeft, ChevronLeft, ChevronRight, X, ImageIcon } from '
 import { useGallery } from './useGallery';
 import { GallerySkeleton, FullPageGallerySkeleton } from './Skeletons';
 import OptimizedImage from './OptimizedImage';
+import { preloadImage } from '@/lib/preload-images';
 
 export function FullPageGallery({ onBack }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -15,6 +16,15 @@ export function FullPageGallery({ onBack }) {
   useEffect(() => { setMounted(true); }, []);
 
   const allImages = images.map(img => img.url);
+
+  // Proactively preload adjacent images in lightbox for instant switching
+  useEffect(() => {
+    if (selectedIndex === null || allImages.length === 0) return;
+    const nextIdx = (selectedIndex + 1) % allImages.length;
+    const prevIdx = (selectedIndex - 1 + allImages.length) % allImages.length;
+    if (allImages[nextIdx]) preloadImage(allImages[nextIdx]);
+    if (allImages[prevIdx]) preloadImage(allImages[prevIdx]);
+  }, [selectedIndex, allImages]);
 
   const handleNext = useCallback((e) => {
     if (allImages.length === 0) return;
@@ -149,6 +159,15 @@ export function GallerySection({ onViewArchive }) {
   }, [images]);
 
   const displayImages = shuffledImages.length > 0 ? shuffledImages : images.slice(0, 8).map(img => img.url);
+
+  // Proactively preload adjacent images for instant lightbox transitions
+  useEffect(() => {
+    if (selectedIndex === null || displayImages.length === 0) return;
+    const nextIdx = (selectedIndex + 1) % displayImages.length;
+    const prevIdx = (selectedIndex - 1 + displayImages.length) % displayImages.length;
+    if (displayImages[nextIdx]) preloadImage(displayImages[nextIdx]);
+    if (displayImages[prevIdx]) preloadImage(displayImages[prevIdx]);
+  }, [selectedIndex, displayImages]);
 
   const handleNext = useCallback((e) => {
     if (displayImages.length === 0) return;

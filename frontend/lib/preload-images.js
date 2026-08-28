@@ -2,10 +2,10 @@
 
 import { FACULTY, PROJECTS, TEAM_MEMBERS } from './cdd-constants';
 
-// Set of preloaded image URLs to track load status
+// In-memory set of pre-decoded / preloaded image URLs for instant zero-latency render
 export const preloadedImageSet = new Set();
 
-// Extract all critical and core static image URLs
+// 1. Critical above-the-fold & branding images
 export const CRITICAL_IMAGES = [
   '/Logo_dark.png',
   '/logo_white.png',
@@ -13,16 +13,26 @@ export const CRITICAL_IMAGES = [
   '/Dr.-Kalyan-Kumar-Jena.jpeg',
 ];
 
+// 2. High priority section images (Projects & Executive Board)
+export const PRIORITY_SECTION_IMAGES = [
+  ...PROJECTS.map((p) => p.image).filter(Boolean),
+  ...TEAM_MEMBERS.filter((m) => m.category === 'Board').map((m) => m.image).filter(Boolean),
+];
+
+// 3. Secondary section images (Core, Founder, Alumni)
+export const SECONDARY_SECTION_IMAGES = [
+  ...TEAM_MEMBERS.filter((m) => m.category !== 'Board').map((m) => m.image).filter(Boolean),
+];
+
 export const ALL_STATIC_IMAGES = [
   ...CRITICAL_IMAGES,
-  ...PROJECTS.map((p) => p.image).filter(Boolean),
-  ...FACULTY.map((f) => f.image).filter(Boolean),
-  ...TEAM_MEMBERS.map((m) => m.image).filter(Boolean),
+  ...PRIORITY_SECTION_IMAGES,
+  ...SECONDARY_SECTION_IMAGES,
 ];
 
 /**
- * Preload and decode a single image URL into memory/browser cache.
- * Returns a Promise that resolves when the image is decoded or loaded.
+ * Preload and decode an image URL into browser GPU/memory cache.
+ * Returns a Promise that resolves when the image is fully decoded.
  */
 export function preloadImage(url) {
   if (!url || typeof window === 'undefined') return Promise.resolve(null);
@@ -31,8 +41,8 @@ export function preloadImage(url) {
   return new Promise((resolve) => {
     const img = new Image();
     img.src = url;
-    
-    // Use img.decode() for faster GPU/memory readiness if supported
+
+    // Use modern img.decode() for instant GPU-ready paint without main thread freeze
     if ('decode' in img) {
       img.decode()
         .then(() => {
@@ -40,7 +50,7 @@ export function preloadImage(url) {
           resolve(url);
         })
         .catch(() => {
-          // Fallback to onload if decode fails (e.g. format issues)
+          // Fallback to standard load
           img.onload = () => {
             preloadedImageSet.add(url);
             resolve(url);
@@ -58,26 +68,30 @@ export function preloadImage(url) {
 }
 
 /**
- * Force preload batches of images with concurrency management.
+ * Preload batches of images with concurrency management and idle time scheduling.
  */
 export async function preloadAllImages(additionalUrls = []) {
   if (typeof window === 'undefined') return;
 
-  const urlsToPreload = Array.from(
-    new Set([...ALL_STATIC_IMAGES, ...additionalUrls].filter(Boolean))
-  );
+  // Immediate Tier 1: Critical & Top Section Images
+  const tier1 = Array.from(new Set([...CRITICAL_IMAGES, ...PRIORITY_SECTION_IMAGES].filter(Boolean)));
+  await Promise.allSettled(tier1.map((url) => preloadImage(url)));
 
-  // Split into immediate critical batch and background batch
-  const critical = urlsToPreload.slice(0, 10);
-  const remaining = urlsToPreload.slice(10);
+  // Tier 2: Secondary Section Images & Additional URLs in background
+  const tier2 = Array.from(new Set([...SECONDARY_SECTION_IMAGES, ...additionalUrls].filter(Boolean)));
+  
+  const processTier2 = async () => {
+    const chunkSize = 4;
+    for (let i = 0; i < tier2.length; i += chunkSize) {
+      const chunk = tier2.slice(i, i + chunkSize);
+      await Promise.allSettled(chunk.map((url) => preloadImage(url)));
+    }
+  };
 
-  // Load critical immediately in parallel
-  await Promise.allSettled(critical.map((url) => preloadImage(url)));
-
-  // Load remaining in chunks to avoid overwhelming low-end devices
-  const chunkSize = 6;
-  for (let i = 0; i < remaining.length; i += chunkSize) {
-    const chunk = remaining.slice(i, i + chunkSize);
-    await Promise.allSettled(chunk.map((url) => preloadImage(url)));
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => { processTier2(); }, { timeout: 2000 });
+  } else {
+    setTimeout(processTier2, 100);
   }
 }
+

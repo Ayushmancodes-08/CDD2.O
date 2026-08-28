@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect, Suspense, lazy, useCallback, useRef } from 'react';
-import { motion, useScroll, useTransform, animate, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, animate, useInView, AnimatePresence } from 'framer-motion';
 import {
-  Mail, MapPin, ChevronRight, Loader2, Target, Compass, ArrowRight, MousePointer2,
+  Mail, MapPin, ChevronRight, Loader2, Target, Compass, ArrowRight, MousePointer2, Send, CheckCircle2, Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Navbar from '@/components/cdd/Navbar';
@@ -89,6 +89,7 @@ function App() {
   const { images: galleryImages, getImageByName } = useGallery();
   const [contactForm, setContactForm] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Eagerly preload and decode static site assets into cache on startup
   useEffect(() => {
@@ -114,17 +115,28 @@ function App() {
 
   const handleContactSubmit = useCallback(async (e) => {
     e.preventDefault();
+    if (!contactForm.email || !contactForm.message) {
+      toast.error('Please enter your email and message.');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
+      const res = await fetch('/api/contact', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'contact', ...contactForm, timestamp: new Date().toISOString() })
+        body: JSON.stringify(contactForm),
       });
-      toast.success("Message sent successfully! We'll be in touch.");
-      setContactForm({ firstName: '', lastName: '', email: '', message: '' });
+      const data = await res.json();
+      if (data.success) {
+        setIsSuccess(true);
+        toast.success("Message sent! A confirmation email has been delivered to your inbox.");
+        setContactForm({ firstName: '', lastName: '', email: '', message: '' });
+        setTimeout(() => setIsSuccess(false), 4500);
+      } else {
+        toast.error(data.error || 'Failed to send message. Please try again.');
+      }
     } catch (error) {
-      toast.error('Failed to send message. Please try again.');
+      toast.error('Connection error. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -433,9 +445,85 @@ function App() {
                   <textarea id="contact-message" rows={4} name="message" value={contactForm.message} onChange={handleContactChange} required
                     className="w-full bg-white rounded-xl px-4 py-3 text-sm text-brand-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 shadow-ambient transition-all resize-none" placeholder="How can we help?" />
                 </div>
-                <button type="submit" disabled={isSubmitting} className="w-full btn-primary group justify-center" aria-label="Send Contact Message">
-                  {isSubmitting ? (<><Loader2 className="animate-spin" size={16} />Sending...</>) : (<>Send Message <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>)}
-                </button>
+                {/* Dynamic Feedback Banner */}
+                <AnimatePresence>
+                  {isSuccess && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      className="p-3 bg-emerald-50 border border-emerald-200/80 rounded-xl flex items-center gap-3 text-emerald-800 text-xs font-medium shadow-sm"
+                    >
+                      <div className="p-1 bg-emerald-500 text-white rounded-full shrink-0">
+                        <CheckCircle2 size={14} />
+                      </div>
+                      <span>Thank you! A confirmation receipt has been sent to your email.</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Animated Action Button */}
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting || isSuccess}
+                  whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                  className={`w-full relative overflow-hidden font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 text-sm ${
+                    isSuccess
+                      ? 'bg-emerald-600 text-white shadow-emerald-500/20'
+                      : isSubmitting
+                      ? 'bg-brand-800 text-white cursor-wait'
+                      : 'bg-brand-900 hover:bg-brand-800 text-white shadow-brand-900/10 hover:shadow-lg'
+                  }`}
+                  aria-label="Send Contact Message"
+                >
+                  <AnimatePresence mode="wait">
+                    {isSuccess ? (
+                      <motion.span
+                        key="success"
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="inline-flex items-center gap-2 text-white font-medium"
+                      >
+                        <CheckCircle2 size={16} className="text-emerald-200 animate-bounce" />
+                        Message Delivered Successfully!
+                      </motion.span>
+                    ) : isSubmitting ? (
+                      <motion.span
+                        key="submitting"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="inline-flex items-center gap-2.5"
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                        />
+                        <span>Dispatching your message...</span>
+                        <motion.div
+                          animate={{ x: [0, 6, 0] }}
+                          transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <Send size={14} className="text-brand-300" />
+                        </motion.div>
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="idle"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="inline-flex items-center gap-2 group"
+                      >
+                        <span>Send Message</span>
+                        <Send size={15} className="group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-200" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </form>
             </div>
           </div>

@@ -189,31 +189,38 @@ export default function RootLayout({ children }) {
       },
       image: f.image ? (f.image.startsWith('http') ? f.image : `https://iicpmec.vercel.app${f.image}`) : undefined,
     })),
-    ...TEAM_MEMBERS.map((m) => ({
-      '@type': 'Person',
-      '@id': `https://iicpmec.vercel.app/#person-${m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-      name: m.name,
-      jobTitle: `${m.role} - Idea and Innovation Cell PMEC`,
-      description: m.description
-        ? `${m.name} is the ${m.role} at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), Parala Maharaja Engineering College. ${m.description}`
-        : `${m.name} is the ${m.role} of Idea and Innovation Cell (IIC PMEC / CDD×SIC) at Parala Maharaja Engineering College, Berhampur.`,
-      worksFor: {
-        '@id': 'https://iicpmec.vercel.app/#organization',
-      },
-      affiliation: {
-        '@type': 'EducationalOrganization',
-        name: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
-        url: 'https://iicpmec.vercel.app',
-      },
-      alumniOf: {
-        '@type': 'CollegeOrUniversity',
-        name: 'Parala Maharaja Engineering College (PMEC)',
-        url: 'https://pmec.ac.in',
-      },
-      email: m.email ? m.email : undefined,
-      sameAs: [m.linkedin, m.instagram, m.github].filter(Boolean),
-      image: m.image ? (m.image.startsWith('http') ? m.image : `https://iicpmec.vercel.app${m.image}`) : undefined,
-    })),
+    ...Array.from(
+      new Map(
+        TEAM_MEMBERS.map((m) => [
+          m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          {
+            '@type': 'Person',
+            '@id': `https://iicpmec.vercel.app/#person-${m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+            name: m.name,
+            jobTitle: `${m.role} - Idea and Innovation Cell PMEC`,
+            description: m.description
+              ? `${m.name} is the ${m.role} at Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC), Parala Maharaja Engineering College. ${m.description}`
+              : `${m.name} is the ${m.role} of Idea and Innovation Cell (IIC PMEC / CDD×SIC) at Parala Maharaja Engineering College, Berhampur.`,
+            worksFor: {
+              '@id': 'https://iicpmec.vercel.app/#organization',
+            },
+            affiliation: {
+              '@type': 'EducationalOrganization',
+              name: 'Idea and Innovation Cell PMEC (IIC PMEC / CDD×SIC)',
+              url: 'https://iicpmec.vercel.app',
+            },
+            alumniOf: {
+              '@type': 'CollegeOrUniversity',
+              name: 'Parala Maharaja Engineering College (PMEC)',
+              url: 'https://pmec.ac.in',
+            },
+            email: m.email ? m.email : undefined,
+            sameAs: [m.linkedin, m.instagram, m.github].filter(Boolean),
+            image: m.image ? (m.image.startsWith('http') ? m.image : `https://iicpmec.vercel.app${m.image}`) : undefined,
+          }
+        ])
+      ).values()
+    ),
   ];
 
   // Generate SoftwareApplication nodes for all Projects

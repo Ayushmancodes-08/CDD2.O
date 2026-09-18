@@ -153,12 +153,37 @@ export const TEAM_MEMBERS = [
     email: "surajkumarsatapathy2006@gmail.com",
     instagram: "https://www.instagram.com/ig_surxx/"
   },
+  // Social Media & Creative Team
+  {
+    name: "Akankhya Panda",
+    role: "Social Media Coordinator",
+    description: "Driving creative digital campaigns, visual storytelling, and active community outreach.",
+    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1789761017/file_00000000b50081fab2e090b8dc0f0437_svc76r.png",
+    category: "SocialMedia",
+    email: "akankhyapanda500@gmail.com"
+  },
+  {
+    name: "Rout Bhavanti",
+    role: "Social Media Coordinator",
+    description: "Managing social media presence, event coverage, and creative content curation.",
+    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1789761413/WhatsApp_Image_2026-09-19_at_01.26.26_ke7seb.jpg",
+    category: "SocialMedia",
+    email: "routbhavanti06@gmail.com"
+  },
+  {
+    name: "Saswatee Priyadarshini Mishra",
+    role: "Social Media Coordinator",
+    description: "Creating engaging digital media, creative banners, and expanding student engagement.",
+    image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1789761331/Me_20260918_200722_954.jpg_ssoufq.jpg",
+    category: "SocialMedia",
+    email: "saswateevirtual24@gmail.com"
+  },
   {
     name: "Prarthana Parija",
-    role: "Coordinator",
-    description: "Assisting in event operations, team coordination, and student activities.",
+    role: "Social Media Coordinator",
+    description: "Assisting in social media strategy, creative media design, and event outreach.",
     image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899126/WhatsApp_Image_2026-08-13_at_19.53.00_y5ree6.jpg",
-    category: "Board"
+    category: "SocialMedia"
   },
 
   // Core Team

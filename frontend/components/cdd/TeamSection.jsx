@@ -317,6 +317,7 @@ const MemberCarousel = ({ members, itemsPerPageDesktop = 1, isFounder = false })
 
 export default function TeamSection() {
   const boardMembers = TEAM_MEMBERS.filter((m) => m.category === 'Board');
+  const socialMediaMembers = TEAM_MEMBERS.filter((m) => m.category === 'SocialMedia' || m.category === 'Media');
   const coreMembers = TEAM_MEMBERS.filter((m) => m.category === 'Core' || m.category === 'Team');
   const founderMember = TEAM_MEMBERS.filter((m) => m.category === 'Founder');
   const alumniMembers = TEAM_MEMBERS.filter((m) => m.category === 'Alumni');
@@ -348,6 +349,21 @@ export default function TeamSection() {
           </div>
         )}
       </section>
+
+      {/* Social Media & Creative Wing Section (Optional / Rendered if members exist) */}
+      {socialMediaMembers.length > 0 && (
+        <section className="space-y-6 p-6 sm:p-10 rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-gray-50/50 shadow-sm">
+          <div className="flex flex-col items-center text-center max-w-xl mx-auto">
+            <span className="px-3.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold uppercase tracking-wider mb-2">
+              Creative & Digital Outreach
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-950">Social Media & Content Team</h2>
+            <p className="text-gray-600 text-xs sm:text-sm mt-1">Crafting visual stories, digital branding, media coverage, and community engagement.</p>
+          </div>
+
+          <MemberCarousel members={socialMediaMembers} itemsPerPageDesktop={socialMediaMembers.length > 1 ? 2 : 1} />
+        </section>
+      )}
 
       {/* Core Committee Section (1 Card at a time) */}
       <section className="space-y-6 p-6 sm:p-10 rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-gray-50/50 shadow-sm">

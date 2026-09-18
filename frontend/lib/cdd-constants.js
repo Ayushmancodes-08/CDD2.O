@@ -158,7 +158,8 @@ export const TEAM_MEMBERS = [
     role: "Coordinator",
     description: "Assisting in event operations, team coordination, and student activities.",
     image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899126/WhatsApp_Image_2026-08-13_at_19.53.00_y5ree6.jpg",
-    category: "Board"
+    category: "Board",
+    email: "parijaprarthana@gmail.com"
   },
 
   // Social Media & Creative Team
@@ -167,7 +168,8 @@ export const TEAM_MEMBERS = [
     role: "Social Media Coordinator",
     description: "Assisting in social media strategy, creative media design, and event outreach.",
     image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899126/WhatsApp_Image_2026-08-13_at_19.53.00_y5ree6.jpg",
-    category: "SocialMedia"
+    category: "SocialMedia",
+    email: "parijaprarthana@gmail.com"
   },
   {
     name: "Akankhya Panda",

@@ -120,7 +120,7 @@ const LINK_SECTIONS = [
     links: [
       {
         id: 'register',
-        title: 'Recruitment 2026-27 (Apply Now)',
+        title: 'Registration 2026 (Apply Now)',
         subtitle: 'Official club membership registration & pass generation',
         url: '/register',
         icon: Flame,

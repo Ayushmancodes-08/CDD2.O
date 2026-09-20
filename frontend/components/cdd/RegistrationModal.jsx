@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import RegistrationForm from './RegistrationForm';
 
-export default function RegistrationModal({ isOpen, onClose }) {
+export default function RegistrationModal({ isOpen, onClose, onSuccess }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -55,7 +55,7 @@ export default function RegistrationModal({ isOpen, onClose }) {
               <X size={18} strokeWidth={2.5} />
             </button>
 
-            <RegistrationForm isModal={true} />
+            <RegistrationForm isModal={true} onSuccess={onSuccess} />
           </motion.div>
         </div>
       )}

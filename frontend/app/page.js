@@ -65,23 +65,37 @@ const SectionWrapper = ({ id, className = '', children, title, subtitle, altBg =
   </section>
 );
 
-const AnimatedCounter = ({ from, to, label }) => {
+const AnimatedCounter = ({ from = 0, to, label, isHighlighted = false }) => {
   const containerRef = useRef(null);
   const textRef = useRef(null);
+  const currentValRef = useRef(from);
   const isInView = useInView(containerRef, { once: true, margin: '0px' });
+
   useEffect(() => {
     if (isInView && textRef.current) {
-      const controls = animate(from, to, {
-        duration: 1.2, ease: 'easeOut',
-        onUpdate(value) { if (textRef.current) textRef.current.textContent = Math.floor(value).toString(); }
+      const startVal = currentValRef.current;
+      const controls = animate(startVal, to, {
+        duration: startVal === from ? 1.2 : 0.8,
+        ease: 'easeOut',
+        onUpdate(value) {
+          const rounded = Math.floor(value);
+          currentValRef.current = rounded;
+          if (textRef.current) textRef.current.textContent = rounded.toString();
+        },
       });
       return () => controls.stop();
     }
   }, [from, to, isInView]);
+
   return (
-    <div ref={containerRef} className="flex flex-col">
-      <h4 className="text-4xl md:text-5xl font-display font-bold text-brand-900 mb-1 flex items-baseline">
+    <div ref={containerRef} className="flex flex-col relative">
+      <h4 className="text-4xl md:text-5xl font-display font-bold text-brand-900 mb-1 flex items-baseline transition-colors">
         <span ref={textRef}>{from}</span><span className="text-brand-400">+</span>
+        {isHighlighted && (
+          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 animate-bounce shadow-sm">
+            +1 New!
+          </span>
+        )}
       </h4>
       <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em]">{label}</p>
     </div>
@@ -95,6 +109,56 @@ function App() {
   const [contactForm, setContactForm] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Dynamic Active Members Count (Base 200 + real completed registrations)
+  const BASE_MEMBERS = 200;
+  const [activeMembersCount, setActiveMembersCount] = useState(BASE_MEMBERS);
+  const [isMemberCountUpdated, setIsMemberCountUpdated] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchMemberCount() {
+      try {
+        const res = await fetch('/api/register?summary=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && typeof data.count === 'number' && isMounted) {
+            setActiveMembersCount(BASE_MEMBERS + data.count);
+          }
+        }
+      } catch (err) {
+        // Fallback to base count gracefully
+      }
+    }
+    fetchMemberCount();
+
+    const handleRegistrationCompleted = () => {
+      setActiveMembersCount((prev) => prev + 1);
+      setIsMemberCountUpdated(true);
+      setTimeout(() => setIsMemberCountUpdated(false), 4500);
+    };
+
+    const handleStorageEvent = (e) => {
+      if (e.key === 'cdd_last_reg_timestamp') {
+        fetchMemberCount();
+      }
+    };
+
+    window.addEventListener('cdd:registration-completed', handleRegistrationCompleted);
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('cdd:registration-completed', handleRegistrationCompleted);
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
+  const handleRegistrationSuccess = () => {
+    setActiveMembersCount((prev) => prev + 1);
+    setIsMemberCountUpdated(true);
+    setTimeout(() => setIsMemberCountUpdated(false), 4500);
+  };
 
   // Eagerly preload and decode static site assets into cache on startup
   useEffect(() => {
@@ -178,7 +242,7 @@ function App() {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="inline-flex flex-wrap items-center gap-2.5 px-4 py-2 bg-brand-50/90 border border-brand-200/80 rounded-full mb-8 shadow-sm">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span className="text-brand-900 text-xs font-bold tracking-wide">Recruitment 2026-27 is LIVE!</span>
+                <span className="text-brand-900 text-xs font-bold tracking-wide">Registration 2026 is LIVE!</span>
                 <span className="text-gray-300 hidden sm:inline">|</span>
                 <button
                   onClick={() => setIsRegisterOpen(true)}
@@ -215,7 +279,7 @@ function App() {
                     className="btn-primary group w-full sm:w-auto justify-center text-center shadow-lg shadow-brand-500/20 bg-brand-900 hover:bg-brand-800 text-white flex items-center gap-2"
                   >
                     <Sparkles size={16} className="text-brand-300 animate-pulse" />
-                    Register for 2026-27
+                    Registration 2026
                     <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                 </MagneticButton>
@@ -233,9 +297,9 @@ function App() {
                 <div className="relative w-full overflow-hidden">
                   <div className="flex gap-10 animate-marquee whitespace-nowrap will-change-transform">
                     {[
-                      'IICPMEC Community', '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
+                      'IICPMEC Community', `${activeMembersCount}+ Active Members`, '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                       'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
-                      'IICPMEC Community', '200+ Active Members', '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
+                      'IICPMEC Community', `${activeMembersCount}+ Active Members`, '11+ Projects Shipped', 'CodeKriti', 'LearnOverse',
                       'Campus Connect', 'Quizmaster AI', 'Skillplot', 'Open Source', '24/7 Community',
                     ].map((item, i) => (
                       <span key={i} className="inline-flex items-center gap-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
@@ -279,7 +343,12 @@ function App() {
                 </div>
               </div>
               <div className="flex gap-12 mt-8 pt-8 border-t border-gray-200">
-                <AnimatedCounter from={0} to={200} label="Active Members" />
+                <AnimatedCounter
+                  from={0}
+                  to={activeMembersCount}
+                  label="Active Members"
+                  isHighlighted={isMemberCountUpdated}
+                />
                 <AnimatedCounter from={0} to={11} label="Projects" />
               </div>
             </motion.div>
@@ -551,7 +620,11 @@ function App() {
         </section>
       </main>
 
-      <RegistrationModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
+      <RegistrationModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        onSuccess={handleRegistrationSuccess}
+      />
       <Footer />
     </div>
   );

@@ -68,7 +68,7 @@ async function sendRegistrationEmail(record, whatsappUrl) {
           
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding: 32px 24px; text-align: center;">
-            <span style="display: inline-block; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #ffffff; margin-bottom: 8px;">Recruitment 2026-27</span>
+            <span style="display: inline-block; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #ffffff; margin-bottom: 8px;">Registration 2026</span>
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">Idea & Innovation Cell (IIC PMEC)</h1>
             <p style="color: #e0f2fe; margin: 6px 0 0 0; font-size: 14px;">Coding, Design & Development × Student Innovation Center</p>
           </div>
@@ -353,7 +353,15 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const isExport = searchParams.get('export') === 'csv' || searchParams.get('export') === 'excel';
+    const isSummary = searchParams.get('summary') === 'true';
     const records = await getAllRegistrations();
+
+    if (isSummary) {
+      return Response.json({
+        success: true,
+        count: records.length,
+      });
+    }
 
     if (isExport) {
       const csvData = generateRegistrationsCSV(records);

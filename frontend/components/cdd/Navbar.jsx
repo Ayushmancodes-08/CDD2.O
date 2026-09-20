@@ -125,7 +125,7 @@ export default function Navbar({ onOpenRegister }) {
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2"
                 >
                   <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  Apply / Register for 2026-27
+                  Registration 2026 (Apply Now)
                 </button>
                 <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}
                   className="block w-full text-center py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">

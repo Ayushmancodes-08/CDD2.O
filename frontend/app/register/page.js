@@ -53,7 +53,7 @@ export default function RegisterPage() {
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold mb-3 shadow-sm"
           >
             <Sparkles size={13} className="text-brand-500" />
-            Recruitment Drive 2026-27 is Live
+            Registration 2026 is Live
           </motion.div>
 
           <motion.h1

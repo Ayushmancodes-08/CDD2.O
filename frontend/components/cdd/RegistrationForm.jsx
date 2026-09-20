@@ -336,6 +336,14 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
         setRegisteredData(data.registration);
         setStep(3);
         toast.success('Registration completed successfully! Welcome to IIC PMEC.');
+        if (typeof window !== 'undefined') {
+          try {
+            window.dispatchEvent(new CustomEvent('cdd:registration-completed', { detail: data.registration }));
+            localStorage.setItem('cdd_last_reg_timestamp', Date.now().toString());
+          } catch (e) {
+            // Ignore if localStorage unavailable
+          }
+        }
         if (onSuccess) onSuccess(data.registration);
       } else {
         toast.error(data.error || 'Failed to submit registration. Please check your details.');
@@ -416,7 +424,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-50 text-brand-700 border border-brand-200/60">
                     <Sparkles size={11} className="text-brand-500" />
-                    Recruitment 2026-27
+                    Registration 2026
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-brand-900 tracking-tight">

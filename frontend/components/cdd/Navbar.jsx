@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Navbar() {
+export default function Navbar({ onOpenRegister }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -79,9 +79,16 @@ export default function Navbar() {
                 </a>
               );
             })}
-            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="ml-4 btn-primary">
-              Contact Us
+            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="text-sm font-medium text-gray-600 hover:text-brand-900 transition-colors">
+              Contact
             </a>
+            <button
+              onClick={onOpenRegister ? onOpenRegister : () => { window.location.href = '/register'; }}
+              className="ml-2 px-4 py-2 rounded-xl bg-brand-900 hover:bg-brand-800 text-white font-semibold text-xs uppercase tracking-wider shadow-sm hover:shadow-brand-500/20 transition-all flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Register
+            </button>
           </div>
 
           <button className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors z-50 focus:outline-none"
@@ -108,9 +115,20 @@ export default function Navbar() {
                   </a>
                 );
               })}
-              <div className="pt-2 mt-1">
+              <div className="pt-2 mt-1 space-y-2">
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    if (onOpenRegister) onOpenRegister();
+                    else window.location.href = '/register';
+                  }}
+                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  Apply / Register for 2026-27
+                </button>
                 <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}
-                  className="block w-full text-center py-3 bg-brand-900 text-white rounded-lg font-semibold text-sm hover:bg-brand-800 transition-colors">
+                  className="block w-full text-center py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">
                   Contact Us
                 </a>
               </div>

@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+export const maxDuration = 30; // Max allowed serverless timeout on Vercel Hobby tier
+
 export async function POST(req) {
   try {
     const body = await req.json();

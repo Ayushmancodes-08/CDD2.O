@@ -197,8 +197,10 @@ const MemberCarousel = ({ members, itemsPerPageDesktop = 1, isFounder = false })
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
+      if (window.innerWidth < 640) {
         setItemsPerPage(1);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(Math.min(2, itemsPerPageDesktop));
       } else {
         setItemsPerPage(itemsPerPageDesktop);
       }

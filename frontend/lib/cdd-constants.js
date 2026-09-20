@@ -9,6 +9,25 @@ export const BRANCHES = [
   { short: "EE", full: "Electrical Engineering" }
 ];
 
+export const REGISTRATION_BRANCHES = [
+  "Automobile Engineering",
+  "Chemical Engineering",
+  "Civil Engineering",
+  "Computer Science and Engineering",
+  "Electrical Engineering",
+  "Electronics and Telecommunication Engineering",
+  "Mechanical Engineering",
+  "Metallurgy and Materials Engineering"
+];
+
+export const REGISTRATION_YEARS = [
+  { id: "1st year", label: "1st Year", amount: 300, duration: "4 Years", perYear: "₹75 / yr" },
+  { id: "2nd year", label: "2nd Year", amount: 225, duration: "3 Years", perYear: "₹75 / yr" },
+  { id: "3rd year", label: "3rd Year", amount: 150, duration: "2 Years", perYear: "₹75 / yr" }
+];
+
+export const COLLEGE_NAME = "Parala Maharaja Engineering College";
+
 export const PROGRAMS = [
   { title: "Web Development", description: "Master modern frameworks like React, Next.js, and build stunning responsive websites.", icon: Monitor },
   { title: "App Development", description: "Create cross-platform mobile applications using Flutter and React Native.", icon: Smartphone },
@@ -81,7 +100,7 @@ export const PROJECTS = [
   },
 ];
 
-export const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBVL19cmqrGU48fl1p3-ztLsqfysAKm2fPFO1Pokv079fzzTr5YF72tdPjdNe3d_ZL/exec';
+export const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPEI_MuI1s-PW13nLfHh6ea160AUd0nZ5Yc-f6ZCNNk3dX2FRHETL3bFNa22RaxH-Yag/exec';
 
 export const TEAM_MEMBERS = [
   // Current Board

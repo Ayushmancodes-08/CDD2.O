@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { MongoClient } from 'mongodb';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'cdd_data')
+  : path.join(process.cwd(), 'data');
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
 
 // Ensure data directory and file exist

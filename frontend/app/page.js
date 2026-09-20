@@ -22,6 +22,10 @@ import {
   FullPageGallerySkeleton,
 } from '@/components/cdd/Skeletons';
 
+const RegistrationModal = dynamic(() => import('@/components/cdd/RegistrationModal'), {
+  ssr: false,
+});
+
 const ProjectsSection = dynamic(() => import('@/components/cdd/ProjectsSection'), {
   loading: () => <ProjectsSkeleton />,
   ssr: true,
@@ -86,6 +90,7 @@ const AnimatedCounter = ({ from, to, label }) => {
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const { images: galleryImages, getImageByName } = useGallery();
   const [contactForm, setContactForm] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,7 +160,7 @@ function App() {
         Skip to main content
       </a>
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand-500 z-[100] origin-left" style={{ scaleX: scrollYProgress }} />
-      <Navbar />
+      <Navbar onOpenRegister={() => setIsRegisterOpen(true)} />
 
       <main id="main-content">
         {/* HERO */}
@@ -171,12 +176,19 @@ function App() {
             <motion.div style={{ y: heroTextY, opacity: heroOpacity }} className="max-w-4xl">
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-100 rounded-full mb-8 glow-ring">
-                <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
-                <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus · IICPMEC</span>
+                className="inline-flex flex-wrap items-center gap-2.5 px-4 py-2 bg-brand-50/90 border border-brand-200/80 rounded-full mb-8 shadow-sm">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="text-brand-900 text-xs font-bold tracking-wide">Recruitment 2026-27 is LIVE!</span>
+                <span className="text-gray-300 hidden sm:inline">|</span>
+                <button
+                  onClick={() => setIsRegisterOpen(true)}
+                  className="text-xs font-semibold text-brand-600 hover:text-brand-900 underline flex items-center gap-1 cursor-pointer"
+                >
+                  Apply Online &rarr;
+                </button>
               </motion.div>
 
-              <h1 className="text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 tracking-tight">
+              <h1 className="text-3xl leading-[1.15] sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 tracking-tight">
                 <TextReveal text="Where" className="text-brand-900" delay={0.1} />{' '}
                 <TextReveal text="Code" className="text-brand-900" delay={0.2} />{' '}
                 <TextReveal text="Meets" className="text-brand-900" delay={0.3} />
@@ -198,12 +210,17 @@ function App() {
                 transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
                 className="flex flex-col sm:flex-row gap-4">
                 <MagneticButton strength={0.2}>
-                  <a href="#about-us" className="btn-primary group w-full sm:w-auto justify-center text-center">
-                    Discover Our Mission <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </a>
+                  <button
+                    onClick={() => setIsRegisterOpen(true)}
+                    className="btn-primary group w-full sm:w-auto justify-center text-center shadow-lg shadow-brand-500/20 bg-brand-900 hover:bg-brand-800 text-white flex items-center gap-2"
+                  >
+                    <Sparkles size={16} className="text-brand-300 animate-pulse" />
+                    Register for 2026-27
+                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </MagneticButton>
                 <MagneticButton strength={0.15}>
-                  <a href="#contact" className="btn-secondary w-full sm:w-auto justify-center text-center">Get in Touch</a>
+                  <a href="#about-us" className="btn-secondary w-full sm:w-auto justify-center text-center">Discover Our Mission</a>
                 </MagneticButton>
               </motion.div>
 
@@ -534,6 +551,7 @@ function App() {
         </section>
       </main>
 
+      <RegistrationModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
       <Footer />
     </div>
   );

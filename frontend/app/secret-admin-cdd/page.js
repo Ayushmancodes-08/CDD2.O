@@ -10,6 +10,7 @@ import {
   Users, MessageSquare, CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { DEFAULT_WHATSAPP_GROUP } from '@/lib/upi';
 
 // Hardcoded fallback credentials (displayed for authorized admin convenience)
 const DEFAULT_USER = 'admin';
@@ -31,12 +32,10 @@ export default function AdminPortalPage() {
   // Filter & Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedYear, setSelectedYear] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedBranch, setSelectedBranch] = useState('all');
 
   // Detail Modal state
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // Check saved session on mount
   useEffect(() => {
@@ -144,43 +143,6 @@ export default function AdminPortalPage() {
     toast.success(`Downloading ${year === 'all' ? 'All Participants' : year} Excel sheet...`);
   };
 
-  // Update verification status
-  const handleUpdateStatus = async (regId, newStatus) => {
-    setIsUpdatingStatus(true);
-    try {
-      const res = await fetch('/api/admin/registrations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          action: 'update_status',
-          regId,
-          status: newStatus,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`Status updated to ${newStatus}`);
-        // Update local state
-        setRegistrations((prev) =>
-          prev.map((r) => (r.regId === regId ? { ...r, status: newStatus } : r))
-        );
-        if (selectedCandidate && selectedCandidate.regId === regId) {
-          setSelectedCandidate((prev) => ({ ...prev, status: newStatus }));
-        }
-      } else {
-        toast.error(data.error || 'Failed to update status');
-      }
-    } catch (err) {
-      toast.error('Failed to update status');
-    } finally {
-      setIsUpdatingStatus(false);
-    }
-  };
-
   // Copy to clipboard helper
   const copyToClipboard = (text, label = 'Copied') => {
     navigator.clipboard.writeText(text);
@@ -208,19 +170,13 @@ export default function AdminPortalPage() {
         selectedYear === 'all' ||
         (r.year && r.year.toLowerCase().trim() === selectedYear.toLowerCase().trim());
 
-      // Status filter
-      const matchesStatus =
-        selectedStatus === 'all' ||
-        (selectedStatus === 'VERIFIED' && r.status === 'VERIFIED') ||
-        (selectedStatus === 'PENDING' && r.status !== 'VERIFIED');
-
       // Branch filter
       const matchesBranch =
         selectedBranch === 'all' || (r.branch && r.branch === selectedBranch);
 
-      return matchesSearch && matchesYear && matchesStatus && matchesBranch;
+      return matchesSearch && matchesYear && matchesBranch;
     });
-  }, [registrations, searchQuery, selectedYear, selectedStatus, selectedBranch]);
+  }, [registrations, searchQuery, selectedYear, selectedBranch]);
 
   // Unique branches for filter dropdown
   const uniqueBranches = useMemo(() => {
@@ -459,17 +415,25 @@ export default function AdminPortalPage() {
               </div>
             </div>
 
-            {/* Card 6: Status breakdown */}
-            <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+            {/* Card 6: WhatsApp Group Community */}
+            <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl relative overflow-hidden">
               <div className="flex items-center justify-between text-slate-400 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Settlement</span>
-                <CheckCircle2 size={16} className="text-emerald-400" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">WhatsApp Group</span>
+                <MessageSquare size={16} className="text-emerald-400" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl sm:text-2xl font-extrabold text-emerald-400">{stats.verifiedCount}</span>
-                <span className="text-xs text-slate-500">verified</span>
-                <span className="text-lg font-bold text-amber-400 ml-auto">{stats.pendingCount}</span>
-                <span className="text-xs text-slate-500">pending</span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+                {stats.totalRegistrations}
+              </h3>
+              <div className="flex justify-between items-center mt-0.5">
+                <span className="text-[11px] text-emerald-400 font-medium">100% In WhatsApp</span>
+                <a
+                  href={DEFAULT_WHATSAPP_GROUP}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 underline inline-flex items-center gap-0.5 cursor-pointer"
+                >
+                  <ExternalLink size={10} /> Open Group
+                </a>
               </div>
             </div>
           </div>
@@ -563,17 +527,6 @@ export default function AdminPortalPage() {
                   <option value="3rd year">3rd Year</option>
                 </select>
 
-                {/* Status Filter */}
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="VERIFIED">Verified Only</option>
-                  <option value="PENDING">Pending Only</option>
-                </select>
-
                 {/* Branch Filter */}
                 {uniqueBranches.length > 0 && (
                   <select
@@ -609,7 +562,7 @@ export default function AdminPortalPage() {
                   <th className="py-3 px-4">Contact</th>
                   <th className="py-3 px-4">UTR & Paying UPI</th>
                   <th className="py-3 px-4">Fee</th>
-                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">WhatsApp Group</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -745,21 +698,11 @@ export default function AdminPortalPage() {
                           ₹{cand.amount || 300}
                         </td>
 
-                        {/* Status */}
+                        {/* WhatsApp Group */}
                         <td className="py-3 px-4">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                              isVerified
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            }`}
-                          >
-                            {isVerified ? (
-                              <CheckCircle2 size={12} />
-                            ) : (
-                              <Clock size={12} />
-                            )}
-                            <span>{cand.status || 'Pending'}</span>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <CheckCircle2 size={12} className="text-emerald-400" />
+                            <span>Added to Group</span>
                           </span>
                         </td>
 
@@ -767,31 +710,22 @@ export default function AdminPortalPage() {
                         <td className="py-3 px-4 text-right space-x-1.5">
                           <button
                             onClick={() => setSelectedCandidate(cand)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer inline-flex items-center"
                             title="View Full Profile & Proof"
                           >
                             <Eye size={15} />
                           </button>
 
-                          {!isVerified ? (
-                            <button
-                              onClick={() => handleUpdateStatus(cand.regId, 'VERIFIED')}
-                              disabled={isUpdatingStatus}
-                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                              title="Mark as Verified"
-                            >
-                              Verify
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleUpdateStatus(cand.regId, 'PENDING_VERIFICATION')}
-                              disabled={isUpdatingStatus}
-                              className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-amber-400 rounded-lg text-[11px] transition-colors cursor-pointer"
-                              title="Revert to Pending"
-                            >
-                              Revert
-                            </button>
-                          )}
+                          <a
+                            href={`https://wa.me/91${cand.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${cand.name}! Welcome to Idea and Innovation Cell (IIC PMEC). Your registration (${cand.regId}) is confirmed and you are in the recruitment cohort!`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm"
+                            title="Open WhatsApp Chat with Candidate"
+                          >
+                            <MessageSquare size={13} />
+                            <span>WhatsApp</span>
+                          </a>
                         </td>
                       </tr>
                     );
@@ -922,50 +856,57 @@ export default function AdminPortalPage() {
                   <span className="font-bold text-white">₹{selectedCandidate.amount}</span>
                 </div>
 
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-1 border-b border-slate-800">
                   <span className="text-slate-400">Submission Timestamp:</span>
                   <span className="text-slate-300">
                     {selectedCandidate.formattedDate || selectedCandidate.createdAt}
                   </span>
                 </div>
-              </div>
 
-              {/* Status Action Buttons */}
-              <div className="flex items-center justify-between gap-3 pt-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Status:</span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      selectedCandidate.status === 'VERIFIED'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    }`}
-                  >
-                    {selectedCandidate.status || 'Pending'}
+                <div className="flex justify-between py-1 border-b border-slate-800">
+                  <span className="text-slate-400">Recruitment Status:</span>
+                  <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
+                    <CheckCircle2 size={13} /> Enrolled Member
                   </span>
                 </div>
 
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">WhatsApp Group:</span>
+                  <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
+                    <CheckCircle2 size={13} /> Added to Official Group
+                  </span>
+                </div>
+              </div>
+
+              {/* WhatsApp Community & Actions */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
                 <div className="flex items-center gap-2">
-                  {selectedCandidate.status !== 'VERIFIED' ? (
-                    <button
-                      onClick={() => handleUpdateStatus(selectedCandidate.regId, 'VERIFIED')}
-                      disabled={isUpdatingStatus}
-                      className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-600/20"
-                    >
-                      <CheckCircle2 size={15} />
-                      Approve & Mark Verified
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        handleUpdateStatus(selectedCandidate.regId, 'PENDING_VERIFICATION')
-                      }
-                      disabled={isUpdatingStatus}
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-                    >
-                      Mark as Pending
-                    </button>
-                  )}
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <CheckCircle2 size={13} />
+                    Added to WhatsApp Group
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 justify-end">
+                  <a
+                    href={`https://wa.me/91${selectedCandidate.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${selectedCandidate.name}! Welcome to Idea and Innovation Cell (IIC PMEC). Your registration (${selectedCandidate.regId}) is confirmed and you are in the recruitment cohort!`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-600/20"
+                  >
+                    <MessageSquare size={14} />
+                    Chat on WhatsApp
+                  </a>
+
+                  <a
+                    href={DEFAULT_WHATSAPP_GROUP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <ExternalLink size={14} />
+                    Group Invite
+                  </a>
                 </div>
               </div>
             </motion.div>

@@ -148,8 +148,9 @@ export async function GET(req) {
       thirdYearRevenue: allRecords
         .filter((r) => (r.year || '').toLowerCase() === '3rd year')
         .reduce((acc, r) => acc + (Number(r.amount) || 0), 0),
-      verifiedCount: allRecords.filter((r) => (r.status || '').toUpperCase() === 'VERIFIED').length,
-      pendingCount: allRecords.filter((r) => (r.status || '').toUpperCase() !== 'VERIFIED').length,
+      whatsappGroupCount: allRecords.length,
+      verifiedCount: allRecords.length,
+      pendingCount: 0,
     };
 
     return Response.json({

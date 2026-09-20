@@ -111,8 +111,8 @@ async function sendRegistrationEmail(record, whatsappUrl) {
                   <td style="padding: 6px 0; color: #e2e8f0; font-family: monospace; text-align: right;">${record.utr}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">Verification Status:</td>
-                  <td style="padding: 6px 0; color: #f59e0b; font-weight: 600; text-align: right;">Pending Bank Settlement</td>
+                  <td style="padding: 6px 0; color: #94a3b8;">Status:</td>
+                  <td style="padding: 6px 0; color: #10b981; font-weight: 600; text-align: right;">Added to WhatsApp Group</td>
                 </tr>
               </table>
             </div>
@@ -193,7 +193,7 @@ async function syncToGoogleSheet(record) {
         amount: record.amount,
         utr: record.utr,
         payingUpi: record.payingUpi || '',
-        status: record.status || 'Pending Verification',
+        status: record.status || 'Added to WhatsApp Group',
         photo: record.photo || null,
         paymentScreenshot: record.paymentScreenshot || null,
         timestamp: record.formattedDate || new Date().toISOString(),
@@ -303,7 +303,7 @@ export async function POST(req) {
       paymentScreenshot: paymentScreenshot || null,
     });
 
-    const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/invite';
+    const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f';
 
     // 3. Trigger Asynchronous Background Tasks (Zero latency for the user)
     sendRegistrationEmail(record, whatsappGroupUrl).catch((e) => console.error('Email error:', e));

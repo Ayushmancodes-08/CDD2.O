@@ -5,7 +5,7 @@
 
 export const DEFAULT_CLUB_UPI = process.env.NEXT_PUBLIC_CLUB_UPI_ID || '8480496340@airtel';
 export const DEFAULT_PAYEE_NAME = process.env.NEXT_PUBLIC_CLUB_PAYEE_NAME || 'Ayushman Patra';
-export const DEFAULT_WHATSAPP_GROUP = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/invite';
+export const DEFAULT_WHATSAPP_GROUP = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f';
 export const OFFICIAL_QR_IMAGE = '/cdd-upi-qr.jpg';
 
 /**

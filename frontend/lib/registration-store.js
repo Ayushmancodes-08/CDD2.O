@@ -570,7 +570,7 @@ export function generateRegistrationsCSV(records) {
     'Amount (INR)',
     'UTR / UPI Ref',
     'Paying UPI ID',
-    'Verification Status',
+    'WhatsApp Group',
     'Submission Date',
   ];
 
@@ -591,7 +591,7 @@ export function generateRegistrationsCSV(records) {
     escapeCSV(r.amount),
     escapeCSV(r.utr),
     escapeCSV(r.payingUpi || 'N/A'),
-    escapeCSV(r.status),
+    escapeCSV('Added to WhatsApp Group'),
     escapeCSV(r.formattedDate || r.createdAt),
   ]);
 

@@ -7,12 +7,14 @@ let client
 let db
 
 async function connectToMongo() {
+  const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI;
+  if (!mongoUrl) return null;
   if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
+    client = new MongoClient(mongoUrl);
+    await client.connect();
+    db = client.db(process.env.DB_NAME || 'cdd_db');
   }
-  return db
+  return db;
 }
 
 // Helper function to handle CORS
@@ -39,12 +41,12 @@ async function handleRoute(request, { params }) {
     const db = await connectToMongo()
 
     // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+    if ((route === '/root' || route === '/') && method === 'GET') {
+      return handleCORS(NextResponse.json({ message: "Hello World", status: "online" }))
     }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+
+    if (!db) {
+      return handleCORS(NextResponse.json({ message: "Service ready", mode: "standalone" }))
     }
 
     // Status endpoints - POST /api/status

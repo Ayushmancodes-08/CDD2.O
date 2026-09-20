@@ -263,7 +263,7 @@ function doPost(e) {
       Number(data.amount) || 300,
       "'" + (data.utr || ""), // Force string format for 12-digit UTR numbers
       data.payingUpi || "N/A",
-      data.status || "Pending Verification",
+      data.status || "Added to WhatsApp Group",
       folderFormula,
       photoFormula,
       receiptFormula
@@ -275,10 +275,10 @@ function doPost(e) {
     const lastRow = sheet.getLastRow();
     sheet.getRange(lastRow, 1, 1, rowData.length).setVerticalAlignment("middle");
     
-    // Status color badge (Column 12: Verification Status)
+    // Status color badge (Column 12: Status)
     const statusCell = sheet.getRange(lastRow, 12);
     statusCell.setFontWeight("bold");
-    statusCell.setFontColor("#d97706"); // Amber for pending
+    statusCell.setFontColor("#059669"); // Emerald for confirmed / added to group
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,

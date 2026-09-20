@@ -256,3 +256,4 @@ export const CLUB_SOCIALS = {
   linkedin: "https://www.linkedin.com/in/idea-and-innovation-cell-pmec-838392431",
   github: "https://github.com/Idea-Innovation-Cell",
 };
+

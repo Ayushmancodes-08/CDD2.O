@@ -170,13 +170,16 @@ async function sendRegistrationEmail(record, whatsappUrl) {
  * Asynchronously sync to Google Sheets & Drive (AppScript)
  */
 async function syncToGoogleSheet(record) {
-  const scriptUrl = process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL;
-  if (!scriptUrl) return;
+  const scriptUrl = (process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL || '').trim();
+  if (!scriptUrl) {
+    console.warn('⚠️ Google Apps Script URL not configured; skipping Sheets sync.');
+    return;
+  }
 
   try {
     const controller = new AbortController();
-    // Allow up to 18 seconds for Google Drive to create 2 files and write to Sheets
-    const timeout = setTimeout(() => controller.abort(), 18000);
+    // Allow up to 22 seconds for Google Drive to create subfolder, upload 2 files, and append row
+    const timeout = setTimeout(() => controller.abort(), 22000);
 
     const res = await fetch(scriptUrl, {
       method: 'POST',
@@ -192,7 +195,7 @@ async function syncToGoogleSheet(record) {
         phone: record.phone,
         amount: record.amount,
         utr: record.utr,
-        payingUpi: record.payingUpi || '',
+        payingUpi: record.payingUpi || 'QR_SCAN',
         status: record.status || 'Added to WhatsApp Group',
         photo: record.photo || null,
         paymentScreenshot: record.paymentScreenshot || null,
@@ -205,7 +208,10 @@ async function syncToGoogleSheet(record) {
 
     const data = await res.json().catch(() => null);
     if (data && data.success) {
-      console.log(`✅ Registration ${record.regId} synced to Google Sheets & Drive successfully.`);
+      console.log(`✅ Registration ${record.regId} synced to Google Sheets & Drive (Row: ${data.rowNumber}).`);
+      return data;
+    } else {
+      console.warn(`⚠️ Google Script returned non-success for ${record.regId}:`, data);
     }
   } catch (err) {
     console.warn('Non-fatal Google Script sync error:', err.message);
@@ -305,9 +311,11 @@ export async function POST(req) {
 
     const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f';
 
-    // 3. Trigger Asynchronous Background Tasks (Zero latency for the user)
-    sendRegistrationEmail(record, whatsappGroupUrl).catch((e) => console.error('Email error:', e));
-    syncToGoogleSheet(record).catch((e) => console.error('Sheets error:', e));
+    // 3. Reliable Execution: Await both background tasks so Serverless (Vercel) does not freeze the runtime
+    await Promise.allSettled([
+      sendRegistrationEmail(record, whatsappGroupUrl).catch((e) => console.error('Email error:', e)),
+      syncToGoogleSheet(record).catch((e) => console.error('Sheets error:', e)),
+    ]);
 
     return Response.json({
       success: true,

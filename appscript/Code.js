@@ -69,6 +69,21 @@ function doGet(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
+    // --- Action: Get Master URLs & Status ---
+    if (action === "getInfo" || action === "urls") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME);
+      const recSheet = ss.getSheetByName(RECRUITMENT_SHEET_NAME);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        spreadsheetUrl: ss.getUrl(),
+        mainFolderUrl: mainFolder.getUrl(),
+        recruitmentFolder: MAIN_FOLDER_NAME,
+        totalRows: recSheet ? recSheet.getLastRow() : 0,
+        timestamp: new Date().toISOString()
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     // --- Default: Health Check ---
     return ContentService.createTextOutput(JSON.stringify({
       status: "online",
@@ -284,6 +299,8 @@ function doPost(e) {
       success: true,
       regId: data.regId,
       memberFolderUrl: memberFolderUrl,
+      mainFolderUrl: mainFolder.getUrl(),
+      spreadsheetUrl: ss.getUrl(),
       photoUrl: photoUrl,
       receiptUrl: receiptUrl,
       rowNumber: lastRow

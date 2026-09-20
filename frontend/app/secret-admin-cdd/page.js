@@ -7,7 +7,7 @@ import {
   CheckCircle2, Clock, AlertTriangle, ExternalLink, Copy, Check,
   Phone, Mail, Calendar, Building2, GraduationCap, ArrowUpDown,
   Eye, X, FileSpreadsheet, ChevronDown, LogOut, Sparkles, DollarSign,
-  Users, MessageSquare, CreditCard
+  Users, MessageSquare, CreditCard, Folder, Cloud, Database
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { DEFAULT_WHATSAPP_GROUP } from '@/lib/upi';
@@ -15,6 +15,7 @@ import { DEFAULT_WHATSAPP_GROUP } from '@/lib/upi';
 // Hardcoded fallback credentials (displayed for authorized admin convenience)
 const DEFAULT_USER = 'admin';
 const DEFAULT_PASS = 'iicpmec2026@admin';
+const RECRUITMENT_DRIVE_FOLDER = 'https://drive.google.com/drive/folders/1riY76K5ST-1KqKnRaaskxPQGB6EteHFa';
 
 export default function AdminPortalPage() {
   // Auth state
@@ -26,7 +27,9 @@ export default function AdminPortalPage() {
   // Data state
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState(null);
+  const [cloudSync, setCloudSync] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
   const [copiedText, setCopiedText] = useState('');
 
   // Filter & Search state
@@ -70,6 +73,7 @@ export default function AdminPortalPage() {
       if (data.success) {
         setRegistrations(data.registrations || []);
         setStats(data.stats || null);
+        if (data.cloudSync) setCloudSync(data.cloudSync);
       } else {
         toast.error(data.error || 'Failed to fetch registrations');
       }
@@ -79,6 +83,34 @@ export default function AdminPortalPage() {
       setIsLoading(false);
     }
   }, [authToken]);
+
+  // Sync All with Google Sheets & Drive
+  const handleSyncCloud = async () => {
+    if (!authToken) return;
+    setIsSyncingCloud(true);
+    toast.loading('Synchronizing participant files & UTRs with Google Drive & Sheets...', { id: 'cloud-sync' });
+    try {
+      const res = await fetch('/api/admin/registrations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ action: 'sync_google' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'All records successfully synced to Google Sheets & Drive!', { id: 'cloud-sync' });
+        await fetchRegistrations();
+      } else {
+        toast.error(data.error || 'Failed to sync with Google Drive', { id: 'cloud-sync' });
+      }
+    } catch (err) {
+      toast.error('Network error during Google sync', { id: 'cloud-sync' });
+    } finally {
+      setIsSyncingCloud(false);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated && authToken) {
@@ -440,59 +472,92 @@ export default function AdminPortalPage() {
         )}
 
         {/* =========================================================================
-            ONE-CLICK EXCEL DOWNLOAD TOOLBAR (REQUESTED BY USER)
+            GOOGLE DRIVE & SPREADSHEET CLOUD SYNC TOOLBAR
            ========================================================================= */}
-        <section className="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/30 p-5 rounded-2xl sm:rounded-3xl shadow-xl space-y-3">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <section className="bg-gradient-to-r from-blue-950/40 via-slate-900 to-emerald-950/30 border-2 border-blue-500/30 p-5 rounded-2xl sm:rounded-3xl shadow-xl space-y-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <FileSpreadsheet className="text-emerald-400" size={20} />
+                <Cloud className="text-blue-400" size={22} />
                 <h3 className="text-base sm:text-lg font-bold text-white">
-                  Direct Excel / Spreadsheet Downloads
+                  Google Drive & Excel Cloud Synchronization
                 </h3>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Synced in Real-time
+                </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Exports fully formatted Microsoft Excel/CSV documents containing all participant records, contact numbers, and UTRs.
+              <p className="text-xs text-slate-400 mt-0.5">
+                Each registration generates an individual Google Drive folder with candidate photos, UTR receipts, and automatic rows in Google Sheets.
               </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <a
+                href={RECRUITMENT_DRIVE_FOLDER}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                <Folder size={15} />
+                <span>Open Google Drive Folder</span>
+                <ExternalLink size={12} />
+              </a>
+
+              <button
+                onClick={handleSyncCloud}
+                disabled={isSyncingCloud}
+                className="py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-600/20 disabled:opacity-60"
+              >
+                <RefreshCw size={14} className={isSyncingCloud ? 'animate-spin' : ''} />
+                <span>{isSyncingCloud ? 'Syncing...' : 'Sync All with Google Drive'}</span>
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
-            {/* Button 1: All Participants */}
-            <button
-              onClick={() => handleDownloadCSV('all')}
-              className="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Download ALL Participants ({registrations.length})</span>
-            </button>
+          {/* One-Click Excel Downloads */}
+          <div className="pt-2 border-t border-slate-800">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mb-2.5">
+              <FileSpreadsheet size={15} className="text-emerald-400" />
+              <span>Direct Excel Downloads (Includes Google Drive Folder Links):</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {/* Button 1: All Participants */}
+              <button
+                onClick={() => handleDownloadCSV('all')}
+                className="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Download size={16} />
+                <span>Download ALL Participants ({registrations.length})</span>
+              </button>
 
-            {/* Button 2: 1st Year Only */}
-            <button
-              onClick={() => handleDownloadCSV('1st year')}
-              className="py-3 px-4 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Download 1st Year Only</span>
-            </button>
+              {/* Button 2: 1st Year Only */}
+              <button
+                onClick={() => handleDownloadCSV('1st year')}
+                className="py-3 px-4 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Download size={16} />
+                <span>Download 1st Year Only</span>
+              </button>
 
-            {/* Button 3: 2nd Year Only */}
-            <button
-              onClick={() => handleDownloadCSV('2nd year')}
-              className="py-3 px-4 bg-purple-600 hover:bg-purple-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Download 2nd Year Only</span>
-            </button>
+              {/* Button 3: 2nd Year Only */}
+              <button
+                onClick={() => handleDownloadCSV('2nd year')}
+                className="py-3 px-4 bg-purple-600 hover:bg-purple-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Download size={16} />
+                <span>Download 2nd Year Only</span>
+              </button>
 
-            {/* Button 4: 3rd Year Only */}
-            <button
-              onClick={() => handleDownloadCSV('3rd year')}
-              className="py-3 px-4 bg-amber-600 hover:bg-amber-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-amber-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Download 3rd Year Only</span>
-            </button>
+              {/* Button 4: 3rd Year Only */}
+              <button
+                onClick={() => handleDownloadCSV('3rd year')}
+                className="py-3 px-4 bg-amber-600 hover:bg-amber-500 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-amber-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Download size={16} />
+                <span>Download 3rd Year Only</span>
+              </button>
+            </div>
           </div>
         </section>
 
@@ -550,26 +615,27 @@ export default function AdminPortalPage() {
             </div>
           </div>
 
-          {/* Table Container */}
-          <div className="overflow-x-auto">
+          {/* Table Container with Smooth Bounded Scrollability & Sticky Header */}
+          <div className="overflow-x-auto max-h-[620px] overflow-y-auto overscroll-contain relative border-t border-slate-800">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-950/60 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-800">
-                  <th className="py-3 px-4">Photo</th>
-                  <th className="py-3 px-4">Reg ID</th>
-                  <th className="py-3 px-4">Candidate Details</th>
-                  <th className="py-3 px-4">Year & Branch</th>
-                  <th className="py-3 px-4">Contact</th>
-                  <th className="py-3 px-4">UTR & Paying UPI</th>
-                  <th className="py-3 px-4">Fee</th>
-                  <th className="py-3 px-4">WhatsApp Group</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+              <thead className="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md shadow-sm">
+                <tr className="text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-800">
+                  <th className="py-3.5 px-4">Photo</th>
+                  <th className="py-3.5 px-4">Reg ID</th>
+                  <th className="py-3.5 px-4">Candidate Details</th>
+                  <th className="py-3.5 px-4">Year & Branch</th>
+                  <th className="py-3.5 px-4">Contact</th>
+                  <th className="py-3.5 px-4">UTR & UPI</th>
+                  <th className="py-3.5 px-4">Fee</th>
+                  <th className="py-3.5 px-4">Google Drive</th>
+                  <th className="py-3.5 px-4">WhatsApp</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
                 {filteredRegistrations.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-slate-500">
+                    <td colSpan={10} className="py-12 text-center text-slate-500">
                       <Users size={32} className="mx-auto mb-2 opacity-30" />
                       <p className="font-semibold">No registration records found.</p>
                       <p className="text-xs text-slate-600 mt-0.5">Try clearing filters or search query.</p>
@@ -577,7 +643,6 @@ export default function AdminPortalPage() {
                   </tr>
                 ) : (
                   filteredRegistrations.map((cand) => {
-                    const isVerified = cand.status === 'VERIFIED';
                     return (
                       <tr
                         key={cand.regId || cand.utr}
@@ -609,7 +674,7 @@ export default function AdminPortalPage() {
                             <span>{cand.regId}</span>
                             <button
                               onClick={() => copyToClipboard(cand.regId, 'Reg ID')}
-                              className="text-slate-500 hover:text-white transition-colors"
+                              className="text-slate-500 hover:text-white transition-colors cursor-pointer"
                               title="Copy Reg ID"
                             >
                               {copiedText === cand.regId ? (
@@ -676,7 +741,7 @@ export default function AdminPortalPage() {
                             <span className="font-bold tracking-wider">{cand.utr}</span>
                             <button
                               onClick={() => copyToClipboard(cand.utr, 'UTR')}
-                              className="text-slate-500 hover:text-white transition-colors"
+                              className="text-slate-500 hover:text-white transition-colors cursor-pointer"
                               title="Copy UTR"
                             >
                               {copiedText === cand.utr ? (
@@ -696,6 +761,28 @@ export default function AdminPortalPage() {
                         {/* Amount */}
                         <td className="py-3 px-4 font-bold text-emerald-400">
                           ₹{cand.amount || 300}
+                        </td>
+
+                        {/* Google Drive Personal Folder */}
+                        <td className="py-3 px-4">
+                          {cand.memberFolderUrl ? (
+                            <a
+                              href={cand.memberFolderUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition-all cursor-pointer"
+                              title="Open Candidate's Dedicated Google Drive Folder"
+                            >
+                              <Folder size={12} />
+                              <span>Drive Folder</span>
+                              <ExternalLink size={10} />
+                            </a>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
+                              <CheckCircle2 size={11} className="text-emerald-500" />
+                              <span>Synced</span>
+                            </span>
+                          )}
                         </td>
 
                         {/* WhatsApp Group */}
@@ -876,6 +963,42 @@ export default function AdminPortalPage() {
                     <CheckCircle2 size={13} /> Added to Official Group
                   </span>
                 </div>
+              </div>
+
+              {/* Google Drive Personal Folder Card */}
+              <div className="p-4 bg-blue-950/30 border border-blue-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <Folder size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span>Google Drive Member Folder</span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                        Cloud Synced
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400">
+                      Stores official student portrait photo & payment receipt screenshot proof in Google Drive.
+                    </p>
+                  </div>
+                </div>
+                {selectedCandidate.memberFolderUrl ? (
+                  <a
+                    href={selectedCandidate.memberFolderUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-600/20 shrink-0"
+                  >
+                    <Folder size={14} />
+                    <span>Open in Drive</span>
+                    <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <span className="text-xs text-slate-500 italic">
+                    Synced in IIC_PMEC_Recruitment_2026
+                  </span>
+                )}
               </div>
 
               {/* WhatsApp Community & Actions */}

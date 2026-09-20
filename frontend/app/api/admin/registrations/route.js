@@ -1,4 +1,5 @@
-import { getAllRegistrations, generateRegistrationsCSV, updateRegistrationStatus } from '@/lib/registration-store';
+import { getAllRegistrations, generateRegistrationsCSV, updateRegistrationStatus, updateRegistrationGoogleSync } from '@/lib/registration-store';
+import { GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 
 export const maxDuration = 30;
 
@@ -158,6 +159,12 @@ export async function GET(req) {
       stats,
       count: filtered.length,
       registrations: filtered,
+      cloudSync: {
+        googleScriptUrl: (process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL || '').trim(),
+        mainDriveFolderUrl: 'https://drive.google.com/drive/folders/1riY76K5ST-1KqKnRaaskxPQGB6EteHFa',
+        googleSheetName: 'Registrations',
+        isOnline: true,
+      },
     });
   } catch (error) {
     console.error('Error in /api/admin/registrations GET:', error);
@@ -230,6 +237,73 @@ export async function POST(req) {
         success: true,
         message: `Registration ${regId} status updated to ${status}.`,
         registration: updated,
+      });
+    }
+
+    // --- Action: Sync All Registrations to Google Sheets & Drive ---
+    if (action === 'sync_google') {
+      if (!verifyAdminAuth(req)) {
+        return Response.json(
+          { success: false, error: 'Unauthorized.' },
+          { status: 401 }
+        );
+      }
+
+      const scriptUrl = (process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL || '').trim();
+      if (!scriptUrl) {
+        return Response.json(
+          { success: false, error: 'Google Apps Script URL is not configured.' },
+          { status: 400 }
+        );
+      }
+
+      const allRecords = await getAllRegistrations();
+      const syncResults = [];
+
+      for (const record of allRecords) {
+        try {
+          const res = await fetch(scriptUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'club_registration',
+              regId: record.regId,
+              name: record.name,
+              year: record.year,
+              branch: record.branch,
+              college: record.college,
+              email: record.email,
+              phone: record.phone,
+              amount: record.amount,
+              utr: record.utr,
+              payingUpi: record.payingUpi || 'QR_SCAN',
+              status: record.status || 'Added to WhatsApp Group',
+              photo: record.photo || null,
+              paymentScreenshot: record.paymentScreenshot || null,
+              timestamp: record.formattedDate || record.createdAt || new Date().toISOString(),
+            }),
+            redirect: 'follow',
+          });
+
+          const data = await res.json().catch(() => null);
+          if (data && data.success) {
+            await updateRegistrationGoogleSync(record.regId, data);
+            syncResults.push({ regId: record.regId, success: true, rowNumber: data.rowNumber });
+          } else {
+            syncResults.push({ regId: record.regId, success: false, error: data?.error || 'Unknown script response' });
+          }
+        } catch (err) {
+          syncResults.push({ regId: record.regId, success: false, error: err.message });
+        }
+      }
+
+      const successCount = syncResults.filter((r) => r.success).length;
+      return Response.json({
+        success: true,
+        message: `Successfully synced ${successCount} of ${allRecords.length} records to Google Sheets & Drive.`,
+        syncedCount: successCount,
+        totalCount: allRecords.length,
+        results: syncResults,
       });
     }
 

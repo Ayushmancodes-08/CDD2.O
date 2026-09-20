@@ -556,6 +556,50 @@ export async function updateRegistrationStatus(regId, newStatus, verifiedBy = 'a
 }
 
 /**
+ * Update a registration record with Google Drive and Sheets sync details
+ */
+export async function updateRegistrationGoogleSync(regId, syncData) {
+  return await storeMutex.runExclusive(async () => {
+    const now = new Date().toISOString();
+    try {
+      const db = await getMongoDb();
+      if (db) {
+        const col = db.collection('club_registrations');
+        await col.updateOne(
+          { regId },
+          {
+            $set: {
+              memberFolderUrl: syncData.memberFolderUrl || null,
+              photoUrl: syncData.photoUrl || null,
+              receiptUrl: syncData.receiptUrl || null,
+              sheetRowNumber: syncData.rowNumber || null,
+              isSyncedWithGoogle: true,
+              googleSyncedAt: now,
+            },
+          }
+        );
+      }
+    } catch (err) {
+      console.warn('MongoDB Google Sync update error:', err.message);
+    }
+
+    const list = readLocalRegistrations();
+    const idx = list.findIndex((r) => r.regId === regId);
+    if (idx !== -1) {
+      list[idx].memberFolderUrl = syncData.memberFolderUrl || list[idx].memberFolderUrl;
+      list[idx].photoUrl = syncData.photoUrl || list[idx].photoUrl;
+      list[idx].receiptUrl = syncData.receiptUrl || list[idx].receiptUrl;
+      list[idx].sheetRowNumber = syncData.rowNumber || list[idx].sheetRowNumber;
+      list[idx].isSyncedWithGoogle = true;
+      list[idx].googleSyncedAt = now;
+      writeLocalRegistrationsAtomic(list);
+      return list[idx];
+    }
+    return null;
+  });
+}
+
+/**
  * Generate CSV for Excel export with UTF-8 BOM
  */
 export function generateRegistrationsCSV(records) {
@@ -571,6 +615,7 @@ export function generateRegistrationsCSV(records) {
     'UTR / UPI Ref',
     'Paying UPI ID',
     'WhatsApp Group',
+    'Google Drive Folder',
     'Submission Date',
   ];
 
@@ -590,8 +635,9 @@ export function generateRegistrationsCSV(records) {
     escapeCSV(r.phone),
     escapeCSV(r.amount),
     escapeCSV(r.utr),
-    escapeCSV(r.payingUpi || 'N/A'),
+    escapeCSV(r.payingUpi || 'QR_SCAN'),
     escapeCSV('Added to WhatsApp Group'),
+    escapeCSV(r.memberFolderUrl || 'Synced in Google Drive'),
     escapeCSV(r.formattedDate || r.createdAt),
   ]);
 

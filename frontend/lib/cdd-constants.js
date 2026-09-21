@@ -21,9 +21,9 @@ export const REGISTRATION_BRANCHES = [
 ];
 
 export const REGISTRATION_YEARS = [
-  { id: "1st year", label: "1st Year", amount: 300, duration: "4 Years", perYear: "₹75 / yr" },
-  { id: "2nd year", label: "2nd Year", amount: 225, duration: "3 Years", perYear: "₹75 / yr" },
-  { id: "3rd year", label: "3rd Year", amount: 150, duration: "2 Years", perYear: "₹75 / yr" }
+  { id: "1st year", label: "1st Year", amount: 300, duration: "4 Years" },
+  { id: "2nd year", label: "2nd Year", amount: 225, duration: "3 Years" },
+  { id: "3rd year", label: "3rd Year", amount: 150, duration: "2 Years" }
 ];
 
 export const COLLEGE_NAME = "Parala Maharaja Engineering College";

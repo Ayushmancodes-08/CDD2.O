@@ -94,9 +94,9 @@ export default function RegisterPage() {
               <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                 <CheckCircle size={18} />
               </div>
-              <h5 className="text-sm font-bold text-brand-900">One-Time Tenure Fee</h5>
+              <h5 className="text-sm font-bold text-brand-900">Full Tenure Membership</h5>
               <p className="text-xs text-gray-500 mt-1">
-                Only ₹75 per academic year for your entire college tenure. No recurring monthly or semester fees.
+                Active society membership throughout your entire college tenure. No recurring monthly or semester fees.
               </p>
             </div>
 

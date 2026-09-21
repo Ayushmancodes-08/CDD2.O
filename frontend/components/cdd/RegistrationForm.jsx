@@ -11,7 +11,7 @@ import {
 import { toast } from 'sonner';
 import { REGISTRATION_BRANCHES, REGISTRATION_YEARS, COLLEGE_NAME } from '@/lib/cdd-constants';
 import { compressImage } from '@/lib/image-compressor';
-import { generateUPIUri, DEFAULT_CLUB_UPI, DEFAULT_PAYEE_NAME, DEFAULT_WHATSAPP_GROUP, OFFICIAL_QR_IMAGE } from '@/lib/upi';
+import { generateUPIUri, DEFAULT_CLUB_UPI, DEFAULT_PAYEE_NAME, DEFAULT_WHATSAPP_GROUP } from '@/lib/upi';
 
 export default function RegistrationForm({ onSuccess = null, isModal = false }) {
   const [step, setStep] = useState(1); // 1: Details, 2: Payment, 3: Pass/Success
@@ -19,8 +19,6 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedRegId, setCopiedRegId] = useState(false);
 
-  // QR presentation: 'dynamic' (Pre-filled ₹ Amount) | 'official' (Official Airtel QR)
-  const [qrViewType, setQrViewType] = useState('dynamic');
   const [isUtrHighlighted, setIsUtrHighlighted] = useState(false);
   const utrSectionRef = useRef(null);
   const utrInputRef = useRef(null);
@@ -362,7 +360,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                 </div>
               </div>
 
-              {/* Year Selection (Radio Cards with dynamic fees) */}
+              {/* Year Selection (Radio Cards) */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                   Select Year of Study <span className="text-rose-500">*</span>
@@ -397,12 +395,13 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                             {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </span>
                         </div>
-                        <div className="mt-auto">
-                          <p className="text-base sm:text-lg font-bold text-brand-900">
-                            ₹{y.amount}
-                            <span className="text-[11px] text-gray-500 font-normal ml-1">({y.duration})</span>
+                        <div className="mt-auto pt-2">
+                          <p className="text-xs sm:text-sm font-medium text-gray-600">
+                            {y.duration}
                           </p>
-                          <p className="text-[10px] sm:text-[11px] text-emerald-600 font-semibold">{y.perYear}</p>
+                          <p className="text-[10px] sm:text-[11px] text-brand-600 font-semibold mt-0.5">
+                            Active Member Status
+                          </p>
                         </div>
                       </label>
                     );
@@ -508,7 +507,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                   type="submit"
                   className="btn-primary group w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5"
                 >
-                  Proceed to Payment (₹{currentAmount})
+                  Proceed to Payment
                   <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -553,7 +552,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       ₹{currentAmount}
                     </h4>
                     <p className="text-[11px] text-brand-200/80 mt-0.5">
-                      {selectedYearObj.duration} active membership at ₹75 per academic year
+                      {selectedYearObj.duration} active membership tenure
                     </p>
                   </div>
 
@@ -574,53 +573,17 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                 </div>
               </div>
 
-              {/* CLEAN DEDICATED QR CODE PAYMENT SECTION */}
+              {/* CLEAN DEDICATED PRE-FILLED QR CODE PAYMENT SECTION */}
               <div className="flex flex-col items-center text-center p-4 sm:p-6 bg-gray-50/90 rounded-2xl border border-gray-200/80 shadow-xs space-y-4">
-                {/* QR Mode Switcher */}
-                <div className="inline-flex p-1 bg-gray-200/70 rounded-xl text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => setQrViewType('dynamic')}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      qrViewType === 'dynamic'
-                        ? 'bg-white text-brand-900 shadow-xs'
-                        : 'text-gray-600 hover:text-brand-900'
-                    }`}
-                  >
-                    Pre-filled QR (₹{currentAmount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setQrViewType('official')}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      qrViewType === 'official'
-                        ? 'bg-white text-brand-900 shadow-xs'
-                        : 'text-gray-600 hover:text-brand-900'
-                    }`}
-                  >
-                    Official Airtel QR
-                  </button>
+                {/* Pre-filled QR Code */}
+                <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                  <QRCodeSVG
+                    value={upiUri}
+                    size={200}
+                    level="M"
+                    includeMargin={true}
+                  />
                 </div>
-
-                {/* QR Presentation */}
-                {qrViewType === 'dynamic' ? (
-                  <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                    <QRCodeSVG
-                      value={upiUri}
-                      size={200}
-                      level="M"
-                      includeMargin={true}
-                    />
-                  </div>
-                ) : (
-                  <div className="p-2 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-[240px] overflow-hidden">
-                    <img
-                      src={OFFICIAL_QR_IMAGE}
-                      alt="Official Airtel UPI QR Code - Ayushman Patra"
-                      className="w-full h-auto object-contain rounded-xl"
-                    />
-                  </div>
-                )}
 
                 {/* Payee Details Badge Box */}
                 <div className="w-full max-w-sm p-3 bg-white rounded-xl border border-gray-200/80 shadow-2xs space-y-1.5">
@@ -629,8 +592,8 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       <p className="text-[10px] uppercase font-bold text-gray-400">Official Recipient</p>
                       <p className="text-xs font-bold text-brand-900">{DEFAULT_PAYEE_NAME}</p>
                     </div>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">
-                      Airtel UPI
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Verified Payee
                     </span>
                   </div>
 

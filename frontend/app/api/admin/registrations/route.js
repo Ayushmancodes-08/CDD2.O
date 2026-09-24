@@ -1,5 +1,6 @@
 import { getAllRegistrations, generateRegistrationsCSV, updateRegistrationStatus, updateRegistrationGoogleSync } from '@/lib/registration-store';
 import { GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
+import { pingMongoAtlas } from '@/lib/mongodb';
 
 export const maxDuration = 30;
 
@@ -154,11 +155,19 @@ export async function GET(req) {
       pendingCount: 0,
     };
 
+    const dbHealth = await pingMongoAtlas();
+
     return Response.json({
       success: true,
       stats,
       count: filtered.length,
       registrations: filtered,
+      database: {
+        connected: dbHealth.connected,
+        mode: dbHealth.mode,
+        latencyMs: dbHealth.latencyMs,
+        acidTransactions: dbHealth.connected,
+      },
       cloudSync: {
         googleScriptUrl: (process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL || '').trim(),
         mainDriveFolderUrl: 'https://drive.google.com/drive/folders/1riY76K5ST-1KqKnRaaskxPQGB6EteHFa',

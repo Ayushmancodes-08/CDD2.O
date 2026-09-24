@@ -1,43 +1,56 @@
-import { MongoClient } from 'mongodb'
-import { NextResponse } from 'next/server'
+import { pingMongoAtlas, getMongoDb } from '@/lib/mongodb';
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'
-
-let client
-let db
-
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
-  }
-  return db
-}
+export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
-  // Security Check: Verify CRON_SECRET
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse('Unauthorized', { status: 401 })
+  // Security Check: If CRON_SECRET is configured, enforce Bearer authorization
+  if (process.env.CRON_SECRET) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
   }
 
+  const start = Date.now();
   try {
-    const database = await connectToMongo()
-    
-    // Ping the database
-    await database.command({ ping: 1 })
+    const pingResult = await pingMongoAtlas();
+    const latencyMs = Date.now() - start;
+
+    // Record uptime heartbeat into MongoDB Atlas
+    if (pingResult.connected) {
+      try {
+        const db = await getMongoDb();
+        if (db) {
+          await db.collection('uptime_heartbeats').insertOne({
+            timestamp: new Date(),
+            createdAt: new Date(),
+            status: 'ALIVE',
+            latencyMs,
+            source: 'vercel_cron',
+          });
+        }
+      } catch (hbErr) {
+        console.warn('Heartbeat insert non-fatal warning:', hbErr.message);
+      }
+    }
 
     return NextResponse.json({
-      success: true,
-      message: 'MongoDB Atlas cluster pinged successfully',
-      timestamp: new Date().toISOString()
-    })
+      success: pingResult.connected,
+      message: pingResult.connected
+        ? 'MongoDB Atlas cluster pinged and warmed successfully'
+        : 'Running in resilient standalone fallback mode',
+      latencyMs,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    console.error('Cron Keep-Alive Error:', error)
-    return NextResponse.json({
-      success: false,
-      error: error.message || 'Failed to ping MongoDB Atlas'
-    }, { status: 500 })
+    console.error('Cron Keep-Alive Error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || 'Failed to ping database',
+      },
+      { status: 500 }
+    );
   }
 }

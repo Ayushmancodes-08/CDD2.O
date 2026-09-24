@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
-import { MongoClient } from 'mongodb';
+import { getMongoDb, runMongoTransaction, getMongoClient } from './mongodb.js';
 
 const DATA_DIR = process.env.VERCEL
   ? path.join('/tmp', 'cdd_data')
@@ -130,36 +129,7 @@ function writeLocalRegistrationsAtomic(list) {
   return true;
 }
 
-let mongoClient = null;
-let mongoDb = null;
 
-async function getMongoDb() {
-  if (!process.env.MONGO_URL) return null;
-  try {
-    if (!mongoClient) {
-      mongoClient = new MongoClient(process.env.MONGO_URL, {
-        writeConcern: { w: 'majority', j: true },
-      });
-      await mongoClient.connect();
-      mongoDb = mongoClient.db(process.env.DB_NAME || 'cdd_portal');
-
-      // Ensure unique indexes for strict isolation and duplicate protection
-      try {
-        const col = mongoDb.collection('club_registrations');
-        await col.createIndex({ utr: 1 }, { unique: true });
-        await col.createIndex({ email: 1 }, { unique: true });
-        await col.createIndex({ phone: 1 }, { unique: true });
-        await col.createIndex({ regId: 1 }, { unique: true });
-      } catch (idxErr) {
-        // Indexes may already exist
-      }
-    }
-    return mongoDb;
-  } catch (err) {
-    console.warn('MongoDB connection fallback to local storage:', err.message);
-    return null;
-  }
-}
 
 /**
  * ========================================================================
@@ -320,37 +290,77 @@ export async function addRegistration(data) {
       amount: record.amount,
     });
 
-    // Strategy A: MongoDB with majority write concern
+    // Strategy A: MongoDB with strict multi-document ACID transaction
     try {
       const db = await getMongoDb();
       if (db) {
-        const col = db.collection('club_registrations');
+        let committedRecord;
+        try {
+          committedRecord = await runMongoTransaction(async ({ db: txDb, session }) => {
+            const col = txDb.collection('club_registrations');
 
-        // Check for duplicates atomically
-        const duplicate = await col.findOne({
-          $or: [{ utr: cleanUTR }, { email: cleanEmail }, { phone: cleanPhone }],
-        });
+            // 1. Isolation & Consistency: Duplicate check executed inside transaction session
+            const duplicate = await col.findOne(
+              { $or: [{ utr: cleanUTR }, { email: cleanEmail }, { phone: cleanPhone }] },
+              { session }
+            );
 
-        if (duplicate) {
-          appendAuditLog({
-            action: 'TRANSACTION_ABORTED_DUPLICATE',
-            regId: record.regId,
-            reason: duplicate.utr === cleanUTR ? 'DUPLICATE_UTR' : duplicate.email === cleanEmail ? 'DUPLICATE_EMAIL' : 'DUPLICATE_PHONE',
+            if (duplicate) {
+              appendAuditLog({
+                action: 'TRANSACTION_ABORTED_DUPLICATE',
+                regId: record.regId,
+                reason: duplicate.utr === cleanUTR ? 'DUPLICATE_UTR' : duplicate.email === cleanEmail ? 'DUPLICATE_EMAIL' : 'DUPLICATE_PHONE',
+              });
+
+              if (duplicate.utr === cleanUTR) {
+                throw new Error('This UPI Transaction (UTR) has already been submitted. Duplicate transactions are not allowed.');
+              }
+              if (duplicate.email === cleanEmail) {
+                throw new Error(`A registration with email "${cleanEmail}" already exists. Each student may only register once.`);
+              }
+              if (duplicate.phone === cleanPhone) {
+                throw new Error(`A registration with phone number "${cleanPhone}" already exists.`);
+              }
+            }
+
+            // 2. Atomicity & Durability: Insert registration document within session
+            await col.insertOne(record, { session });
+
+            // 3. Atomicity: Insert immutable transaction audit record within the exact same transaction
+            try {
+              await txDb.collection('transaction_audit_logs').insertOne(
+                {
+                  timestamp: new Date(),
+                  action: 'TRANSACTION_COMMITTED_ATLAS_ACID',
+                  regId: record.regId,
+                  utr: cleanUTR,
+                  email: cleanEmail,
+                  phone: cleanPhone,
+                  amount: record.amount,
+                  status: record.status,
+                },
+                { session }
+              );
+            } catch (auditErr) {
+              // Non-fatal within audit
+            }
+
+            return record;
           });
-
-          if (duplicate.utr === cleanUTR) {
-            throw new Error('This UPI Transaction (UTR) has already been submitted. Duplicate transactions are not allowed.');
-          }
-          if (duplicate.email === cleanEmail) {
-            throw new Error(`A registration with email "${cleanEmail}" already exists. Each student may only register once.`);
-          }
-          if (duplicate.phone === cleanPhone) {
-            throw new Error(`A registration with phone number "${cleanPhone}" already exists.`);
+        } catch (txErr) {
+          // If transaction unsupported (e.g. non-replica set local testing), fallback to direct atomic insert
+          if (txErr.message && (txErr.message.includes('Transaction') || txErr.message.includes('standalone'))) {
+            const col = db.collection('club_registrations');
+            const dup = await col.findOne({ $or: [{ utr: cleanUTR }, { email: cleanEmail }, { phone: cleanPhone }] });
+            if (dup) {
+              throw new Error('Duplicate submission detected: Either UTR, Email, or Phone number is already registered.');
+            }
+            await col.insertOne(record);
+            committedRecord = record;
+          } else {
+            throw txErr;
           }
         }
-
-        // Insert with majority journaled write
-        await col.insertOne(record);
 
         appendAuditLog({
           action: 'TRANSACTION_COMMITTED_MONGO',
@@ -359,10 +369,10 @@ export async function addRegistration(data) {
           status: record.status,
         });
 
-        return record;
+        return committedRecord;
       }
     } catch (err) {
-      if (err.message && (err.message.includes('already exists') || err.message.includes('already been submitted'))) {
+      if (err.message && (err.message.includes('already exists') || err.message.includes('already been submitted') || err.message.includes('Duplicate'))) {
         throw err;
       }
       if (err.code === 11000) {

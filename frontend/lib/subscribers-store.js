@@ -1,13 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { MongoClient } from 'mongodb';
+import { getMongoDb } from './mongodb.js';
 
 const DATA_DIR = process.env.VERCEL
   ? path.join('/tmp', 'cdd_data')
   : path.join(process.cwd(), 'data');
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
 
-// Ensure data directory and file exist
 function ensureStorageFile() {
   try {
     if (!fs.existsSync(DATA_DIR)) {
@@ -18,24 +17,6 @@ function ensureStorageFile() {
     }
   } catch (err) {
     console.error('Error initializing subscriber storage file:', err);
-  }
-}
-
-let mongoClient = null;
-let mongoDb = null;
-
-async function getMongoDb() {
-  if (!process.env.MONGO_URL) return null;
-  try {
-    if (!mongoClient) {
-      mongoClient = new MongoClient(process.env.MONGO_URL);
-      await mongoClient.connect();
-      mongoDb = mongoClient.db(process.env.DB_NAME || 'cdd_portal');
-    }
-    return mongoDb;
-  } catch (err) {
-    console.warn('MongoDB connection fallback to local storage:', err.message);
-    return null;
   }
 }
 

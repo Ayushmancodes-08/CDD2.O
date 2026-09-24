@@ -49,15 +49,39 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
 
   const currentAmount = selectedYearObj.amount;
 
-  // Generate UPI URI for Club recipient
-  const upiUri = useMemo(() => {
+  // Registration Session State
+  const [sessionData, setSessionData] = useState(null);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+
+  // Generate UPI URI for Club recipient (Using session if generated, or fallback)
+  const activeUpiUri = useMemo(() => {
+    if (sessionData?.upiUri) return sessionData.upiUri;
     return generateUPIUri({
       vpa: DEFAULT_CLUB_UPI,
       name: DEFAULT_PAYEE_NAME,
       amount: currentAmount,
       note: `CDD-Reg-${(formData.name || 'Member').trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 15)}`,
     });
-  }, [formData.name, currentAmount]);
+  }, [sessionData, formData.name, currentAmount]);
+
+  // App-Specific Direct Intent Links (PhonePe, GPay, Paytm)
+  const activeAppLinks = useMemo(() => {
+    if (sessionData?.appLinks) return sessionData.appLinks;
+    const cleanNote = `CDD-Reg-${(formData.name || 'Member').trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 15)}`;
+    const baseUri = generateUPIUri({
+      vpa: DEFAULT_CLUB_UPI,
+      name: DEFAULT_PAYEE_NAME,
+      amount: currentAmount,
+      note: cleanNote,
+    });
+    const query = baseUri.replace('upi://pay?', '');
+    return {
+      generic: baseUri,
+      gpay: `tez://upi/pay?${query}`,
+      phonepe: `phonepe://pay?${query}`,
+      paytm: `paytmmp://pay?${query}`,
+    };
+  }, [sessionData, formData.name, currentAmount]);
 
   // Handle Text/Select Changes
   const handleChange = (e) => {
@@ -157,11 +181,39 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
     return true;
   };
 
-  const handleNextToPayment = (e) => {
+  const handleNextToPayment = async (e) => {
     e.preventDefault();
-    if (validateStep1()) {
+    if (!validateStep1()) return;
+
+    setIsCreatingSession(true);
+    try {
+      const res = await fetch('/api/register/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          year: formData.year,
+          branch: formData.branch,
+          college: formData.college,
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        toast.error(data.error || 'Failed to create registration session.');
+        return;
+      }
+
+      setSessionData(data);
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast.success('Registration session generated! Choose your payment method.');
+    } catch (err) {
+      toast.error('Network connection error while generating payment session.');
+    } finally {
+      setIsCreatingSession(false);
     }
   };
 
@@ -193,10 +245,11 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
           email: formData.email.trim(),
           phone: formData.phone.trim(),
           photo: formData.photo,
-          amount: currentAmount,
+          amount: sessionData?.amount || currentAmount,
           utr: cleanUtr,
           paymentScreenshot: formData.paymentScreenshot,
-          payingUpi: 'QR_SCAN',
+          payingUpi: 'UPI_DIRECT',
+          sessionId: sessionData?.sessionId || null,
         }),
       });
 
@@ -505,10 +558,20 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
               <div className="pt-2 sm:pt-4 flex justify-end">
                 <button
                   type="submit"
-                  className="btn-primary group w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5"
+                  disabled={isCreatingSession}
+                  className="btn-primary group w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 disabled:opacity-60 cursor-pointer"
                 >
-                  Proceed to Payment
-                  <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
+                  {isCreatingSession ? (
+                    <>
+                      <Loader2 size={17} className="animate-spin" />
+                      Generating Session & Payment Link...
+                    </>
+                  ) : (
+                    <>
+                      Proceed to Payment
+                      <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </div>
             </motion.form>
@@ -529,27 +592,34 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-brand-900 mb-2 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-brand-900 mb-2 transition-colors cursor-pointer"
                 >
                   <ArrowLeft size={13} /> Back to details
                 </button>
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-brand-900 tracking-tight">
-                  Scan & Pay Membership Fee
-                </h3>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-brand-900 tracking-tight">
+                    Complete Membership Payment
+                  </h3>
+                  {sessionData?.sessionId && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-brand-50 text-brand-700 border border-brand-200">
+                      Ref: {sessionData.sessionId}
+                    </span>
+                  )}
+                </div>
                 <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
-                  Scan the official QR code using any UPI app (Google Pay, PhonePe, Paytm, BHIM, etc.)
+                  Choose direct mobile payment (instant app open) or scan the official QR code.
                 </p>
               </div>
 
               {/* Payment Summary Box */}
-              <div className="bg-gradient-to-br from-brand-900 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-ambient relative overflow-hidden">
+              <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-4 sm:p-5 shadow-ambient relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative z-10">
                   <div>
                     <span className="text-[11px] uppercase tracking-wider text-brand-300 font-semibold">
                       Membership Tier ({selectedYearObj.label})
                     </span>
                     <h4 className="text-2xl sm:text-3xl font-display font-extrabold text-white mt-0.5">
-                      ₹{currentAmount}
+                      ₹{sessionData?.amount || currentAmount}
                     </h4>
                     <p className="text-[11px] text-brand-200/80 mt-0.5">
                       {selectedYearObj.duration} active membership tenure
@@ -558,13 +628,13 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
 
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 sm:py-2 rounded-xl border border-white/15 w-full sm:w-auto justify-between sm:justify-start">
                     <div className="text-left">
-                      <p className="text-[9px] uppercase text-brand-200 font-medium">Official Payee: {DEFAULT_PAYEE_NAME}</p>
+                      <p className="text-[9px] uppercase text-brand-200 font-medium">Official Payee: {sessionData?.payee?.name || DEFAULT_PAYEE_NAME}</p>
                       <p className="text-xs font-mono font-bold text-white break-all">{DEFAULT_CLUB_UPI}</p>
                     </div>
                     <button
                       type="button"
                       onClick={handleCopyUPI}
-                      className="p-1.5 hover:bg-white/20 rounded-lg transition-colors text-white shrink-0"
+                      className="p-1.5 hover:bg-white/20 rounded-lg transition-colors text-white shrink-0 cursor-pointer"
                       title="Copy UPI ID"
                     >
                       {copiedUpi ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -573,66 +643,146 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                 </div>
               </div>
 
-              {/* CLEAN DEDICATED PRE-FILLED QR CODE PAYMENT SECTION */}
-              <div className="flex flex-col items-center text-center p-4 sm:p-6 bg-gray-50/90 rounded-2xl border border-gray-200/80 shadow-xs space-y-4">
-                {/* Pre-filled QR Code */}
-                <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                  <QRCodeSVG
-                    value={upiUri}
-                    size={200}
-                    level="M"
-                    includeMargin={true}
-                  />
-                </div>
-
-                {/* Payee Details Badge Box */}
-                <div className="w-full max-w-sm p-3 bg-white rounded-xl border border-gray-200/80 shadow-2xs space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <p className="text-[10px] uppercase font-bold text-gray-400">Official Recipient</p>
-                      <p className="text-xs font-bold text-brand-900">{DEFAULT_PAYEE_NAME}</p>
+              {/* THE TWO PAYMENT OPTIONS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* OPTION 1: MOBILE DIRECT PAYMENT LINK (INTENT CHOOSER) */}
+                <div className="flex flex-col justify-between p-4 sm:p-5 bg-gradient-to-b from-brand-50/70 to-emerald-50/40 rounded-2xl border-2 border-brand-200/80 shadow-xs relative">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand-600 text-white shadow-xs">
+                        <Smartphone size={12} />
+                        Option 1: Mobile Quick Pay
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                        Android & iOS
+                      </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Verified Payee
+
+                    <h4 className="text-base font-display font-bold text-brand-950 mb-1">
+                      Pay Directly in UPI App
+                    </h4>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-4">
+                      Tapping the button below opens your phone&apos;s UPI chooser (Google Pay, PhonePe, Paytm, BHIM) with exact amount & payee pre-filled.
+                    </p>
+
+                    {/* Pre-filled Universal Pay Now Button */}
+                    <a
+                      href={activeUpiUri}
+                      className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-brand-600 hover:from-emerald-500 hover:to-brand-500 text-white font-display font-extrabold text-sm sm:text-base shadow-md shadow-emerald-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-center cursor-pointer border border-white/20"
+                    >
+                      <Zap className="fill-white" size={17} />
+                      <span>Pay Now ₹{sessionData?.amount || currentAmount}</span>
+                      <ArrowRight size={16} />
+                    </a>
+
+                    {/* Quick App Direct Launch Buttons */}
+                    <div className="mt-3.5 pt-3 border-t border-brand-200/50">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Or open specific app directly:
+                      </p>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <a
+                          href={activeAppLinks.phonepe}
+                          className="py-2 px-1 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
+                        >
+                          <span>PhonePe</span>
+                        </a>
+                        <a
+                          href={activeAppLinks.gpay}
+                          className="py-2 px-1 rounded-lg border border-blue-200 bg-white hover:bg-blue-50 text-blue-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
+                        >
+                          <span>GPay</span>
+                        </a>
+                        <a
+                          href={activeAppLinks.paytm}
+                          className="py-2 px-1 rounded-lg border border-sky-200 bg-white hover:bg-sky-50 text-sky-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
+                        >
+                          <span>Paytm</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-2.5 rounded-xl bg-white/80 border border-brand-100 text-[11px] text-gray-600 flex items-start gap-1.5">
+                    <Info size={14} className="text-brand-600 shrink-0 mt-0.5" />
+                    <span>
+                      After paying, switch back to this tab to enter the 12-digit UTR and upload your receipt screenshot.
                     </span>
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-                    <div className="text-left">
-                      <p className="text-[10px] uppercase font-bold text-gray-400">UPI ID (VPA)</p>
-                      <p className="text-xs font-mono font-bold text-brand-950">{DEFAULT_CLUB_UPI}</p>
+                {/* OPTION 2: DYNAMIC PRE-FILLED QR CODE */}
+                <div className="flex flex-col items-center justify-between p-4 sm:p-5 bg-gray-50/90 rounded-2xl border border-gray-200/80 shadow-xs text-center">
+                  <div className="w-full">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-700 text-white shadow-xs">
+                        <QrCode size={12} />
+                        Option 2: Scan QR
+                      </span>
+                      <span className="text-[10px] font-bold text-gray-600 bg-gray-200/80 px-2 py-0.5 rounded-md">
+                        Desktop / Any Phone
+                      </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleCopyUPI}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-brand-50 hover:bg-brand-100 text-brand-800 transition-colors cursor-pointer"
-                    >
-                      {copiedUpi ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
-                      <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
-                    </button>
+
+                    <h4 className="text-base font-display font-bold text-brand-950 mb-1">
+                      Scan Official QR Code
+                    </h4>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                      Scan with any UPI scanner app on your phone to transfer the ₹{sessionData?.amount || currentAmount} fee.
+                    </p>
+
+                    {/* Pre-filled QR Code */}
+                    <div className="p-3 bg-white rounded-2xl border border-gray-200 shadow-xs inline-block">
+                      <QRCodeSVG
+                        value={activeUpiUri}
+                        size={175}
+                        level="M"
+                        includeMargin={true}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Payee Details Badge Box */}
+                  <div className="w-full mt-3 p-2.5 bg-white rounded-xl border border-gray-200/80 shadow-2xs space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-[9px] uppercase font-bold text-gray-400">Recipient</p>
+                        <p className="text-xs font-bold text-brand-900">{sessionData?.payee?.name || DEFAULT_PAYEE_NAME}</p>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        BharatPe Verified
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                      <div className="text-left">
+                        <p className="text-[9px] uppercase font-bold text-gray-400">UPI ID</p>
+                        <p className="text-xs font-mono font-bold text-brand-950">{DEFAULT_CLUB_UPI}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyUPI}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-brand-50 hover:bg-brand-100 text-brand-800 transition-colors cursor-pointer"
+                      >
+                        {copiedUpi ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} />}
+                        <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
-                    <CheckCircle2 size={13} /> Amount: ₹{currentAmount}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    Accepted on Google Pay, PhonePe, Paytm, BHIM & all banking apps
-                  </span>
-                </div>
+              </div>
 
-                {/* Direct Action: Move to Enter UTR & Proof */}
-                <div className="pt-2 w-full max-w-sm">
-                  <button
-                    type="button"
-                    onClick={handleMoveToRegister}
-                    className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <span>I Have Completed Payment ➔ Enter UTR & Proof</span>
-                    <ArrowRight size={15} />
-                  </button>
-                </div>
+              {/* Direct Jump to UTR Button */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={handleMoveToRegister}
+                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>Already Paid? Enter 12-Digit UTR & Upload Screenshot ➔</span>
+                </button>
               </div>
 
               {/* UTR Input & Screenshot Upload */}

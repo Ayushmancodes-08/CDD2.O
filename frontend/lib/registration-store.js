@@ -300,6 +300,7 @@ export async function addRegistration(data) {
     utr: cleanUTR,
     photo: data.photo || null,
     paymentScreenshot: data.paymentScreenshot || null,
+    sessionId: data.sessionId || null,
     status: 'PENDING_VERIFICATION',
     createdAt: now.toISOString(),
     formattedDate: istDate,

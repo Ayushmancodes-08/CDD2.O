@@ -187,6 +187,7 @@ async function syncToGoogleSheet(record) {
       body: JSON.stringify({
         action: 'club_registration',
         regId: record.regId,
+        registrationNumber: record.regId,
         name: record.name,
         year: record.year,
         branch: record.branch,
@@ -194,8 +195,9 @@ async function syncToGoogleSheet(record) {
         email: record.email,
         phone: record.phone,
         amount: record.amount,
+        amountPaid: record.amount,
         utr: record.utr,
-        payingUpi: record.payingUpi || 'QR_SCAN',
+        payingUpi: record.payingUpi || 'BharatPe Merchant UPI',
         status: record.status || 'Added to WhatsApp Group',
         photo: record.photo || null,
         paymentScreenshot: record.paymentScreenshot || null,
@@ -234,7 +236,8 @@ export async function POST(req) {
       photo,
       paymentScreenshot,
       utr,
-      payingUpi
+      payingUpi,
+      sessionId,
     } = body;
 
     // 1. Strict Server-Side Validations
@@ -305,6 +308,7 @@ export async function POST(req) {
       amount: expectedAmount,
       utr: cleanUTR,
       payingUpi: (payingUpi || '').trim(),
+      sessionId: (sessionId || '').trim() || null,
       photo: photo || null,
       paymentScreenshot: paymentScreenshot || null,
     });

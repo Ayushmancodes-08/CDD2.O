@@ -181,14 +181,14 @@ function doPost(e) {
     let sheet = ss.getSheetByName(RECRUITMENT_SHEET_NAME);
     const headers = [
       "Timestamp",
-      "Reg ID",
+      "Registration Number",
       "Student Name",
       "Year of Study",
       "Engineering Branch",
       "College",
       "WhatsApp Phone",
       "Email Address",
-      "Fee Amount (₹)",
+      "Amount Paid (₹)",
       "UPI Ref (UTR)",
       "Paying UPI ID",
       "Verification Status",
@@ -214,20 +214,28 @@ function doPost(e) {
       headerRange.setFontWeight("bold");
       headerRange.setHorizontalAlignment("center");
       sheet.setFrozenRows(1);
+    } else {
+      // Ensure existing headers stay in sync
+      sheet.getRange(1, 2).setValue("Registration Number");
+      sheet.getRange(1, 9).setValue("Amount Paid (₹)");
     }
 
     // 1. Get Main Recruitment Folder
     const mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME);
 
-    // 2. Create Dedicated Subfolder for THIS Registered Member
-    const cleanRegId = sanitizeFileName(data.regId || "STUDENT");
+    // 2. Extract and format Registration Number and Amount Paid
+    const regNumber = (data.registrationNumber || data.regId || "CDD26-STUDENT").trim();
+    const cleanRegId = sanitizeFileName(regNumber);
     const cleanName = sanitizeFileName(data.name || "Member");
+    const amountPaid = Number(data.amountPaid || data.amount) || 300;
+
+    // 3. Create Dedicated Subfolder for THIS Registered Member
     const memberFolderName = cleanRegId + "_" + cleanName;
     const memberFolder = getOrCreateSubFolder(mainFolder, memberFolderName);
     const memberFolderUrl = memberFolder.getUrl();
     const folderFormula = '=HYPERLINK("' + memberFolderUrl + '", "📁 Open Folder")';
 
-    // 3. Decode & Save Student Photo inside the Member's Personal Folder
+    // 4. Decode & Save Student Photo inside the Member's Personal Folder
     let photoUrl = "";
     let photoFormula = "No Photo";
     if (data.photo && typeof data.photo === "string" && data.photo.length > 50) {
@@ -245,7 +253,7 @@ function doPost(e) {
       }
     }
 
-    // 4. Decode & Save Payment Screenshot inside the Member's Personal Folder
+    // 5. Decode & Save Payment Screenshot inside the Member's Personal Folder
     let receiptUrl = "";
     let receiptFormula = "No Screenshot";
     if (data.paymentScreenshot && typeof data.paymentScreenshot === "string" && data.paymentScreenshot.length > 50) {
@@ -264,20 +272,20 @@ function doPost(e) {
       }
     }
 
-    // 5. Format & Append Row
+    // 6. Format & Append Row
     const timestamp = data.timestamp || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
     const rowData = [
       timestamp,
-      data.regId || "N/A",
+      "'" + regNumber, // Force string representation for registration number
       data.name || "N/A",
       data.year || "N/A",
       data.branch || "N/A",
       data.college || "Parala Maharaja Engineering College",
       "'" + (data.phone || ""), // Force string format for phone numbers
       data.email || "N/A",
-      Number(data.amount) || 300,
+      amountPaid, // Numeric amount for easy summing/formulas in Google Sheets
       "'" + (data.utr || ""), // Force string format for 12-digit UTR numbers
-      data.payingUpi || "N/A",
+      data.payingUpi || "BharatPe Merchant UPI",
       data.status || "Added to WhatsApp Group",
       folderFormula,
       photoFormula,
@@ -290,6 +298,17 @@ function doPost(e) {
     const lastRow = sheet.getLastRow();
     sheet.getRange(lastRow, 1, 1, rowData.length).setVerticalAlignment("middle");
     
+    // Highlight Registration Number (Column 2)
+    const regNumCell = sheet.getRange(lastRow, 2);
+    regNumCell.setFontWeight("bold");
+    regNumCell.setHorizontalAlignment("center");
+
+    // Format Amount Paid (Column 9) as Currency
+    const amountCell = sheet.getRange(lastRow, 9);
+    amountCell.setFontWeight("bold");
+    amountCell.setHorizontalAlignment("right");
+    amountCell.setNumberFormat("₹#,##0");
+
     // Status color badge (Column 12: Status)
     const statusCell = sheet.getRange(lastRow, 12);
     statusCell.setFontWeight("bold");
@@ -297,7 +316,9 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
-      regId: data.regId,
+      regId: regNumber,
+      registrationNumber: regNumber,
+      amountPaid: amountPaid,
       memberFolderUrl: memberFolderUrl,
       mainFolderUrl: mainFolder.getUrl(),
       spreadsheetUrl: ss.getUrl(),

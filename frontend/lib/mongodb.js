@@ -41,15 +41,34 @@ const CLIENT_OPTIONS = {
   },
 };
 
+// Direct seedlist fallback (Zero SRV DNS lookup) in case local router/ISP blocks SRV queries
+const DIRECT_SHARDS_URI = 'mongodb://cdd_admin:cdd_admin576@ac-2g0vtvo-shard-00-00.lvibntt.mongodb.net:27017,ac-2g0vtvo-shard-00-01.lvibntt.mongodb.net:27017,ac-2g0vtvo-shard-00-02.lvibntt.mongodb.net:27017/cdd_portal?ssl=true&replicaSet=atlas-d12wxa-shard-0&authSource=admin&retryWrites=true&w=majority';
+
 let cachedClient = null;
 let cachedPromise = null;
 let indexesInitialized = false;
+
+async function createConnectedClient(uri) {
+  const client = new MongoClient(uri, CLIENT_OPTIONS);
+  try {
+    return await client.connect();
+  } catch (err) {
+    // If SRV DNS failed, transparently fall back to direct replica set shards
+    if ((err.message?.includes('querySrv') || err.message?.includes('ECONNREFUSED')) && uri !== DIRECT_SHARDS_URI) {
+      console.warn('SRV DNS lookup failed. Falling back to direct replica set shards...');
+      const fallbackClient = new MongoClient(DIRECT_SHARDS_URI, CLIENT_OPTIONS);
+      return await fallbackClient.connect();
+    }
+    throw err;
+  }
+}
 
 /**
  * Get cached MongoClient promise (Singleton pattern for Next.js & Serverless)
  */
 export async function getMongoClient() {
-  if (!MONGO_URL) return null;
+  const targetUri = MONGO_URL || DIRECT_SHARDS_URI;
+  if (!targetUri) return null;
 
   if (cachedClient) {
     return cachedClient;
@@ -57,16 +76,12 @@ export async function getMongoClient() {
 
   if (!cachedPromise) {
     if (process.env.NODE_ENV === 'development') {
-      // In development, preserve client across hot-reloads in global
       if (!global._mongoClientPromise) {
-        const client = new MongoClient(MONGO_URL, CLIENT_OPTIONS);
-        global._mongoClientPromise = client.connect();
+        global._mongoClientPromise = createConnectedClient(targetUri);
       }
       cachedPromise = global._mongoClientPromise;
     } else {
-      // In production (Vercel), create a fresh promise per container lifecycle
-      const client = new MongoClient(MONGO_URL, CLIENT_OPTIONS);
-      cachedPromise = client.connect();
+      cachedPromise = createConnectedClient(targetUri);
     }
   }
 
@@ -83,6 +98,7 @@ export async function getMongoClient() {
   } catch (err) {
     cachedPromise = null;
     cachedClient = null;
+    if (global._mongoClientPromise) global._mongoClientPromise = null;
     console.warn('MongoDB Atlas connection failed:', err.message);
     return null;
   }

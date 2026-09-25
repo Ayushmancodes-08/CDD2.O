@@ -11,7 +11,14 @@ import {
 import { toast } from 'sonner';
 import { REGISTRATION_BRANCHES, REGISTRATION_YEARS, COLLEGE_NAME } from '@/lib/cdd-constants';
 import { compressImage } from '@/lib/image-compressor';
-import { generateUPIUri, DEFAULT_CLUB_UPI, DEFAULT_PAYEE_NAME, DEFAULT_WHATSAPP_GROUP } from '@/lib/upi';
+import {
+  generateUPIUri,
+  DEFAULT_CLUB_UPI,
+  DEFAULT_PAYEE_NAME,
+  DEFAULT_TAP_TO_PAY_UPI,
+  DEFAULT_TAP_TO_PAY_NAME,
+  DEFAULT_WHATSAPP_GROUP,
+} from '@/lib/upi';
 
 export default function RegistrationForm({ onSuccess = null, isModal = false }) {
   const [step, setStep] = useState(1); // 1: Details, 2: Payment, 3: Pass/Success
@@ -130,12 +137,12 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [sessionData, setSessionData] = useState(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
-  // Generate UPI URI for Club recipient (Using session if generated, or fallback)
+  // Generate UPI URI for Tap to Pay recipient (Using session if generated, or fallback)
   const activeUpiUri = useMemo(() => {
     if (sessionData?.upiUri) return sessionData.upiUri;
     return generateUPIUri({
-      vpa: DEFAULT_CLUB_UPI,
-      name: DEFAULT_PAYEE_NAME,
+      vpa: DEFAULT_TAP_TO_PAY_UPI,
+      name: DEFAULT_TAP_TO_PAY_NAME,
       amount: currentAmount,
       note: `CDD-Reg-${(formData.name || 'Member').trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 15)}`,
     });
@@ -146,8 +153,8 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
     if (sessionData?.appLinks) return sessionData.appLinks;
     const cleanNote = `CDD-Reg-${(formData.name || 'Member').trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 15)}`;
     const baseUri = generateUPIUri({
-      vpa: DEFAULT_CLUB_UPI,
-      name: DEFAULT_PAYEE_NAME,
+      vpa: DEFAULT_TAP_TO_PAY_UPI,
+      name: DEFAULT_TAP_TO_PAY_NAME,
       amount: currentAmount,
       note: cleanNote,
     });
@@ -239,11 +246,11 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const handleDirectPay = () => {
     try {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(DEFAULT_CLUB_UPI);
+        navigator.clipboard.writeText(DEFAULT_TAP_TO_PAY_UPI);
         setCopiedUpi(true);
         setTimeout(() => setCopiedUpi(false), 2500);
       }
-      toast.info('UPI ID copied to clipboard! Opening your payment app...', { duration: 3000 });
+      toast.info(`Opening UPI app (${DEFAULT_TAP_TO_PAY_UPI} copied to clipboard)...`, { duration: 3200 });
     } catch (e) {
       // Ignore clipboard error
     }
@@ -760,9 +767,31 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                     <h4 className="text-base font-display font-bold text-brand-950 mb-1">
                       Pay Directly in UPI App
                     </h4>
-                    <p className="text-xs text-gray-600 leading-relaxed mb-4">
-                      Tapping the button below opens your phone&apos;s UPI chooser (Google Pay, PhonePe, Paytm, BHIM) with exact amount & payee pre-filled.
+                    <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                      Tapping below opens your UPI app (PhonePe, GPay, Paytm) with payee &amp; fee pre-filled.
                     </p>
+
+                    {/* Tap-to-Pay UPI ID Mini Badge */}
+                    <div className="mb-3.5 p-2 bg-emerald-50/80 rounded-xl border border-emerald-200/80 flex items-center justify-between">
+                      <div className="text-left">
+                        <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-800">Tap-to-Pay UPI</span>
+                        <p className="text-xs font-mono font-bold text-brand-950">{DEFAULT_TAP_TO_PAY_UPI}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                            navigator.clipboard.writeText(DEFAULT_TAP_TO_PAY_UPI);
+                            setCopiedUpi(true);
+                            toast.success('Tap-to-Pay UPI ID copied!');
+                            setTimeout(() => setCopiedUpi(false), 2500);
+                          }
+                        }}
+                        className="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer"
+                      >
+                        {copiedUpi ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
 
                     {/* Pre-filled Universal Pay Now Button */}
                     <a
@@ -806,10 +835,10 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                     </div>
                   </div>
 
-                  <div className="mt-3 p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-900 flex items-start gap-1.5">
-                    <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                  <div className="mt-3 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/80 text-[11px] text-emerald-950 flex items-start gap-1.5">
+                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0 mt-0.5" />
                     <span>
-                      Tapping above copies the official UPI ID. If your bank shows an issue on direct open, simply tap <strong>&quot;To UPI ID&quot;</strong> in your app and paste!
+                      Direct settlement enabled via <strong>{DEFAULT_TAP_TO_PAY_UPI}</strong> (Ayushman Patra).
                     </span>
                   </div>
 

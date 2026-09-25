@@ -4,6 +4,8 @@ import {
   getAppUpiLinks,
   DEFAULT_CLUB_UPI,
   DEFAULT_PAYEE_NAME,
+  DEFAULT_TAP_TO_PAY_UPI,
+  DEFAULT_TAP_TO_PAY_NAME,
 } from '@/lib/upi';
 import {
   YEAR_FEE_MAP,
@@ -94,10 +96,10 @@ export async function POST(req) {
     const safeName = name.trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
     const upiNote = `CDD-${sessionRand}-${safeName}`;
 
-    // 4. Generate Standard NPCI Deep-Link & Specific App URIs
+    // 4. Generate Standard NPCI Deep-Link & Specific App URIs using Tap-to-Pay VPA (8480496340-2@ybl)
     const upiOptions = {
-      vpa: DEFAULT_CLUB_UPI,
-      name: DEFAULT_PAYEE_NAME,
+      vpa: DEFAULT_TAP_TO_PAY_UPI,
+      name: DEFAULT_TAP_TO_PAY_NAME,
       amount,
       note: upiNote,
     };
@@ -112,9 +114,11 @@ export async function POST(req) {
       note: upiNote,
       upiUri,
       appLinks,
+      tapToPayUpi: DEFAULT_TAP_TO_PAY_UPI,
       payee: {
         vpa: DEFAULT_CLUB_UPI,
-        name: DEFAULT_PAYEE_NAME,
+        tapToPayVpa: DEFAULT_TAP_TO_PAY_UPI,
+        name: DEFAULT_TAP_TO_PAY_NAME,
       },
       student: {
         name: name.trim(),

@@ -6,7 +6,7 @@ import {
   User, Mail, Phone, Building2, GraduationCap, CheckCircle2,
   Upload, ArrowRight, ArrowLeft, Copy, Check, ShieldCheck,
   Lock, ExternalLink, Loader2, Sparkles, RefreshCw, Smartphone,
-  Send, AtSign, Zap, QrCode, MessageSquare, Info, AlertCircle
+  Send, AtSign, Zap, QrCode, MessageSquare, Info, AlertCircle, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { REGISTRATION_BRANCHES, REGISTRATION_YEARS, COLLEGE_NAME } from '@/lib/cdd-constants';
@@ -22,6 +22,83 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [isUtrHighlighted, setIsUtrHighlighted] = useState(false);
   const utrSectionRef = useRef(null);
   const utrInputRef = useRef(null);
+  const isHandlingPopStateRef = useRef(false);
+  const paymentHistoryActiveRef = useRef(false);
+
+  // Smooth scroll to top of form/modal
+  const scrollToFormTop = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const modalContainer = document.getElementById('cdd-modal-content-container');
+      if (modalContainer) {
+        modalContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      const formTop = document.getElementById('cdd-registration-form-top');
+      if (formTop) {
+        formTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (e) {
+      // Ignore if scroll fails
+    }
+  };
+
+  // Safe navigation back to Details (Step 1)
+  const handleBackToDetails = () => {
+    isHandlingPopStateRef.current = true;
+    paymentHistoryActiveRef.current = false;
+    setStep(1);
+    scrollToFormTop();
+
+    if (typeof window !== 'undefined' && window.location.hash === '#payment') {
+      try {
+        window.history.back();
+      } catch (e) {}
+    }
+  };
+
+  // Manage browser history for Step 2 (payment section) so phone/browser back button returns to Step 1
+  useEffect(() => {
+    if (step === 2) {
+      if (!isHandlingPopStateRef.current) {
+        try {
+          if (window.location.hash !== '#payment') {
+            window.history.pushState({ cddSection: 'payment' }, '', '#payment');
+          }
+          paymentHistoryActiveRef.current = true;
+        } catch (err) {
+          console.error('History push error:', err);
+        }
+      }
+      isHandlingPopStateRef.current = false;
+
+      const handlePopState = () => {
+        // User pressed physical or browser back button on phone while in payment section
+        isHandlingPopStateRef.current = true;
+        paymentHistoryActiveRef.current = false;
+        setStep(1);
+        scrollToFormTop();
+        toast.info('Returned to student details. Your information is preserved.');
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, [step]);
+
+  // Clean up payment hash when unmounting
+  useEffect(() => {
+    return () => {
+      paymentHistoryActiveRef.current = false;
+      if (typeof window !== 'undefined' && window.location.hash === '#payment') {
+        try {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (e) {}
+      }
+    };
+  }, []);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -158,6 +235,20 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
     setTimeout(() => setCopiedUpi(false), 2500);
   };
 
+  // Handle 1-Tap launch for UPI apps with automated clipboard copy fallback
+  const handleDirectPay = () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(DEFAULT_CLUB_UPI);
+        setCopiedUpi(true);
+        setTimeout(() => setCopiedUpi(false), 2500);
+      }
+      toast.info('UPI ID copied to clipboard! Opening your payment app...', { duration: 3000 });
+    } catch (e) {
+      // Ignore clipboard error
+    }
+  };
+
   // Step 1 Validation
   const validateStep1 = () => {
     if (!formData.name.trim() || formData.name.trim().length < 2) {
@@ -208,7 +299,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
 
       setSessionData(data);
       setStep(2);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToFormTop();
       toast.success('Registration session generated! Choose your payment method.');
     } catch (err) {
       toast.error('Network connection error while generating payment session.');
@@ -256,8 +347,15 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
       const data = await res.json();
 
       if (data.success) {
+        paymentHistoryActiveRef.current = false;
+        if (typeof window !== 'undefined' && window.location.hash === '#payment') {
+          try {
+            window.history.replaceState({ cddStep: 3 }, '', window.location.pathname + window.location.search);
+          } catch (e) {}
+        }
         setRegisteredData(data.registration);
         setStep(3);
+        scrollToFormTop();
         toast.success('Registration completed successfully! Welcome to IIC PMEC.');
         if (typeof window !== 'undefined') {
           try {
@@ -279,10 +377,10 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   };
 
   return (
-    <div className={`w-full ${isModal ? 'p-0 sm:p-1' : 'max-w-3xl mx-auto'}`}>
+    <div id="cdd-registration-form-top" className={`w-full ${isModal ? 'p-0 sm:p-1' : 'max-w-3xl mx-auto'}`}>
       {/* Stepper Progress Bar */}
       <div className="mb-6 sm:mb-8">
-        <div className="flex items-center justify-between relative px-2">
+        <div className={`flex items-center justify-between relative px-2 ${isModal ? 'pr-12 sm:pr-14' : ''}`}>
           <div className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-gray-200 w-full z-0" />
           <div
             className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-brand-500 transition-all duration-500 z-0"
@@ -591,7 +689,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
               <div>
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
+                  onClick={handleBackToDetails}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-brand-900 mb-2 transition-colors cursor-pointer"
                 >
                   <ArrowLeft size={13} /> Back to details
@@ -669,6 +767,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                     {/* Pre-filled Universal Pay Now Button */}
                     <a
                       href={activeUpiUri}
+                      onClick={handleDirectPay}
                       className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-brand-600 hover:from-emerald-500 hover:to-brand-500 text-white font-display font-extrabold text-sm sm:text-base shadow-md shadow-emerald-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-center cursor-pointer border border-white/20"
                     >
                       <Zap className="fill-white" size={17} />
@@ -684,18 +783,21 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       <div className="grid grid-cols-3 gap-1.5">
                         <a
                           href={activeAppLinks.phonepe}
+                          onClick={handleDirectPay}
                           className="py-2 px-1 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
                         >
                           <span>PhonePe</span>
                         </a>
                         <a
                           href={activeAppLinks.gpay}
+                          onClick={handleDirectPay}
                           className="py-2 px-1 rounded-lg border border-blue-200 bg-white hover:bg-blue-50 text-blue-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
                         >
                           <span>GPay</span>
                         </a>
                         <a
                           href={activeAppLinks.paytm}
+                          onClick={handleDirectPay}
                           className="py-2 px-1 rounded-lg border border-sky-200 bg-white hover:bg-sky-50 text-sky-900 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors text-center shadow-2xs"
                         >
                           <span>Paytm</span>
@@ -704,7 +806,14 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                     </div>
                   </div>
 
-                  <div className="mt-4 p-2.5 rounded-xl bg-white/80 border border-brand-100 text-[11px] text-gray-600 flex items-start gap-1.5">
+                  <div className="mt-3 p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-900 flex items-start gap-1.5">
+                    <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                    <span>
+                      Tapping above copies the official UPI ID. If your bank shows an issue on direct open, simply tap <strong>&quot;To UPI ID&quot;</strong> in your app and paste!
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-white/80 border border-brand-100 text-[11px] text-gray-600 flex items-start gap-1.5">
                     <Info size={14} className="text-brand-600 shrink-0 mt-0.5" />
                     <span>
                       After paying, switch back to this tab to enter the 12-digit UTR and upload your receipt screenshot.
@@ -740,6 +849,21 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                         level="M"
                         includeMargin={true}
                       />
+                    </div>
+
+                    {/* Save QR option for phone users */}
+                    <div className="mt-2.5">
+                      <a
+                        href="/cdd-upi-qr.jpg"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download="IIC-PMEC-Official-UPI-QR.jpg"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[11px] font-bold text-brand-900 transition-colors shadow-2xs cursor-pointer"
+                        title="Download official QR to scan from your phone gallery"
+                      >
+                        <Download size={13} />
+                        <span>Save QR (For Phone Gallery Scan)</span>
+                      </a>
                     </div>
                   </div>
 
@@ -870,9 +994,9 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
               <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
+                  onClick={handleBackToDetails}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto px-5 py-2.5 sm:py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm font-semibold transition-colors order-2 sm:order-1"
+                  className="w-full sm:w-auto px-5 py-2.5 sm:py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm font-semibold transition-colors order-2 sm:order-1 cursor-pointer"
                 >
                   Back
                 </button>

@@ -611,6 +611,34 @@ export async function updateRegistrationGoogleSync(regId, syncData) {
 }
 
 /**
+ * Delete a registration record (Admin capability)
+ */
+export async function deleteRegistration(regId) {
+  return await storeMutex.runExclusive(async () => {
+    let deletedMongo = false;
+    try {
+      const db = await getMongoDb();
+      if (db) {
+        const col = db.collection('club_registrations');
+        const res = await col.deleteOne({ regId });
+        deletedMongo = res.deletedCount > 0;
+      }
+    } catch (err) {
+      console.warn('MongoDB delete error:', err.message);
+    }
+
+    const list = readLocalRegistrations();
+    const filtered = list.filter((r) => r.regId !== regId);
+    const deletedLocal = filtered.length !== list.length;
+    if (deletedLocal) {
+      writeLocalRegistrationsAtomic(filtered);
+    }
+
+    return deletedMongo || deletedLocal;
+  });
+}
+
+/**
  * Generate CSV for Excel export with UTF-8 BOM
  */
 export function generateRegistrationsCSV(records) {

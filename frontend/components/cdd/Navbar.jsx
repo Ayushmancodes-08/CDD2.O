@@ -79,9 +79,13 @@ export default function Navbar({ onOpenRegister }) {
                 </a>
               );
             })}
-            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="text-sm font-medium text-gray-600 hover:text-brand-900 transition-colors">
-              Contact
+            {/* Contact CTA */}
+            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="ml-2 btn-primary">
+              Contact Us
             </a>
+
+            {/* Registration button disconnected from mainframe for now.
+                To restore, uncomment this block:
             <button
               onClick={onOpenRegister ? onOpenRegister : () => { window.location.href = '/register'; }}
               className="ml-2 px-4 py-2 rounded-xl bg-brand-900 hover:bg-brand-800 text-white font-semibold text-xs uppercase tracking-wider shadow-sm hover:shadow-brand-500/20 transition-all flex items-center gap-1.5"
@@ -89,6 +93,7 @@ export default function Navbar({ onOpenRegister }) {
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Register
             </button>
+            */}
           </div>
 
           <button className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors z-50 focus:outline-none"
@@ -116,6 +121,8 @@ export default function Navbar({ onOpenRegister }) {
                 );
               })}
               <div className="pt-2 mt-1 space-y-2">
+                {/* Registration button disconnected from mobile navbar for now.
+                    To restore, uncomment this block:
                 <button
                   onClick={() => {
                     setIsOpen(false);
@@ -127,8 +134,9 @@ export default function Navbar({ onOpenRegister }) {
                   <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                   Registration 2026 (Apply Now)
                 </button>
+                */}
                 <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}
-                  className="block w-full text-center py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">
+                  className="block w-full text-center py-3 bg-brand-900 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors">
                   Contact Us
                 </a>
               </div>

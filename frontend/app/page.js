@@ -22,9 +22,11 @@ import {
   FullPageGallerySkeleton,
 } from '@/components/cdd/Skeletons';
 
-const RegistrationModal = dynamic(() => import('@/components/cdd/RegistrationModal'), {
-  ssr: false,
-});
+// NOTE: Registration Modal is disconnected from the Mainframe for now.
+// All components & hooks are preserved in `@/components/cdd/MainframeRegistrationIntegration`.
+// const RegistrationModal = dynamic(() => import('@/components/cdd/RegistrationModal'), {
+//   ssr: false,
+// });
 
 const ProjectsSection = dynamic(() => import('@/components/cdd/ProjectsSection'), {
   loading: () => <ProjectsSkeleton />,
@@ -104,17 +106,21 @@ const AnimatedCounter = ({ from = 0, to, label, isHighlighted = false }) => {
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  // [DISCONNECTED] Full registration model/modal disconnected from Mainframe for now.
+  // Preserved in `@/components/cdd/MainframeRegistrationIntegration`.
+  // const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const { images: galleryImages, getImageByName } = useGallery();
   const [contactForm, setContactForm] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Dynamic Active Members Count (Base 200 + real completed registrations)
-  const BASE_MEMBERS = 200;
-  const [activeMembersCount, setActiveMembersCount] = useState(BASE_MEMBERS);
-  const [isMemberCountUpdated, setIsMemberCountUpdated] = useState(false);
+  // Active Members Count (Base 200)
+  const activeMembersCount = 200;
+  const isMemberCountUpdated = false;
 
+  /*
+  // Dynamic Active Members Count polling & registration listeners (Archived)
+  // To restore, see `@/components/cdd/MainframeRegistrationIntegration`
   useEffect(() => {
     let isMounted = true;
     async function fetchMemberCount() {
@@ -126,39 +132,12 @@ function App() {
             setActiveMembersCount(BASE_MEMBERS + data.count);
           }
         }
-      } catch (err) {
-        // Fallback to base count gracefully
-      }
+      } catch (err) {}
     }
     fetchMemberCount();
-
-    const handleRegistrationCompleted = () => {
-      setActiveMembersCount((prev) => prev + 1);
-      setIsMemberCountUpdated(true);
-      setTimeout(() => setIsMemberCountUpdated(false), 4500);
-    };
-
-    const handleStorageEvent = (e) => {
-      if (e.key === 'cdd_last_reg_timestamp') {
-        fetchMemberCount();
-      }
-    };
-
-    window.addEventListener('cdd:registration-completed', handleRegistrationCompleted);
-    window.addEventListener('storage', handleStorageEvent);
-
-    return () => {
-      isMounted = false;
-      window.removeEventListener('cdd:registration-completed', handleRegistrationCompleted);
-      window.removeEventListener('storage', handleStorageEvent);
-    };
+    ...
   }, []);
-
-  const handleRegistrationSuccess = () => {
-    setActiveMembersCount((prev) => prev + 1);
-    setIsMemberCountUpdated(true);
-    setTimeout(() => setIsMemberCountUpdated(false), 4500);
-  };
+  */
 
   // Eagerly preload and decode static site assets into cache on startup
   useEffect(() => {
@@ -224,7 +203,8 @@ function App() {
         Skip to main content
       </a>
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand-500 z-[100] origin-left" style={{ scaleX: scrollYProgress }} />
-      <Navbar onOpenRegister={() => setIsRegisterOpen(true)} />
+      {/* Registration trigger disconnected from Navbar for now */}
+      <Navbar />
 
       <main id="main-content">
         {/* HERO */}
@@ -238,18 +218,22 @@ function App() {
 
           <div className="relative z-10 px-5 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
             <motion.div style={{ y: heroTextY, opacity: heroOpacity }} className="max-w-4xl">
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-flex flex-wrap items-center gap-2.5 px-4 py-2 bg-brand-50/90 border border-brand-200/80 rounded-full mb-8 shadow-sm">
+              {/* Registration badge archived in @/components/cdd/MainframeRegistrationIntegration */}
+              {/*
+              <div className="inline-flex flex-wrap items-center gap-2.5 px-4 py-2 bg-brand-50/90 border border-brand-200/80 rounded-full mb-8 shadow-sm">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                 <span className="text-brand-900 text-xs font-bold tracking-wide">Registration 2026 is LIVE!</span>
                 <span className="text-gray-300 hidden sm:inline">|</span>
-                <button
-                  onClick={() => setIsRegisterOpen(true)}
-                  className="text-xs font-semibold text-brand-600 hover:text-brand-900 underline flex items-center gap-1 cursor-pointer"
-                >
+                <button onClick={() => setIsRegisterOpen(true)} className="text-xs font-semibold text-brand-600 hover:text-brand-900 underline flex items-center gap-1 cursor-pointer">
                   Apply Online &rarr;
                 </button>
+              </div>
+              */}
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-100 rounded-full mb-8 glow-ring">
+                <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
+                <span className="text-brand-700 text-xs font-semibold tracking-wide">Est. 2021 · PMEC Campus · IICPMEC</span>
               </motion.div>
 
               <h1 className="text-3xl leading-[1.15] sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-brand-900 mb-6 md:mb-8 tracking-tight">
@@ -273,18 +257,24 @@ function App() {
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
                 className="flex flex-col sm:flex-row gap-4">
+                {/* Registration CTA button archived in @/components/cdd/MainframeRegistrationIntegration */}
+                {/*
+                <button
+                  onClick={() => setIsRegisterOpen(true)}
+                  className="btn-primary group w-full sm:w-auto justify-center text-center shadow-lg shadow-brand-500/20 bg-brand-900 hover:bg-brand-800 text-white flex items-center gap-2"
+                >
+                  <Sparkles size={16} className="text-brand-300 animate-pulse" />
+                  Registration 2026
+                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                */}
                 <MagneticButton strength={0.2}>
-                  <button
-                    onClick={() => setIsRegisterOpen(true)}
-                    className="btn-primary group w-full sm:w-auto justify-center text-center shadow-lg shadow-brand-500/20 bg-brand-900 hover:bg-brand-800 text-white flex items-center gap-2"
-                  >
-                    <Sparkles size={16} className="text-brand-300 animate-pulse" />
-                    Registration 2026
-                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
+                  <a href="#about-us" className="btn-primary group w-full sm:w-auto justify-center text-center">
+                    Discover Our Mission <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </a>
                 </MagneticButton>
                 <MagneticButton strength={0.15}>
-                  <a href="#about-us" className="btn-secondary w-full sm:w-auto justify-center text-center">Discover Our Mission</a>
+                  <a href="#contact" className="btn-secondary w-full sm:w-auto justify-center text-center">Get in Touch</a>
                 </MagneticButton>
               </motion.div>
 
@@ -620,11 +610,17 @@ function App() {
         </section>
       </main>
 
-      <RegistrationModal
-        isOpen={isRegisterOpen}
-        onClose={() => setIsRegisterOpen(false)}
-        onSuccess={handleRegistrationSuccess}
-      />
+      {/* 
+        REGISTRATION MODAL (DISCONNECTED FROM MAINFRAME)
+        All code, triggers, and state management are preserved in:
+        `@/components/cdd/MainframeRegistrationIntegration`
+        
+        <RegistrationModal
+          isOpen={isRegisterOpen}
+          onClose={() => setIsRegisterOpen(false)}
+          onSuccess={handleRegistrationSuccess}
+        />
+      */}
       <Footer />
     </div>
   );

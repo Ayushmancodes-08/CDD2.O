@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 import { addRegistration, getAllRegistrations, generateRegistrationsCSV, normalizePhone, normalizeUTR } from '@/lib/registration-store';
 import { GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { sendApplicationReceivedEmail } from '@/lib/email-service';
@@ -25,151 +24,6 @@ const VALID_BRANCHES = [
   'Mechanical Engineering',
   'Metallurgy and Materials Engineering'
 ];
-
-/**
- * Configure Nodemailer transporter with connection pooling
- */
-function getEmailTransporter() {
-  const gmailUser = (process.env.GMAIL_USER || '').trim();
-  const gmailPass = (process.env.GMAIL_APP_PASSWORD || '').trim();
-  if (!gmailUser || !gmailPass) return null;
-
-  return nodemailer.createTransport({
-    service: 'gmail',
-    pool: true,
-    maxConnections: 3,
-    maxMessages: 100,
-    auth: {
-      user: gmailUser,
-      pass: gmailPass,
-    },
-  });
-}
-
-/**
- * Send Asynchronous Confirmation Email (Non-blocking with error resilience)
- */
-async function sendRegistrationEmail(record, whatsappUrl) {
-  try {
-    const transporter = getEmailTransporter();
-    if (!transporter) {
-      console.warn('⚠️ GMAIL credentials not configured; skipping confirmation email.');
-      return;
-    }
-
-    const gmailUser = (process.env.GMAIL_USER || '').trim();
-    const adminEmail = (process.env.ADMIN_NOTIFICATION_EMAIL || gmailUser).trim();
-
-    const studentMailHtml = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Registration Confirmation - IIC PMEC</title>
-      </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 24px; color: #f8fafc;">
-        <div style="max-width: 620px; margin: 0 auto; background: #1e293b; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-          
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding: 32px 24px; text-align: center;">
-            <span style="display: inline-block; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #ffffff; margin-bottom: 8px;">Registration 2026</span>
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">Idea & Innovation Cell (IIC PMEC)</h1>
-            <p style="color: #e0f2fe; margin: 6px 0 0 0; font-size: 14px;">Coding, Design & Development × Student Innovation Center</p>
-          </div>
-
-          <!-- Application ID Banner -->
-          <div style="background: rgba(14, 165, 233, 0.12); border-bottom: 1px solid rgba(14, 165, 233, 0.2); padding: 18px 24px; text-align: center;">
-            <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #38bdf8;">Your Application Pass ID</p>
-            <p style="margin: 0; font-family: monospace; font-size: 26px; font-weight: 800; letter-spacing: 2px; color: #ffffff;">${record.regId}</p>
-          </div>
-
-          <!-- Body Content -->
-          <div style="padding: 28px 24px;">
-            <h2 style="color: #ffffff; font-size: 18px; margin: 0 0 12px 0;">Hello ${record.name},</h2>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 0 0 20px 0;">
-              Your club membership application for <strong>Idea & Innovation Cell</strong> has been successfully registered. We are excited to see your interest in building, designing, and innovating with us!
-            </p>
-
-            <!-- Details Summary Table -->
-            <div style="background: #0f172a; border-radius: 12px; padding: 18px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.06);">
-              <h3 style="color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">Registration Summary</h3>
-              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">Academic Year:</td>
-                  <td style="padding: 6px 0; color: #ffffff; font-weight: 600; text-align: right;">${record.year}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">Branch:</td>
-                  <td style="padding: 6px 0; color: #ffffff; font-weight: 600; text-align: right;">${record.branch}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">College:</td>
-                  <td style="padding: 6px 0; color: #ffffff; font-weight: 600; text-align: right;">Parala Maharaja Engineering College</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">Membership Fee:</td>
-                  <td style="padding: 6px 0; color: #10b981; font-weight: 700; text-align: right;">₹${record.amount}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">UPI Ref (UTR):</td>
-                  <td style="padding: 6px 0; color: #e2e8f0; font-family: monospace; text-align: right;">${record.utr}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 6px 0; color: #94a3b8;">Status:</td>
-                  <td style="padding: 6px 0; color: #10b981; font-weight: 600; text-align: right;">Added to WhatsApp Group</td>
-                </tr>
-              </table>
-            </div>
-
-            <!-- WhatsApp Group Call to Action -->
-            <div style="background: linear-gradient(135deg, rgba(37, 211, 102, 0.15) 0%, rgba(18, 140, 126, 0.15) 100%); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
-              <h3 style="color: #25d366; font-size: 16px; margin: 0 0 8px 0; font-weight: 700;">Important Next Step</h3>
-              <p style="color: #e2e8f0; font-size: 13px; margin: 0 0 16px 0; line-height: 1.5;">
-                Join the official recruitment WhatsApp announcement group to receive updates regarding interview schedules, tasks, and orientation.
-              </p>
-              <a href="${whatsappUrl}" target="_blank" style="display: inline-block; background-color: #25d366; color: #ffffff; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 9999px; text-decoration: none; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);">
-                Join Candidates WhatsApp Group &rarr;
-              </a>
-            </div>
-
-            <p style="color: #94a3b8; font-size: 12px; line-height: 1.5; margin: 0;">
-              Keep your Application Pass ID (<strong>${record.regId}</strong>) handy for future reference. If you notice any discrepancy, reply directly to this email.
-            </p>
-          </div>
-
-          <!-- Footer -->
-          <div style="background: #0b1120; padding: 18px 24px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06);">
-            <p style="color: #64748b; font-size: 11px; margin: 0;">
-              &copy; ${new Date().getFullYear()} Idea and Innovation Cell (IIC PMEC / CDD×SIC), Parala Maharaja Engineering College.
-            </p>
-          </div>
-        </div>
-      </body>
-    </html>
-    `;
-
-    // Dispatch to Student
-    await transporter.sendMail({
-      from: `"IIC PMEC Recruitment" <${gmailUser}>`,
-      to: record.email,
-      subject: `Registration Confirmed: ${record.regId} - IIC PMEC Club Membership`,
-      html: studentMailHtml,
-    });
-
-    // Notify Admin
-    if (adminEmail) {
-      await transporter.sendMail({
-        from: `"IIC Portal Alerts" <${gmailUser}>`,
-        to: adminEmail,
-        subject: `⚡ New Registration: ${record.name} (${record.year} - ${record.branch}) [₹${record.amount}]`,
-        text: `New registration received:\nID: ${record.regId}\nName: ${record.name}\nYear: ${record.year}\nBranch: ${record.branch}\nUTR: ${record.utr}\nAmount: ₹${record.amount}\nPhone: ${record.phone}\nEmail: ${record.email}`,
-      });
-    }
-  } catch (err) {
-    console.error('Non-fatal error dispatching registration email:', err);
-  }
-}
 
 /**
  * Asynchronously sync to Google Sheets & Drive (AppScript)
@@ -203,7 +57,7 @@ async function syncToGoogleSheet(record) {
         amount: record.amount,
         amountPaid: record.amount,
         utr: record.utr,
-        payingUpi: record.payingUpi || 'BharatPe Merchant UPI',
+        payingUpi: record.payingUpi || 'Canara Bank Direct Transfer',
         status: record.status || 'Pending Verification',
         photo: record.photo || null,
         paymentScreenshot: record.paymentScreenshot || null,

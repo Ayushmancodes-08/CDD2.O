@@ -130,7 +130,7 @@ export const TEAM_MEMBERS = [
     image: "https://res.cloudinary.com/dlanrr3jl/image/upload/v1786899127/1728367354668_uya93b.jpg",
     category: "Board",
     linkedin: "https://www.linkedin.com/in/ayushman-patra08/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BByOzMs0sQX6%2BN7xYh6U%2BPw%3D%3D",
-    email: "patraayushman21@gmail.com",
+    email: "ideainnovationcell.pmec@gmail.com",
     instagram: "https://www.instagram.com/ayushman_patra08/"
   },
   {

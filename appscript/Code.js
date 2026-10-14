@@ -7,20 +7,26 @@
  * 1. Recruitment Registrations (POST):
  *    - Creates a dedicated subfolder for each registered student inside
  *      the main "IIC_PMEC_Recruitment_2026" folder:
- *      e.g. "IIC-2026-0042_Ayushman_Patra"
+ *      e.g. "2301109042_Ayushman_Patra"
  *    - Saves both:
- *        1. Student Profile Photo ("STUDENT_Photo.jpg")
+ *        1. Student Profile Photo ("2301109042_Photo.jpg")
  *        2. Payment Screenshot ("UTR_123456789012_PaymentProof.jpg")
  *      directly inside the member's personal folder!
  *    - Adds clickable =HYPERLINK() links to the member folder, photo, and receipt.
+ *    - Sets status to "Pending Verification".
  * 
- * 2. Event Registrations (POST):
+ * 2. Admin Status Approval Webhook (POST action: update_status):
+ *    - Triggered when admin approves candidate in /secret-admin-cdd.
+ *    - Updates status in Google Sheet to "VERIFIED" with green formatting.
+ *    - Can also send a native Google backup confirmation email with official WhatsApp link.
+ * 
+ * 3. Event Registrations (POST):
  *    - Logs workshop/event signups to an "Event_Registrations" tab.
  * 
- * 3. Gallery Images API (GET ?action=getImages):
+ * 4. Gallery Images API (GET ?action=getImages):
  *    - Scans Google Drive folder ("IIC_PMEC_Gallery") and returns direct CDN URLs.
  * 
- * 4. Health Check (GET):
+ * 5. Health Check (GET):
  *    - Instant online verification.
  */
 
@@ -28,6 +34,7 @@ const MAIN_FOLDER_NAME = "IIC_PMEC_Recruitment_2026";
 const GALLERY_FOLDER_NAME = "IIC_PMEC_Gallery";
 const RECRUITMENT_SHEET_NAME = "Registrations";
 const EVENT_SHEET_NAME = "Event_Registrations";
+const OFFICIAL_WHATSAPP_LINK = "https://chat.whatsapp.com/HPR6RiuFLhxJz34y52IvjY";
 
 /**
  * ==============================================================================
@@ -248,8 +255,8 @@ function doPost(e) {
       "WhatsApp Phone",
       "Email Address",
       "Amount Paid (₹)",
-      "UPI Ref (UTR)",
-      "Paying UPI ID",
+      "Bank Ref (UTR)",
+      "Payment Method",
       "Verification Status",
       "Member Drive Folder",
       "Student Photo",
@@ -277,6 +284,8 @@ function doPost(e) {
       // Ensure existing headers stay in sync
       sheet.getRange(1, 2).setValue("Reg ID / Roll No");
       sheet.getRange(1, 9).setValue("Amount Paid (₹)");
+      sheet.getRange(1, 10).setValue("Bank Ref (UTR)");
+      sheet.getRange(1, 11).setValue("Payment Method");
     }
 
     // 1. Get Main Recruitment Folder
@@ -344,7 +353,7 @@ function doPost(e) {
       data.email || "N/A",
       amountPaid, // Numeric amount for easy summing/formulas in Google Sheets
       "'" + (data.utr || ""), // Force string format for 12-digit UTR numbers
-      data.payingUpi || "BharatPe Merchant UPI",
+      data.payingUpi || "Canara Bank Direct Transfer",
       data.status || "Pending Verification",
       folderFormula,
       photoFormula,

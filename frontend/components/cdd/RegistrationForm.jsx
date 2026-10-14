@@ -1,26 +1,17 @@
 'use client';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QRCodeSVG } from 'qrcode.react';
 import {
   User, Mail, Phone, Building2, GraduationCap, CheckCircle2,
   Upload, ArrowRight, ArrowLeft, Copy, Check, ShieldCheck,
   Lock, ExternalLink, Loader2, Sparkles, RefreshCw, Smartphone,
-  Send, AtSign, Zap, QrCode, MessageSquare, Info, AlertCircle, Download,
+  Send, AtSign, Zap, MessageSquare, Info, AlertCircle, Download,
   CreditCard, Landmark, Hash, Clock, FileCheck, Camera, ChevronRight,
   Cloud, RotateCcw, AlertTriangle, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { REGISTRATION_BRANCHES, REGISTRATION_YEARS, COLLEGE_NAME, BANK_DETAILS } from '@/lib/cdd-constants';
 import { compressImage } from '@/lib/image-compressor';
-import {
-  generateUPIUri,
-  DEFAULT_CLUB_UPI,
-  DEFAULT_PAYEE_NAME,
-  DEFAULT_TAP_TO_PAY_UPI,
-  DEFAULT_TAP_TO_PAY_NAME,
-  DEFAULT_WHATSAPP_GROUP,
-} from '@/lib/upi';
 
 const DRAFT_STORAGE_KEY = 'cdd_reg_draft_2026';
 
@@ -30,8 +21,6 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
   const [copiedIfsc, setCopiedIfsc] = useState(false);
-  const [copiedUpi, setCopiedUpi] = useState(false);
-  const [showQrCode, setShowQrCode] = useState(false);
   const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
   const [draftSavedTime, setDraftSavedTime] = useState(null);
 
@@ -199,18 +188,6 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
 
   const currentAmount = selectedYearObj.amount;
 
-  // Active UPI URI for students who prefer UPI over direct bank transfer
-  const activeUpiUri = useMemo(() => {
-    if (sessionData?.upiUri) return sessionData.upiUri;
-    const cleanNote = `CDD-${(formData.rollNo || formData.name || 'Member').trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`;
-    return generateUPIUri({
-      vpa: DEFAULT_TAP_TO_PAY_UPI,
-      name: DEFAULT_TAP_TO_PAY_NAME,
-      amount: currentAmount,
-      note: cleanNote,
-    });
-  }, [sessionData, formData.rollNo, formData.name, currentAmount]);
-
   // Handle Input Changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -282,16 +259,6 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
     }
     toast.success('IFSC Code CNRB0017998 copied to clipboard!');
     setTimeout(() => setCopiedIfsc(false), 2500);
-  };
-
-  const handleCopyUpi = () => {
-    navigator.clipboard.writeText(DEFAULT_CLUB_UPI);
-    setCopiedUpi(true);
-    if (typeof window !== 'undefined' && window.navigator?.vibrate) {
-      try { window.navigator.vibrate(35); } catch (e) {}
-    }
-    toast.success('UPI ID copied to clipboard!');
-    setTimeout(() => setCopiedUpi(false), 2500);
   };
 
   // Validation: Phase 1
@@ -944,46 +911,19 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                   </div>
                 </div>
 
-                {/* Optional QR Code & UPI Accordion */}
+                {/* Official Bank Transfer Only Notice */}
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
-                      <Zap size={14} className="text-amber-500" />
-                      Paying via UPI apps (PhonePe, GPay, Paytm)?
+                  <div className="p-3.5 bg-amber-50/80 border border-amber-200/90 rounded-xl flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
+                      <Info size={14} />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowQrCode((prev) => !prev)}
-                      className="text-xs text-brand-700 hover:text-brand-900 font-bold underline cursor-pointer"
-                    >
-                      {showQrCode ? 'Hide UPI QR' : 'Show UPI QR Code'}
-                    </button>
+                    <div className="text-xs text-amber-950 space-y-1">
+                      <p className="font-bold text-amber-900">Payment Instruction: Bank Details Only</p>
+                      <p className="text-amber-800/90 leading-relaxed">
+                        Please initiate payment of <strong className="font-bold text-amber-950">₹{currentAmount}/-</strong> strictly using the Canara Bank account details provided above via NetBanking, IMPS, NEFT, or your banking app. Once transferred, click <strong className="font-semibold text-emerald-800">&quot;I Have Paid&quot;</strong> below to enter your 12-digit UTR/Reference number and upload receipt proof.
+                      </p>
+                    </div>
                   </div>
-
-                  {showQrCode && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-3 p-4 bg-white rounded-xl border border-gray-200 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-                    >
-                      <div className="p-2 bg-white rounded-xl border-2 border-gray-200 shadow-sm shrink-0">
-                        <QRCodeSVG value={activeUpiUri} size={130} level="M" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs font-bold text-gray-700">Scan to Pay via any UPI App</p>
-                        <p className="text-xs font-mono font-bold text-brand-900 break-all">{DEFAULT_CLUB_UPI}</p>
-                        <button
-                          type="button"
-                          onClick={handleCopyUpi}
-                          className="mt-2 text-xs font-bold text-brand-600 hover:text-brand-800 inline-flex items-center gap-1 cursor-pointer"
-                        >
-                          {copiedUpi ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
-                          {copiedUpi ? 'UPI Copied' : 'Copy UPI ID'}
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
                 </div>
               </div>
 
@@ -1041,7 +981,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                   Verify & Submit Proof (Phase 3)
                 </h3>
                 <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
-                  Enter the 12-digit transaction ID / UTR and attach your bank or UPI transfer receipt.
+                  Enter the 12-digit transaction ID / UTR and attach your bank transfer receipt.
                 </p>
               </div>
 
@@ -1090,7 +1030,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                   />
                 </div>
                 <p className="text-[11px] text-amber-800/90 leading-tight">
-                  Enter the 12-digit UTR from Canara Bank, NetBanking, GPay, PhonePe, or Paytm receipt.
+                  Enter the 12-digit UTR / IMPS / Reference number from your bank transfer receipt.
                 </p>
               </div>
 

@@ -7,7 +7,8 @@ import {
   Upload, ArrowRight, ArrowLeft, Copy, Check, ShieldCheck,
   Lock, ExternalLink, Loader2, Sparkles, RefreshCw, Smartphone,
   Send, AtSign, Zap, QrCode, MessageSquare, Info, AlertCircle, Download,
-  CreditCard, Landmark, Hash, Clock, FileCheck, Camera, ChevronRight
+  CreditCard, Landmark, Hash, Clock, FileCheck, Camera, ChevronRight,
+  Cloud, RotateCcw, AlertTriangle, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { REGISTRATION_BRANCHES, REGISTRATION_YEARS, COLLEGE_NAME, BANK_DETAILS } from '@/lib/cdd-constants';
@@ -21,6 +22,8 @@ import {
   DEFAULT_WHATSAPP_GROUP,
 } from '@/lib/upi';
 
+const DRAFT_STORAGE_KEY = 'cdd_reg_draft_2026';
+
 export default function RegistrationForm({ onSuccess = null, isModal = false }) {
   // 1: Details (Phase 1), 2: Bank & Fees (Phase 2), 3: Proof / UTR (Phase 3), 4: Submitted & Pending Review
   const [step, setStep] = useState(1);
@@ -29,6 +32,8 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [copiedIfsc, setCopiedIfsc] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
+  const [draftSavedTime, setDraftSavedTime] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -51,6 +56,125 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const [isCompressingScreenshot, setIsCompressingScreenshot] = useState(false);
   const [sessionData, setSessionData] = useState(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+
+  // 1. Google Form Mode: Restore draft on component mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          setFormData((prev) => ({
+            ...prev,
+            name: parsed.name || '',
+            rollNo: parsed.rollNo || '',
+            year: parsed.year || '1st year',
+            branch: parsed.branch || 'Computer Science and Engineering',
+            email: parsed.email || '',
+            phone: parsed.phone || '',
+            photo: parsed.photo || '',
+            utr: parsed.utr || '',
+          }));
+          if (parsed.photo) setPhotoPreview(parsed.photo);
+          if (parsed.step && parsed.step >= 1 && parsed.step <= 3) {
+            setStep(parsed.step);
+          }
+          if (parsed.sessionData) {
+            setSessionData(parsed.sessionData);
+          }
+          setHasRestoredDraft(true);
+          setDraftSavedTime('Restored');
+        }
+      }
+    } catch (e) {}
+  }, []);
+
+  // 2. Google Form Mode: Auto-save draft on data changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (step === 4) {
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch (e) {}
+      return;
+    }
+
+    const hasData = Boolean(
+      formData.name.trim() ||
+      formData.rollNo.trim() ||
+      formData.email.trim() ||
+      formData.phone.trim() ||
+      formData.photo ||
+      formData.utr.trim()
+    );
+
+    if (hasData) {
+      try {
+        localStorage.setItem(
+          DRAFT_STORAGE_KEY,
+          JSON.stringify({
+            name: formData.name,
+            rollNo: formData.rollNo,
+            year: formData.year,
+            branch: formData.branch,
+            email: formData.email,
+            phone: formData.phone,
+            photo: formData.photo,
+            utr: formData.utr,
+            step: Math.min(step, 3),
+            sessionData,
+            savedAt: new Date().toISOString(),
+          })
+        );
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        setDraftSavedTime(timeStr);
+      } catch (e) {}
+    }
+  }, [formData, step, sessionData]);
+
+  // 3. Clear draft helper
+  const handleClearDraft = () => {
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch (e) {}
+    setFormData({
+      name: '',
+      rollNo: '',
+      year: '1st year',
+      branch: 'Computer Science and Engineering',
+      college: COLLEGE_NAME,
+      email: '',
+      phone: '',
+      photo: '',
+      utr: '',
+      paymentScreenshot: '',
+    });
+    setPhotoPreview(null);
+    setScreenshotPreview(null);
+    setSessionData(null);
+    setStep(1);
+    setHasRestoredDraft(false);
+    setDraftSavedTime(null);
+    toast.info('Form draft reset. You can start fresh.');
+  };
+
+  // 4. Tab / Window beforeunload prompt while filling
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleBeforeUnload = (e) => {
+      const hasUnsubmitted =
+        (formData.name.trim() || formData.rollNo.trim() || formData.email.trim()) &&
+        step < 4;
+      if (hasUnsubmitted) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Your registration draft is saved.';
+        return e.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formData, step]);
 
   // Scroll helper
   const scrollToFormTop = () => {
@@ -139,10 +263,13 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
     }
   };
 
-  // Copy Helpers
+  // Copy Helpers with Mobile Haptic Feedback
   const handleCopyAcc = () => {
     navigator.clipboard.writeText(BANK_DETAILS.accountNumber);
     setCopiedAcc(true);
+    if (typeof window !== 'undefined' && window.navigator?.vibrate) {
+      try { window.navigator.vibrate(35); } catch (e) {}
+    }
     toast.success('Account Number 110209284559 copied to clipboard!');
     setTimeout(() => setCopiedAcc(false), 2500);
   };
@@ -150,6 +277,9 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const handleCopyIfsc = () => {
     navigator.clipboard.writeText(BANK_DETAILS.ifscCode);
     setCopiedIfsc(true);
+    if (typeof window !== 'undefined' && window.navigator?.vibrate) {
+      try { window.navigator.vibrate(35); } catch (e) {}
+    }
     toast.success('IFSC Code CNRB0017998 copied to clipboard!');
     setTimeout(() => setCopiedIfsc(false), 2500);
   };
@@ -157,6 +287,9 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(DEFAULT_CLUB_UPI);
     setCopiedUpi(true);
+    if (typeof window !== 'undefined' && window.navigator?.vibrate) {
+      try { window.navigator.vibrate(35); } catch (e) {}
+    }
     toast.success('UPI ID copied to clipboard!');
     setTimeout(() => setCopiedUpi(false), 2500);
   };
@@ -360,6 +493,30 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
         <div className="absolute -top-24 -right-24 w-60 h-60 bg-brand-400/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
 
+        {/* Google Form Mode Auto-Save Status Strip */}
+        {step <= 3 && (
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 mb-5 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs shadow-xs">
+            <div className="flex items-center gap-2 text-slate-700 font-medium">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <Cloud size={15} className="text-emerald-600 shrink-0" />
+              <span className="text-xs font-semibold text-slate-800">
+                Draft auto-saved {draftSavedTime ? `(${draftSavedTime})` : 'locally'}
+              </span>
+              <span className="text-[10px] text-gray-400 hidden sm:inline">• Safely stored in browser</span>
+            </div>
+            {(formData.name || formData.rollNo || formData.email || hasRestoredDraft) && (
+              <button
+                type="button"
+                onClick={handleClearDraft}
+                className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline inline-flex items-center gap-1 cursor-pointer transition-colors"
+                title="Reset form and clear saved draft"
+              >
+                <RotateCcw size={12} /> Reset form
+              </button>
+            )}
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           {/* ========================================================================= */}
           {/* PHASE 1: STUDENT DETAILS FORM */}
@@ -411,10 +568,10 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                   </div>
                   <label
                     htmlFor="student-photo-input"
-                    className="absolute -bottom-2 -right-2 bg-brand-900 hover:bg-brand-800 text-white p-2 rounded-xl shadow-md cursor-pointer transition-all hover:scale-105 active:scale-95"
+                    className="absolute -bottom-2 -right-2 bg-brand-900 hover:bg-brand-800 text-white p-2.5 rounded-xl shadow-md cursor-pointer transition-all hover:scale-105 active:scale-95"
                     title="Upload Photo ID"
                   >
-                    <Upload size={14} />
+                    <Upload size={15} />
                     <input
                       id="student-photo-input"
                       type="file"
@@ -439,7 +596,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                         placeholder="e.g. Ayushman Patra"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
                       />
                     </div>
                   </div>
@@ -514,7 +671,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       placeholder="e.g. 2301109042 or 24LE012"
                       value={formData.rollNo}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-mono"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-mono"
                     />
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1">College Registration ID or Class Roll No.</p>
@@ -531,7 +688,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       value={formData.branch}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer"
+                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-base sm:text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer"
                     >
                       {REGISTRATION_BRANCHES.map((b) => (
                         <option key={b} value={b}>
@@ -561,7 +718,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       placeholder="you@pmec.ac.in or gmail"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
                     />
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1">Approval email & WhatsApp link will arrive here.</p>
@@ -581,7 +738,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                       placeholder="10-digit WhatsApp number"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-mono"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-900 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-mono"
                     />
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1">For official cohort communications.</p>
@@ -929,7 +1086,7 @@ export default function RegistrationForm({ onSuccess = null, isModal = false }) 
                     placeholder="e.g. 428711094821"
                     value={formData.utr}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-amber-300 bg-white text-brand-900 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all uppercase"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-amber-300 bg-white text-brand-900 text-base sm:text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all uppercase"
                   />
                 </div>
                 <p className="text-[11px] text-amber-800/90 leading-tight">

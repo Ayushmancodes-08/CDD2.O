@@ -320,7 +320,46 @@ export async function POST(req) {
       );
     }
 
-    // 2. Add Registration (Atomic with deduplication)
+    // 2. Pre-flight Deduplication Check
+    try {
+      const existingList = await getAllRegistrations();
+      const duplicate = existingList.find(
+        (r) =>
+          r.utr === cleanUTR ||
+          (r.rollNo && r.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+          (r.registrationNumber && r.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase()) ||
+          r.email === cleanEmail ||
+          r.phone === cleanPhone
+      );
+      if (duplicate) {
+        let dupMsg = 'A registration already exists with this information.';
+        if (duplicate.utr === cleanUTR) {
+          dupMsg = `This Transaction UTR (${cleanUTR}) has already been submitted under Application ID ${duplicate.regId}. Duplicate transactions are strictly prohibited.`;
+        } else if (
+          (duplicate.rollNo && duplicate.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+          (duplicate.registrationNumber && duplicate.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase())
+        ) {
+          dupMsg = `A registration for Reg ID / Roll No "${cleanRollNo}" has already been submitted (Application ID: ${duplicate.regId}). Each student can register only once.`;
+        } else if (duplicate.email === cleanEmail) {
+          dupMsg = `A registration with email "${cleanEmail}" already exists (Application ID: ${duplicate.regId}).`;
+        } else if (duplicate.phone === cleanPhone) {
+          dupMsg = `A registration with phone number "${cleanPhone}" already exists (Application ID: ${duplicate.regId}).`;
+        }
+
+        return Response.json(
+          {
+            success: false,
+            error: dupMsg,
+            existingRegId: duplicate.regId,
+          },
+          { status: 409 }
+        );
+      }
+    } catch (preErr) {
+      console.warn('Pre-check warning:', preErr.message);
+    }
+
+    // 3. Add Registration (Atomic with deduplication)
     const record = await addRegistration({
       name: name.trim(),
       rollNo: cleanRollNo,

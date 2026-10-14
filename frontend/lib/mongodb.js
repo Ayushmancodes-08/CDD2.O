@@ -170,6 +170,8 @@ export async function ensureMongoIndexes(db) {
     await registrations.createIndex({ email: 1 }, { unique: true });
     await registrations.createIndex({ phone: 1 }, { unique: true });
     await registrations.createIndex({ regId: 1 }, { unique: true });
+    await registrations.createIndex({ rollNo: 1 }, { unique: true, sparse: true });
+    await registrations.createIndex({ registrationNumber: 1 }, { unique: true, sparse: true });
     await registrations.createIndex({ sessionId: 1 }, { sparse: true });
     await registrations.createIndex({ createdAt: -1 });
 

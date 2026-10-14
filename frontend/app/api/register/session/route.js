@@ -77,15 +77,25 @@ export async function POST(req) {
     try {
       const existingList = await getAllRegistrations();
       const duplicate = existingList.find(
-        (r) => r.email === cleanEmail || r.phone === cleanPhone
+        (r) =>
+          (r.rollNo && r.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+          (r.registrationNumber && r.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase()) ||
+          r.email === cleanEmail ||
+          r.phone === cleanPhone
       );
       if (duplicate) {
+        const isRollMatch = (duplicate.rollNo && duplicate.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+                            (duplicate.registrationNumber && duplicate.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase());
+        const fieldName = isRollMatch
+          ? `Reg ID / Roll No "${cleanRollNo}"`
+          : duplicate.email === cleanEmail
+          ? `email address "${cleanEmail}"`
+          : `phone number "${cleanPhone}"`;
+
         return Response.json(
           {
             success: false,
-            error: `A registration is already recorded for this ${
-              duplicate.email === cleanEmail ? 'email address' : 'phone number'
-            } (ID: ${duplicate.regId}). Each candidate can only register once.`,
+            error: `A registration is already recorded for this ${fieldName} (Application ID: ${duplicate.regId}). Each candidate can only register once.`,
             existingRegId: duplicate.regId,
           },
           { status: 409 }

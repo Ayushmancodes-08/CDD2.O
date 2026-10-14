@@ -314,26 +314,40 @@ export async function addRegistration(data) {
 
             // 1. Isolation & Consistency: Duplicate check executed inside transaction session
             const duplicate = await col.findOne(
-              { $or: [{ utr: cleanUTR }, { email: cleanEmail }, { phone: cleanPhone }] },
+              {
+                $or: [
+                  { utr: cleanUTR },
+                  { email: cleanEmail },
+                  { phone: cleanPhone },
+                  { rollNo: cleanRollNo },
+                  { registrationNumber: cleanRollNo },
+                ],
+              },
               { session }
             );
 
             if (duplicate) {
+              const isUtrDup = duplicate.utr === cleanUTR;
+              const isRollDup = (duplicate.rollNo && duplicate.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+                                (duplicate.registrationNumber && duplicate.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase());
+              const isEmailDup = duplicate.email === cleanEmail;
+
               appendAuditLog({
                 action: 'TRANSACTION_ABORTED_DUPLICATE',
                 regId: record.regId,
-                reason: duplicate.utr === cleanUTR ? 'DUPLICATE_UTR' : duplicate.email === cleanEmail ? 'DUPLICATE_EMAIL' : 'DUPLICATE_PHONE',
+                reason: isUtrDup ? 'DUPLICATE_UTR' : isRollDup ? 'DUPLICATE_ROLL_NO' : isEmailDup ? 'DUPLICATE_EMAIL' : 'DUPLICATE_PHONE',
               });
 
-              if (duplicate.utr === cleanUTR) {
+              if (isUtrDup) {
                 throw new Error('This UPI Transaction (UTR) has already been submitted. Duplicate transactions are not allowed.');
               }
-              if (duplicate.email === cleanEmail) {
+              if (isRollDup) {
+                throw new Error(`A registration with Reg ID / Roll No "${cleanRollNo}" already exists. Duplicate registrations are not allowed.`);
+              }
+              if (isEmailDup) {
                 throw new Error(`A registration with email "${cleanEmail}" already exists. Each student may only register once.`);
               }
-              if (duplicate.phone === cleanPhone) {
-                throw new Error(`A registration with phone number "${cleanPhone}" already exists.`);
-              }
+              throw new Error(`A registration with phone number "${cleanPhone}" already exists.`);
             }
 
             // 2. Atomicity & Durability: Insert registration document within session
@@ -405,6 +419,20 @@ export async function addRegistration(data) {
         utr: cleanUTR,
       });
       throw new Error('This UPI Transaction (UTR) has already been submitted. Duplicate transactions are not allowed.');
+    }
+
+    const dupRoll = list.find(
+      (r) =>
+        (r.rollNo && r.rollNo.toLowerCase() === cleanRollNo.toLowerCase()) ||
+        (r.registrationNumber && r.registrationNumber.toLowerCase() === cleanRollNo.toLowerCase())
+    );
+    if (dupRoll) {
+      appendAuditLog({
+        action: 'TRANSACTION_ABORTED_DUPLICATE_FILE',
+        regId: record.regId,
+        rollNo: cleanRollNo,
+      });
+      throw new Error(`A registration with Reg ID / Roll No "${cleanRollNo}" already exists. Duplicate registrations are not allowed.`);
     }
 
     const dupEmail = list.find((r) => r.email === cleanEmail);

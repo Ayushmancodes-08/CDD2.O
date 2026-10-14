@@ -20,10 +20,19 @@ export const REGISTRATION_BRANCHES = [
   "Metallurgy and Materials Engineering"
 ];
 
+export const BANK_DETAILS = {
+  bankName: "Canara Bank",
+  branch: "Sitalpalli",
+  accountName: "CODINGDESIGN ANDDEVELOPMENT CLUB",
+  accountNumber: "110209284559",
+  ifscCode: "CNRB0017998",
+  noticeRef: "PMEC/Startup/03/2026",
+  deadline: "26 October 2026",
+};
+
 export const REGISTRATION_YEARS = [
-  { id: "1st year", label: "1st Year", amount: 300, duration: "4 Years" },
-  { id: "2nd year", label: "2nd Year", amount: 225, duration: "3 Years" },
-  { id: "3rd year", label: "3rd Year", amount: 150, duration: "2 Years" }
+  { id: "1st year", label: "First-Year Student", shortLabel: "1st Year", amount: 300, duration: "4 Years", description: "First-Year PMEC Students" },
+  { id: "2nd year", label: "Second-Year Student", shortLabel: "2nd Year", amount: 225, duration: "3 Years", description: "Second-Year PMEC Students" }
 ];
 
 export const COLLEGE_NAME = "Parala Maharaja Engineering College";

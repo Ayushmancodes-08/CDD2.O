@@ -176,12 +176,63 @@ function doPost(e) {
     }
 
     // ==========================================================================
-    // CASE 2: CLUB RECRUITMENT REGISTRATION (Per-Member Folder + Photo + UTR)
+    // CASE 2: STATUS UPDATE / APPROVE MEMBER WEBHOOK (From Admin Dashboard)
+    // ==========================================================================
+    if (data.action === "update_status" || data.action === "approve_member") {
+      let sheet = ss.getSheetByName(RECRUITMENT_SHEET_NAME);
+      if (!sheet) {
+        return ContentService.createTextOutput(JSON.stringify({
+          success: false,
+          error: "Registrations sheet not found."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
+      const searchKey = (data.regId || data.rollNo || data.utr || data.email || "").toLowerCase().trim();
+      const lastRow = sheet.getLastRow();
+      let rowFound = -1;
+
+      if (lastRow > 1) {
+        const values = sheet.getRange(2, 1, lastRow - 1, 12).getValues();
+        for (let i = 0; i < values.length; i++) {
+          const rowReg = String(values[i][1]).toLowerCase().trim(); // Column 2
+          const rowEmail = String(values[i][7]).toLowerCase().trim(); // Column 8
+          const rowUtr = String(values[i][9]).toLowerCase().trim(); // Column 10
+          if (rowReg.includes(searchKey) || rowEmail === searchKey || rowUtr === searchKey) {
+            rowFound = i + 2;
+            break;
+          }
+        }
+      }
+
+      const targetStatus = (data.status || "VERIFIED").toUpperCase();
+      if (rowFound !== -1) {
+        const statusCell = sheet.getRange(rowFound, 12);
+        statusCell.setValue(targetStatus);
+        statusCell.setFontWeight("bold");
+        if (targetStatus === "VERIFIED") {
+          statusCell.setFontColor("#059669");
+        } else if (targetStatus === "REJECTED") {
+          statusCell.setFontColor("#dc2626");
+        } else {
+          statusCell.setFontColor("#d97706");
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: "Status updated in Google Sheet.",
+        rowNumber: rowFound,
+        status: targetStatus
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ==========================================================================
+    // CASE 3: CLUB RECRUITMENT REGISTRATION (Per-Member Folder + Photo + UTR)
     // ==========================================================================
     let sheet = ss.getSheetByName(RECRUITMENT_SHEET_NAME);
     const headers = [
       "Timestamp",
-      "Registration Number",
+      "Reg ID / Roll No",
       "Student Name",
       "Year of Study",
       "Engineering Branch",
@@ -216,7 +267,7 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     } else {
       // Ensure existing headers stay in sync
-      sheet.getRange(1, 2).setValue("Registration Number");
+      sheet.getRange(1, 2).setValue("Reg ID / Roll No");
       sheet.getRange(1, 9).setValue("Amount Paid (₹)");
     }
 
@@ -224,7 +275,7 @@ function doPost(e) {
     const mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME);
 
     // 2. Extract and format Registration Number and Amount Paid
-    const regNumber = (data.registrationNumber || data.regId || "CDD26-STUDENT").trim();
+    const regNumber = (data.rollNo || data.registrationNumber || data.regId || "CDD26-STUDENT").trim();
     const cleanRegId = sanitizeFileName(regNumber);
     const cleanName = sanitizeFileName(data.name || "Member");
     const amountPaid = Number(data.amountPaid || data.amount) || 300;
@@ -286,7 +337,7 @@ function doPost(e) {
       amountPaid, // Numeric amount for easy summing/formulas in Google Sheets
       "'" + (data.utr || ""), // Force string format for 12-digit UTR numbers
       data.payingUpi || "BharatPe Merchant UPI",
-      data.status || "Added to WhatsApp Group",
+      data.status || "Pending Verification",
       folderFormula,
       photoFormula,
       receiptFormula
@@ -312,7 +363,12 @@ function doPost(e) {
     // Status color badge (Column 12: Status)
     const statusCell = sheet.getRange(lastRow, 12);
     statusCell.setFontWeight("bold");
-    statusCell.setFontColor("#059669"); // Emerald for confirmed / added to group
+    const initialStatus = String(data.status || "Pending Verification").toUpperCase();
+    if (initialStatus === "VERIFIED" || initialStatus.includes("WHATSAPP")) {
+      statusCell.setFontColor("#059669"); // Emerald
+    } else {
+      statusCell.setFontColor("#d97706"); // Amber for pending verification
+    }
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,

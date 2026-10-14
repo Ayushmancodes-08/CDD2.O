@@ -23,7 +23,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, year, branch, college, email, phone } = body;
+    const { name, rollNo, registrationNumber, year, branch, college, email, phone } = body;
 
     // 1. Validation
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
@@ -33,10 +33,18 @@ export async function POST(req) {
       );
     }
 
+    const cleanRollNo = (rollNo || registrationNumber || '').trim();
+    if (!cleanRollNo || cleanRollNo.length < 2) {
+      return Response.json(
+        { success: false, error: 'Please enter your Reg ID / Roll No.' },
+        { status: 400 }
+      );
+    }
+
     const normalizedYear = (year || '').toLowerCase().trim();
     if (!YEAR_FEE_MAP[normalizedYear]) {
       return Response.json(
-        { success: false, error: 'Please select a valid academic year (1st, 2nd, or 3rd year).' },
+        { success: false, error: 'Please select a valid academic year (First-Year or Second-Year Student).' },
         { status: 400 }
       );
     }
@@ -122,6 +130,8 @@ export async function POST(req) {
       },
       student: {
         name: name.trim(),
+        rollNo: cleanRollNo,
+        registrationNumber: cleanRollNo,
         year: normalizedYear,
         branch,
         college: 'Parala Maharaja Engineering College',

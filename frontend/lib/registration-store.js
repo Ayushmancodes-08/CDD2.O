@@ -139,7 +139,11 @@ function writeLocalRegistrationsAtomic(list) {
  */
 export const YEAR_FEE_MAP = {
   '1st year': 300,
+  'first year': 300,
+  'first-year student': 300,
   '2nd year': 225,
+  'second year': 225,
+  'second-year student': 225,
   '3rd year': 150,
 };
 
@@ -165,9 +169,14 @@ function validateConsistency(data) {
     throw new Error('Consistency Violation: Invalid or missing applicant name (minimum 2 characters).');
   }
 
+  const cleanRollNo = (data.rollNo || data.registrationNumber || '').trim();
+  if (!cleanRollNo || cleanRollNo.length < 2) {
+    throw new Error('Consistency Violation: Reg ID / Roll No is required (minimum 2 characters).');
+  }
+
   const normalizedYear = (data.year || '').toLowerCase().trim();
   if (!YEAR_FEE_MAP[normalizedYear]) {
-    throw new Error('Consistency Violation: Year must be 1st year, 2nd year, or 3rd year.');
+    throw new Error('Consistency Violation: Year must be First-Year Student (1st year) or Second-Year Student (2nd year).');
   }
 
   const expectedAmount = YEAR_FEE_MAP[normalizedYear];
@@ -258,9 +267,13 @@ export async function addRegistration(data) {
   const now = new Date();
   const istDate = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
 
+  const cleanRollNo = (data.rollNo || data.registrationNumber || '').trim();
+
   const record = {
     regId: data.regId || generateRegId(data.branch),
     name: cleanName,
+    rollNo: cleanRollNo,
+    registrationNumber: cleanRollNo,
     year: normalizedYear,
     branch: data.branch,
     college: 'Parala Maharaja Engineering College',
@@ -645,6 +658,7 @@ export function generateRegistrationsCSV(records) {
   const headers = [
     'Reg ID',
     'Name',
+    'Reg ID / Roll No',
     'Year',
     'Branch',
     'College',
@@ -653,7 +667,7 @@ export function generateRegistrationsCSV(records) {
     'Amount (INR)',
     'UTR / UPI Ref',
     'Paying UPI ID',
-    'WhatsApp Group',
+    'Status',
     'Google Drive Folder',
     'Submission Date',
   ];
@@ -667,6 +681,7 @@ export function generateRegistrationsCSV(records) {
   const rows = records.map((r) => [
     escapeCSV(r.regId),
     escapeCSV(r.name),
+    escapeCSV(r.rollNo || r.registrationNumber || 'N/A'),
     escapeCSV(r.year),
     escapeCSV(r.branch),
     escapeCSV(r.college || 'PMEC'),
@@ -674,8 +689,8 @@ export function generateRegistrationsCSV(records) {
     escapeCSV(r.phone),
     escapeCSV(r.amount),
     escapeCSV(r.utr),
-    escapeCSV(r.payingUpi || 'QR_SCAN'),
-    escapeCSV('Added to WhatsApp Group'),
+    escapeCSV(r.payingUpi || 'BANK_TRANSFER'),
+    escapeCSV(r.status || 'PENDING_VERIFICATION'),
     escapeCSV(r.memberFolderUrl || 'Synced in Google Drive'),
     escapeCSV(r.formattedDate || r.createdAt),
   ]);

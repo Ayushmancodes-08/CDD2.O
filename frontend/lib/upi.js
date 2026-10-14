@@ -7,7 +7,7 @@ export const DEFAULT_CLUB_UPI = process.env.NEXT_PUBLIC_CLUB_UPI_ID || 'BHARATPE
 export const DEFAULT_PAYEE_NAME = process.env.NEXT_PUBLIC_CLUB_PAYEE_NAME || 'BharatPe Merchant';
 export const DEFAULT_TAP_TO_PAY_UPI = process.env.NEXT_PUBLIC_TAP_TO_PAY_UPI || '8480496340-2@ybl';
 export const DEFAULT_TAP_TO_PAY_NAME = process.env.NEXT_PUBLIC_TAP_TO_PAY_NAME || 'Ayushman Patra';
-export const DEFAULT_WHATSAPP_GROUP = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f';
+export const DEFAULT_WHATSAPP_GROUP = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/HPR6RiuFLhxJz34y52IvjY';
 export const OFFICIAL_QR_IMAGE = '/cdd-upi-qr.jpg';
 
 /**

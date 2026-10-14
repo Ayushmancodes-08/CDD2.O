@@ -1,12 +1,17 @@
 import nodemailer from 'nodemailer';
 import { addRegistration, getAllRegistrations, generateRegistrationsCSV, normalizePhone, normalizeUTR } from '@/lib/registration-store';
 import { GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
+import { sendApplicationReceivedEmail } from '@/lib/email-service';
 
 export const maxDuration = 30; // Max allowed serverless timeout on Vercel Hobby tier
 
 const YEAR_FEE_MAP = {
   '1st year': 300,
+  'first year': 300,
+  'first-year student': 300,
   '2nd year': 225,
+  'second year': 225,
+  'second-year student': 225,
   '3rd year': 150
 };
 
@@ -187,7 +192,8 @@ async function syncToGoogleSheet(record) {
       body: JSON.stringify({
         action: 'club_registration',
         regId: record.regId,
-        registrationNumber: record.regId,
+        rollNo: record.rollNo || record.registrationNumber || '',
+        registrationNumber: record.rollNo || record.registrationNumber || record.regId,
         name: record.name,
         year: record.year,
         branch: record.branch,
@@ -228,6 +234,8 @@ export async function POST(req) {
     const body = await req.json();
     const {
       name,
+      rollNo,
+      registrationNumber,
       year,
       branch,
       college,
@@ -248,9 +256,17 @@ export async function POST(req) {
       );
     }
 
+    const cleanRollNo = (rollNo || registrationNumber || '').trim();
+    if (!cleanRollNo || cleanRollNo.length < 2) {
+      return Response.json(
+        { success: false, error: 'Please enter your Reg ID / Roll No.' },
+        { status: 400 }
+      );
+    }
+
     if (!year || !YEAR_FEE_MAP[year.toLowerCase()]) {
       return Response.json(
-        { success: false, error: 'Please select a valid academic year (1st, 2nd, or 3rd year).' },
+        { success: false, error: 'Please select a valid academic year (First-Year or Second-Year Student).' },
         { status: 400 }
       );
     }
@@ -282,17 +298,24 @@ export async function POST(req) {
       );
     }
 
+    if (!photo) {
+      return Response.json(
+        { success: false, error: 'Please upload your passport size professional photo.' },
+        { status: 400 }
+      );
+    }
+
     const cleanUTR = normalizeUTR(utr);
     if (!cleanUTR || cleanUTR.length < 10 || cleanUTR.length > 20) {
       return Response.json(
-        { success: false, error: 'Please enter a valid 12-digit UPI Reference / UTR number from your payment receipt.' },
+        { success: false, error: 'Please enter a valid 12-digit UPI / Bank Reference (UTR) number from your payment receipt.' },
         { status: 400 }
       );
     }
 
     if (!paymentScreenshot) {
       return Response.json(
-        { success: false, error: 'Please upload a screenshot of your completed UPI payment.' },
+        { success: false, error: 'Please upload a screenshot of your completed bank transfer / UPI payment receipt.' },
         { status: 400 }
       );
     }
@@ -300,6 +323,8 @@ export async function POST(req) {
     // 2. Add Registration (Atomic with deduplication)
     const record = await addRegistration({
       name: name.trim(),
+      rollNo: cleanRollNo,
+      registrationNumber: cleanRollNo,
       year: normalizedYear,
       branch,
       college: 'Parala Maharaja Engineering College',
@@ -307,26 +332,26 @@ export async function POST(req) {
       phone: cleanPhone,
       amount: expectedAmount,
       utr: cleanUTR,
-      payingUpi: (payingUpi || '').trim(),
+      payingUpi: (payingUpi || 'BANK_TRANSFER').trim(),
       sessionId: (sessionId || '').trim() || null,
       photo: photo || null,
       paymentScreenshot: paymentScreenshot || null,
     });
 
-    const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f';
-
-    // 3. Reliable Execution: Await both background tasks so Serverless (Vercel) does not freeze the runtime
+    // 3. Reliable Execution: Await application received email & google sheet sync
     await Promise.allSettled([
-      sendRegistrationEmail(record, whatsappGroupUrl).catch((e) => console.error('Email error:', e)),
+      sendApplicationReceivedEmail(record).catch((e) => console.error('Application received email error:', e)),
       syncToGoogleSheet(record).catch((e) => console.error('Sheets error:', e)),
     ]);
 
     return Response.json({
       success: true,
-      message: 'Registration submitted successfully!',
+      message: 'Registration submitted successfully! Your application is pending admin verification.',
       registration: {
         regId: record.regId,
         name: record.name,
+        rollNo: record.rollNo || cleanRollNo,
+        registrationNumber: record.registrationNumber || cleanRollNo,
         year: record.year,
         branch: record.branch,
         college: record.college,
@@ -337,7 +362,6 @@ export async function POST(req) {
         status: record.status,
         formattedDate: record.formattedDate,
       },
-      whatsappGroupUrl,
     });
   } catch (error) {
     console.error('Error in /api/register:', error);

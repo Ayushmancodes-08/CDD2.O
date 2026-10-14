@@ -2,6 +2,7 @@ import { getAllRegistrations, generateRegistrationsCSV, updateRegistrationStatus
 import { GOOGLE_SCRIPT_URL } from '@/lib/cdd-constants';
 import { pingMongoAtlas, getMongoDb } from '@/lib/mongodb';
 import { getAllSubscribers } from '@/lib/subscribers-store';
+import { sendApprovalEmail } from '@/lib/email-service';
 
 export const maxDuration = 30;
 
@@ -195,7 +196,7 @@ export async function GET(req) {
         payeeName: process.env.NEXT_PUBLIC_CLUB_PAYEE_NAME || 'BharatPe Merchant',
         tapToPayUpi: process.env.NEXT_PUBLIC_TAP_TO_PAY_UPI || '8480496340-2@ybl',
         tapToPayName: process.env.NEXT_PUBLIC_TAP_TO_PAY_NAME || 'Ayushman Patra',
-        whatsappGroup: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/DeHa9ful3zBI9troj4vg4f',
+        whatsappGroup: process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/HPR6RiuFLhxJz34y52IvjY',
         adminNotificationEmail: process.env.ADMIN_NOTIFICATION_EMAIL || 'ideainnovationcell.pmec@gmail.com',
         feeTiers: [
           { year: '1st year', label: '1st Year', amount: 300, duration: '4 Years' },
@@ -271,10 +272,69 @@ export async function POST(req) {
         );
       }
 
+      let emailSent = false;
+      const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/HPR6RiuFLhxJz34y52IvjY';
+
+      // If status is updated to VERIFIED, automatically send official confirmation email with official WhatsApp group link
+      if (status.toUpperCase() === 'VERIFIED') {
+        try {
+          emailSent = await sendApprovalEmail(updated, whatsappGroupUrl);
+        } catch (emailErr) {
+          console.error('Approval confirmation email error:', emailErr);
+        }
+
+        // Also sync status update to Google Apps Script spreadsheet
+        const scriptUrl = (process.env.GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL || '').trim();
+        if (scriptUrl) {
+          fetch(scriptUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'update_status',
+              regId: updated.regId,
+              rollNo: updated.rollNo || updated.registrationNumber,
+              email: updated.email,
+              utr: updated.utr,
+              status: 'VERIFIED',
+              whatsappUrl: whatsappGroupUrl,
+            }),
+            redirect: 'follow',
+          }).catch((syncErr) => console.warn('Non-fatal Google Script status sync error:', syncErr.message));
+        }
+      }
+
       return Response.json({
         success: true,
-        message: `Registration ${regId} status updated to ${status}.`,
+        message: status.toUpperCase() === 'VERIFIED'
+          ? `Candidate ${regId} APPROVED! Official confirmation email with WhatsApp group link ${emailSent ? 'sent to ' + updated.email : 'dispatched'}.`
+          : `Registration ${regId} status updated to ${status}.`,
         registration: updated,
+        emailSent,
+      });
+    }
+
+    // --- Action: Resend Approval Email ---
+    if (action === 'resend_approval_email') {
+      if (!verifyAdminAuth(req)) {
+        return Response.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+      }
+
+      const { regId } = body;
+      const allRecords = await getAllRegistrations();
+      const target = allRecords.find((r) => r.regId === regId);
+      if (!target) {
+        return Response.json({ success: false, error: 'Candidate record not found.' }, { status: 404 });
+      }
+
+      const whatsappGroupUrl = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/HPR6RiuFLhxJz34y52IvjY';
+      const emailSent = await sendApprovalEmail(target, whatsappGroupUrl);
+
+      return Response.json({
+        success: true,
+        message: emailSent
+          ? `Confirmation email with WhatsApp group link resent to ${target.email}!`
+          : `Could not send email to ${target.email}. Please verify SMTP settings.`,
+        emailSent,
       });
     }
 

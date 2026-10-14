@@ -262,7 +262,7 @@ export default function AdminPortalPage() {
 
       const data = await res.json();
       if (data.success) {
-        toast.success(`Status updated to ${newStatus}`);
+        toast.success(data.message || `Status updated to ${newStatus}`);
         setRegistrations((prev) =>
           prev.map((r) => (r.regId === regId ? { ...r, status: newStatus } : r))
         );
@@ -275,6 +275,36 @@ export default function AdminPortalPage() {
       }
     } catch (e) {
       toast.error('Network error updating status');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  // Resend Official Confirmation Email with WhatsApp Group Link
+  const handleResendApprovalEmail = async (regId) => {
+    if (!authToken || !regId) return;
+    setIsUpdatingStatus(true);
+    toast.loading('Dispatching confirmation email with WhatsApp group link...', { id: 'resend-email' });
+    try {
+      const res = await fetch('/api/admin/registrations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          action: 'resend_approval_email',
+          regId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'Confirmation email with WhatsApp group link sent!', { id: 'resend-email' });
+      } else {
+        toast.error(data.error || 'Failed to send email. Check SMTP settings.', { id: 'resend-email' });
+      }
+    } catch (e) {
+      toast.error('Network error sending email.', { id: 'resend-email' });
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -914,7 +944,12 @@ export default function AdminPortalPage() {
                               <p className="font-bold text-white group-hover:text-brand-300 transition-colors">
                                 {cand.name}
                               </p>
-                              <p className="text-[11px] text-slate-400 truncate max-w-[180px]">
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="font-mono text-[10px] font-bold text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">
+                                  Reg ID / Roll No: {cand.rollNo || cand.registrationNumber || cand.regId || 'N/A'}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 truncate max-w-[180px] mt-0.5">
                                 {cand.college || 'Parala Maharaja Engineering College'}
                               </p>
                             </td>
@@ -1519,6 +1554,13 @@ export default function AdminPortalPage() {
               {/* Data Table details */}
               <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 text-xs space-y-2 mb-6">
                 <div className="flex justify-between py-1 border-b border-slate-800">
+                  <span className="text-slate-400">Reg ID / Roll No:</span>
+                  <span className="font-mono text-amber-300 font-bold tracking-wider">
+                    {selectedCandidate.rollNo || selectedCandidate.registrationNumber || selectedCandidate.regId || 'N/A'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between py-1 border-b border-slate-800">
                   <span className="text-slate-400">WhatsApp Phone:</span>
                   <span className="font-mono text-white flex items-center gap-2">
                     {selectedCandidate.phone}
@@ -1629,14 +1671,27 @@ export default function AdminPortalPage() {
               {/* WhatsApp & Quick Action Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleUpdateStatus(selectedCandidate.regId, 'VERIFIED')}
-                    disabled={isUpdatingStatus}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <CheckCheck size={14} />
-                    <span>Mark Verified</span>
-                  </button>
+                  {(selectedCandidate.status || '').toUpperCase() !== 'VERIFIED' ? (
+                    <button
+                      onClick={() => handleUpdateStatus(selectedCandidate.regId, 'VERIFIED')}
+                      disabled={isUpdatingStatus}
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-400/30"
+                      title="Approve & Send Confirmation Email with WhatsApp Group Link"
+                    >
+                      <CheckCheck size={15} />
+                      <span>Approve & Send WhatsApp Link Email</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleResendApprovalEmail(selectedCandidate.regId)}
+                      disabled={isUpdatingStatus}
+                      className="px-3.5 py-2 bg-brand-600/20 hover:bg-brand-600/30 text-brand-300 border border-brand-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                      title="Resend official confirmation email with WhatsApp group link"
+                    >
+                      <Send size={13} />
+                      <span>Resend WhatsApp Link Email</span>
+                    </button>
+                  )}
 
                   <button
                     onClick={() => handleUpdateStatus(selectedCandidate.regId, 'REJECTED')}

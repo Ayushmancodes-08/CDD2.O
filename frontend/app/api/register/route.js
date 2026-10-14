@@ -204,7 +204,7 @@ async function syncToGoogleSheet(record) {
         amountPaid: record.amount,
         utr: record.utr,
         payingUpi: record.payingUpi || 'BharatPe Merchant UPI',
-        status: record.status || 'Added to WhatsApp Group',
+        status: record.status || 'Pending Verification',
         photo: record.photo || null,
         paymentScreenshot: record.paymentScreenshot || null,
         timestamp: record.formattedDate || new Date().toISOString(),

@@ -187,17 +187,25 @@ function doPost(e) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
-      const searchKey = (data.regId || data.rollNo || data.utr || data.email || "").toLowerCase().trim();
+      const searchRegId = (data.regId || "").toLowerCase().trim();
+      const searchRollNo = (data.rollNo || "").toLowerCase().trim();
+      const searchEmail = (data.email || "").toLowerCase().trim();
+      const searchUtr = (data.utr || "").toLowerCase().trim();
       const lastRow = sheet.getLastRow();
       let rowFound = -1;
 
       if (lastRow > 1) {
         const values = sheet.getRange(2, 1, lastRow - 1, 12).getValues();
         for (let i = 0; i < values.length; i++) {
-          const rowReg = String(values[i][1]).toLowerCase().trim(); // Column 2
-          const rowEmail = String(values[i][7]).toLowerCase().trim(); // Column 8
-          const rowUtr = String(values[i][9]).toLowerCase().trim(); // Column 10
-          if (rowReg.includes(searchKey) || rowEmail === searchKey || rowUtr === searchKey) {
+          const rowReg = String(values[i][1]).toLowerCase().trim(); // Column 2 (Reg ID / Roll No)
+          const rowEmail = String(values[i][7]).toLowerCase().trim(); // Column 8 (Email)
+          const rowUtr = String(values[i][9]).toLowerCase().trim(); // Column 10 (UTR)
+
+          const matchReg = (searchRollNo && rowReg.includes(searchRollNo)) || (searchRegId && rowReg.includes(searchRegId));
+          const matchEmail = searchEmail && rowEmail === searchEmail;
+          const matchUtr = searchUtr && rowUtr.includes(searchUtr);
+
+          if (matchReg || matchEmail || matchUtr) {
             rowFound = i + 2;
             break;
           }
